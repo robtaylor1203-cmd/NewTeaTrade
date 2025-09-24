@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tea Products - TeaTrade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="products-page">
+    <header class="site-header">
+        <div class="header-top-bar">
+            <a href="index.html" class="header-logo"><h1>Tea<span>Trade</span></h1></a>
+            <div class="header-search-wrapper"><input type="text" class="header-search-bar" placeholder="Product or brand"></div>
+            <div class="user-actions">
+                <a href="#" title="Create Account"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg></a>
+                <a href="#" title="Sign In"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></a>
+            </div>
+            <!-- ADDED: Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+        <nav class="secondary-nav">
+            <ul>
+                <li><a href="news.html">News</a></li>
+                <li><a href="jobs.html">Jobs</a></li>
+                <li><a href="products.html" class="active">Products</a></li>
+                <li><a href="corporate.html">Corporate</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="filter-bar">
+        <button class="filter-chip">Black Tea</button>
+        <button class="filter-chip">Green Tea</button>
+        <button class="filter-chip">Oolong Tea</button>
+    </div>
+    <main class="product-grid-container" id="product-grid">
+        <p style="padding: 24px;">Loading products...</p>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productGridContainer = document.getElementById('product-grid');
+            fetch('products.json').then(response => response.json()).then(products => {
+                productGridContainer.innerHTML = ''; 
+                if (products && products.length > 0) {
+                    products.forEach(product => {
+                        const productCard = document.createElement('a');
+                        productCard.className = 'product-card';
+                        productCard.href = product.link || '#';
+                        productCard.target = '_blank';
+                        productCard.rel = 'noopener noreferrer';
+                        const ratingPercent = (product.rating / 5) * 100;
+                        // Added loading="lazy" for performance
+                        productCard.innerHTML = `<div class="product-card-image-wrapper"><img class="product-card-image" src="${product.image}" alt="${product.name}" loading="lazy"></div><div class="product-card-info"><h3 class="product-name">${product.name}</h3><p class="product-brand">${product.brand}</p><p class="product-price">${product.price}</p><div class="product-reviews"><div class="star-rating"><div class="star-rating-filled" style="width: ${ratingPercent}%;"></div></div><span class="review-count">(${product.reviewCount})</span></div></div>`;
+                        productGridContainer.appendChild(productCard);
+                    });
+                } else { productGridContainer.innerHTML = '<p style="padding: 24px;">No products found.</p>'; }
+            }).catch(error => { console.error('Error fetching products data:', error); productGridContainer.innerHTML = '<p style="padding: 24px;">Error loading products.</p>'; });
+        });
+    </script>
+    <!-- ADDED: script.js link -->
+    <script src="script.js"></script>
+</body>
+</html>
