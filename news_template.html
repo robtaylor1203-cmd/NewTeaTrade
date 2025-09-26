@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tea Industry News - TeaTrade</title>
+    
     <link rel="stylesheet" href="style.css">
+    
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="news-page">
-    <!-- (Header content remains the same as previous update) -->
     <header class="site-header">
         <div class="header-top-bar">
             <a href="index.html" class="header-logo">
@@ -37,41 +38,9 @@
     <main class="page-container">
         <h2 class="page-title">Industry News</h2>
         <div class="news-list" id="news-container">
-    </div>
+            </div>
     </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const newsContainer = document.getElementById('news-container');
-            fetch('news.json')
-                .then(response => response.json())
-                .then(articles => {
-                    newsContainer.innerHTML = '';
-                    if (articles && articles.length > 0) {
-                        articles.forEach(article => {
-                            const articleElement = document.createElement('article');
-                            articleElement.className = 'news-item';
-                            // UPDATED STRUCTURE: Text on the left, Image on the right
-                            articleElement.innerHTML = `
-                                <div class="text-content">
-                                    <a href="${article.link}" class="main-link" target="_blank" rel="noopener noreferrer">
-                                        <h3>${article.headline}</h3>
-                                        <p class="snippet">${article.snippet}</p>
-                                    </a>
-                                    <div class="source">${article.source}</div>
-                                </div>
-                                <a href="${article.link}" class="image-link" target="_blank" rel="noopener noreferrer">
-                                    <img class="article-image" src="${article.image}" alt="Article Thumbnail" loading="lazy">
-                                </a>`;
-                            newsContainer.appendChild(articleElement);
-                        });
-                    } else { newsContainer.innerHTML = '<p>No featured articles found.</p>'; }
-                })
-                .catch(error => {
-                    console.error('Error fetching news:', error);
-                    newsContainer.innerHTML = '<p>Sorry, there was an error loading the news.</p>';
-                });
-        });
-    </script>
+    
     <script src="script.js"></script>
 </body>
 </html>
