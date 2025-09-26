@@ -113,17 +113,17 @@ def main():
     print("Injecting articles into HTML...")
     with open(HTML_FILE, "r", encoding="utf-8") as f:
         html = f.read()
-    
+
     start_tag = ''
     end_tag = ''
-    
+
     start_index = html.find(start_tag)
     end_index = html.find(end_tag)
-    
+
     if start_index == -1 or end_index == -1:
         print("Could not find the start and end tags in the HTML file.")
         return
-        
+
     articles_html = ""
     for article in all_articles:
         articles_html += f"""
@@ -137,12 +137,12 @@ def main():
                 </div>
             </article>
         """
-        
+
     new_html = html[:start_index + len(start_tag)] + articles_html + html[end_index:]
-    
+
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(new_html)
-        
+
     print(f"Successfully injected {len(all_articles)} articles into {HTML_FILE}.")
 
 if __name__ == "__main__":
