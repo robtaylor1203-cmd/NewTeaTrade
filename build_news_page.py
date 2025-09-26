@@ -1,89 +1,149 @@
 import sqlite3
-from datetime import datetime
+from playwright.sync_api import sync_playwright
+from datetime import datetime, timezone
+from urllib.parse import urljoin
+from fuzzywuzzy import fuzz
+import requests
+import time
+import random
 
 DB_FILE = "news.db"
-OUTPUT_HTML_FILE = "news.html"
-TEMPLATE_HTML_FILE = "news_template.html" # We will create this template file
+HTML_FILE = "news.html"
 
-def fetch_articles_from_db():
-    """Fetches all articles from the database, ordered by date."""
-    print("Fetching articles from the database...")
+def initialize_database():
+    """Creates the news table in the database if it doesn't exist."""
     with sqlite3.connect(DB_FILE) as conn:
-        # Make the cursor return rows that can be accessed by column name
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        # Order by article_date, putting articles with no date last.
-        # Then, sort by the date we scraped them.
-        cursor.execute("""
-            SELECT headline, snippet, source, link, article_date
-            FROM articles
-            ORDER BY
-                CASE WHEN article_date IS NULL THEN 1 ELSE 0 END,
-                article_date DESC,
-                scraped_date DESC
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS articles (
+                id INTEGER PRIMARY KEY,
+                headline TEXT NOT NULL,
+                snippet TEXT,
+                source TEXT NOT NULL,
+                link TEXT NOT NULL UNIQUE,
+                scraped_date TEXT NOT NULL,
+                article_date TEXT
+            )
         """)
-        articles = cursor.fetchall()
-        print(f"Found {len(articles)} articles.")
-        return articles
+        print("Database initialized successfully.")
 
-def create_article_html(article):
-    """Creates an HTML block for a single article."""
-    
-    # --- Date Formatting ---
-    # The date is stored in ISO format (e.g., "2025-09-26T10:00:00Z")
-    # We will format it to be more readable, e.g., "26 September 2025"
-    display_date = ""
-    if article['article_date']:
+def article_exists(headline, link, conn):
+    """Checks if an article already exists to prevent duplicates."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT headline FROM articles WHERE link = ?", (link,))
+    if cursor.fetchone():
+        return True
+    cursor.execute("SELECT headline FROM articles")
+    for row in cursor.fetchall():
+        if fuzz.ratio(headline, row[0]) > 90:
+            return True
+    return False
+
+def scrape_tea_and_coffee_news(page):
+    """Scrapes articles from teaandcoffee.net/news"""
+    print("Scraping Tea & Coffee News...")
+    url = "https://www.teaandcoffee.net/news/"
+    page.goto(url, wait_until="networkidle", timeout=60000)
+
+    articles = []
+    for item in page.locator('article:has(div.articleExcerpt)').all():
         try:
-            # Parse the ISO 8601 date format
-            date_obj = datetime.fromisoformat(article['article_date'].replace('Z', '+00:00'))
-            display_date = date_obj.strftime("%d %B %Y")
-        except ValueError:
-            # If the date format is unexpected, just display it as is.
-            display_date = article['article_date']
+            headline_element = item.locator('h3 a')
+            headline = headline_element.inner_text()
+            link = headline_element.get_attribute('href')
+            snippet = item.locator('div.articleExcerpt').inner_text()
+            article_date = item.locator('div.meta').inner_text()
 
-    # Using an f-string to build the HTML block. This matches the style in style.css
-    return f"""
-        <article class="news-item">
-            <div class="text-content">
-                <a href="{article['link']}" class="main-link" target="_blank" rel="noopener noreferrer">
-                    <h3>{article['headline']}</h3>
-                    <p class="snippet">{article['snippet']}</p>
-                </a>
-                <div class="source">{article['source']} - <span class="article-date">{display_date}</span></div>
-            </div>
-        </article>
-    """
+            if headline and link:
+                articles.append({
+                    "headline": headline.strip(),
+                    "snippet": snippet.strip(),
+                    "source": "Tea & Coffee Trade Journal",
+                    "link": urljoin(url, link),
+                    "article_date": article_date
+                })
+        except Exception as e:
+            print(f"Could not process an item on Tea & Coffee News: {e}")
 
-def build_html_page():
-    """Builds the final news.html page."""
-    articles = fetch_articles_from_db()
+    return articles
+
+def main():
+    """Main function to run all scrapers and update the database."""
+    initialize_database()
+
+    all_articles = []
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False, slow_mo=100)
+        page = browser.new_page()
+
+        all_articles.extend(scrape_tea_and_coffee_news(page))
+
+        if not all_articles:
+            print("No articles were scraped. Saving debug files...")
+            page.screenshot(path="debug_homepage.png", full_page=True)
+            with open("debug_homepage.html", "w", encoding="utf-8") as f:
+                f.write(page.content())
+            print("Debug screenshot and HTML file have been saved.")
+
+        browser.close()
+
+    if not all_articles:
+        print("\nNo articles were found in this run.")
+        return
+
+    new_articles_count = 0
+    with sqlite3.connect(DB_FILE) as conn:
+        for article in all_articles:
+            if not article_exists(article['headline'], article['link'], conn):
+                conn.execute("""
+                    INSERT INTO articles (headline, snippet, source, link, scraped_date, article_date)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    article['headline'],
+                    article['snippet'],
+                    article['source'],
+                    article['link'],
+                    datetime.now(timezone.utc).isoformat(),
+                    article.get('article_date')
+                ))
+                new_articles_count += 1
+
+    print(f"\nScraping complete. Added {new_articles_count} new articles to the database.")
+
+    # --- NEW: HTML Injection Logic ---
+    print("Injecting articles into HTML...")
+    with open(HTML_FILE, "r", encoding="utf-8") as f:
+        html = f.read()
     
-    if not articles:
-        print("No articles to build. Exiting.")
-        return
-
-    print("Generating HTML for each article...")
-    all_articles_html = "".join([create_article_html(article) for article in articles])
-
-    # Read the template file
-    try:
-        with open(TEMPLATE_HTML_FILE, "r", encoding="utf-8") as f:
-            template_content = f.read()
-    except FileNotFoundError:
-        print(f"ERROR: Template file '{TEMPLATE_HTML_FILE}' not found. Please create it.")
+    start_tag = ''
+    end_tag = ''
+    
+    start_index = html.find(start_tag)
+    end_index = html.find(end_tag)
+    
+    if start_index == -1 or end_index == -1:
+        print("Could not find the start and end tags in the HTML file.")
         return
         
-    # Replace the placeholder in the template with our generated HTML
-    final_html = template_content.replace("", all_articles_html)
-
-    # Write the new content to the output file
-    with open(OUTPUT_HTML_FILE, "w", encoding="utf-8") as f:
-        f.write(final_html)
+    articles_html = ""
+    for article in all_articles:
+        articles_html += f"""
+            <article class="news-item">
+                <div class="text-content">
+                    <a href="{article['link']}" class="main-link" target="_blank" rel="noopener noreferrer">
+                        <h3>{article['headline']}</h3>
+                        <p class="snippet">{article['snippet']}</p>
+                    </a>
+                    <div class="source">{article['source']} - <span class="article-date">{article['article_date']}</span></div>
+                </div>
+            </article>
+        """
         
-    print(f"\n✅ Success! Your website has been updated.")
-    print(f"   '{OUTPUT_HTML_FILE}' has been rebuilt with {len(articles)} articles.")
-
+    new_html = html[:start_index + len(start_tag)] + articles_html + html[end_index:]
+    
+    with open(HTML_FILE, "w", encoding="utf-8") as f:
+        f.write(new_html)
+        
+    print(f"Successfully injected {len(all_articles)} articles into {HTML_FILE}.")
 
 if __name__ == "__main__":
-    build_html_page()
+    main()
