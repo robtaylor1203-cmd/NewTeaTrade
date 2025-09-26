@@ -1,5 +1,4 @@
 import sqlite3
-import pandas as pd
 from playwright.sync_api import sync_playwright
 from datetime import datetime, timezone
 from urllib.parse import urljoin
@@ -7,8 +6,10 @@ from fuzzywuzzy import fuzz
 import requests
 import time
 import random
+from bs4 import BeautifulSoup, Comment
 
 DB_FILE = "news.db"
+HTML_FILE = "news.html"
 
 def initialize_database():
     """Creates the news table in the database if it doesn't exist."""
@@ -44,8 +45,6 @@ def scrape_tea_and_coffee_news(page):
     url = "https://www.teaandcoffee.net/news/"
     page.goto(url, wait_until="networkidle", timeout=60000)
 
-    # --- NEW: More precise selector ---
-    # We are now looking for article elements that contain a div with the class "articleExcerpt"
     articles = []
     for item in page.locator('article:has(div.articleExcerpt)').all():
         try:
@@ -110,6 +109,57 @@ def main():
                 new_articles_count += 1
 
     print(f"\nScraping complete. Added {new_articles_count} new articles to the database.")
+
+    # --- HTML Injection Logic ---
+    print("Injecting articles into HTML...")
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT headline, snippet, source, link, article_date
+            FROM articles
+            ORDER BY
+                CASE WHEN article_date IS NULL THEN 1 ELSE 0 END,
+                article_date DESC,
+                scraped_date DESC
+        """)
+        articles = cursor.fetchall()
+
+    with open(HTML_FILE, "r", encoding="utf-8") as f:
+        soup = BeautifulSoup(f, "html.parser")
+    
+    start_tag = soup.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
+    end_tag = soup.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
+    
+    if not start_tag or not end_tag:
+        print("Could not find the start and end tags in the HTML file.")
+        return
+        
+    for tag in start_tag.find_all_next():
+        if tag == end_tag:
+            break
+        tag.decompose()
+        
+    articles_html = ""
+    for article in articles:
+        articles_html += f"""
+            <article class="news-item">
+                <div class="text-content">
+                    <a href="{article['link']}" class="main-link" target="_blank" rel="noopener noreferrer">
+                        <h3>{article['headline']}</h3>
+                        <p class="snippet">{article['snippet']}</p>
+                    </a>
+                    <div class="source">{article['source']} - <span class="article-date">{article['article_date']}</span></div>
+                </div>
+            </article>
+        """
+        
+    start_tag.insert_after(BeautifulSoup(articles_html, "html.parser"))
+    
+    with open(HTML_FILE, "w", encoding="utf-8") as f:
+        f.write(str(soup))
+        
+    print(f"Successfully injected {len(articles)} articles into {HTML_FILE}.")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,76 @@
+Consolidated Project State Document (PSD) - v0.5
+1. Project Overview & Core Objectives
+Project Name: TeaTrade
+
+High-Level Goal: To centralise the global tea trade industry, establishing TeaTrade as the single, authoritative source for all industry information.
+
+Key Deliverables:
+
+A comprehensive database of global tea auction results, consolidated weekly.
+
+An aggregation platform for industry news.
+
+A dedicated jobs board for the tea sector.
+
+A directory of tea products.
+
+A powerful backend data pipeline to automate the collection, processing, and storage of all data.
+
+An automated market reports library populated by web scrapers.
+
+A data warehouse capable of handling significant weekly data intake (est. 20,000+ rows/week) to enable future analytics.
+
+Core Mandate: The existing user interface and "Google-like" feel of the website are to be preserved and built upon.
+
+1.1. Development Environment & Constraints
+Operating System: Windows (HP Laptop)
+
+Terminal/Shell: Git Bash
+
+User Expertise: Beginner. All code modifications must be delivered as complete, full files. No partial code snippets or instructions to "replace a section" should be used.
+
+2. Tech Stack & Architecture
+Frontend: HTML, CSS, vanilla JavaScript.
+
+Backend Language: Python.
+
+Scraping Engine: Playwright.
+
+Data Handling/Processing: Pandas, lxml, fuzzywuzzy.
+
+Database: SQLite (news.db) for storing scraped articles.
+
+HTML Generation: BeautifulSoup4 for dynamically building the news.html page.
+
+Automation: GitHub Actions for daily, automated scraping and site-building.
+
+3. Key Decisions & Rationale
+(2025-09-24) Project state management: Will be handled via a PROJECT_STATE.md file.
+
+(2025-09-24) Technology selection: Python with Playwright is chosen as the primary scraping stack.
+
+(2025-09-26) News Data Storage: A file-based SQLite database (news.db) was chosen for persistence and to facilitate smart deduplication.
+
+(2025-09-26) Automation: GitHub Actions will be used to run the scraper and build the news page on a daily schedule.
+
+(2025-09-26) Development Workflow: The project will use a single, all-in-one script (scraper_news.py) to scrape, update the database, and rebuild the news.html file in one run. The build_news_page.py script has been deprecated.
+
+4. Current Status & Next Steps
+Last Completed Task: Successfully resolved the issue with the scraper_news.py script not finding the placeholder tags in news.html. The script now successfully scrapes, updates the database, and rebuilds the HTML file.
+
+Current Focus: Expanding the news scraper to include more sources and refining the automation process.
+
+Immediate Blockers: None.
+
+Next Action Items:
+
+Expand News Scraper: Add new functions to scraper_news.py to scrape more sources from our list (e.g., BBC News, Yahoo News, and others).
+
+Refine GitHub Action: Ensure the .github/workflows/scrape_news.yml file is correctly configured to run the all-in-one scraper script.
+
+[Parked] The J.Thomas auction site is not serving data correctly. The corresponding scraper is complete but on hold.
+
+5. Data Sources
+Market Reports: A comprehensive list of URLs has been provided for auction centers including Mombasa, Colombo, Limbe, Kolkata, Guwahati, Siliguri, South India, Jakarta, and Bangladesh. These are stored in Market Report Sources.txt.
+
+News: A list of 14 primary news outlets and search engine results pages has been provided. These are stored in News sources.txt.
