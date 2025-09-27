@@ -91,18 +91,17 @@ def handle_consent(page, source_name):
     """
     Handles specific cookie consent banners by explicitly waiting for and clicking them.
     """
-    # Configuration defines how to handle consent per source
     consent_config = {
         "BBC News": {
             "selectors": [
+                'button:has-text("Accept additional cookies")', # From screenshot
                 'button[aria-label*="agree" i]',
                 'button:has-text("Yes, I agree")',
                 'button[data-testid="banner-accept"]',
                 'p[data-bbc-content-id="bbccookies-continue-button"]',
                 'button:has-text("Allow all")',
-                'button:has-text("Accept recommended cookies")'
             ],
-            "wait_after_click": "domcontentloaded" # BBC often reloads/redirects
+            "wait_after_click": "domcontentloaded"
         },
         "Euronews": {
             "selectors": [
@@ -110,38 +109,41 @@ def handle_consent(page, source_name):
                 'button:has-text("Agree and close")',
                 'button:has-text("AGREE")'
             ],
-            "wait_after_click": "hidden" # Euronews usually just hides the banner
+            "wait_after_click": "hidden"
         },
+        "Tea & Coffee Trade Journal": {
+            "selectors": [
+                'button:has-text("Accept")',
+                'button:has-text("Allow all")',
+                'button:has-text("Agree")'
+            ],
+             "wait_after_click": "hidden"
+        }
     }
 
     config = consent_config.get(source_name)
     if not config:
-        return False # No specific handling defined
+        return False
 
     combined_selector = ", ".join(config["selectors"])
 
     try:
-        # 1. Wait explicitly for the banner to appear (up to 10 seconds)
         print(f"  [Consent] Waiting up to 10s for {source_name} consent banner...")
         page.wait_for_selector(combined_selector, state='visible', timeout=10000)
         
-        # 2. Click the first visible button (use force=True in case of overlays)
         button = page.locator(combined_selector).first
         if button.is_visible():
             print(f"  [Consent] Found banner. Clicking consent button.")
-            # Use force=True to click even if slightly obscured
             button.click(timeout=5000, force=True)
             
-            # 3. Wait for the UI to update
             if config["wait_after_click"] == "domcontentloaded":
                 try:
-                    # Wait for navigation/reload if expected
                     page.wait_for_load_state("domcontentloaded", timeout=15000)
                 except PlaywrightTimeoutError:
-                    time.sleep(1) # Fallback if navigation doesn't occur
+                    time.sleep(2)
             elif config["wait_after_click"] == "hidden":
-                # Wait for the button/banner to disappear
                 button.wait_for(state="hidden", timeout=10000)
+                time.sleep(2)
             
             return True
     except PlaywrightTimeoutError:
@@ -157,86 +159,76 @@ def handle_consent(page, source_name):
 # =============================================================================
 
 def scrape_tea_and_coffee_news(page):
-    """Scrapes articles from teaandcoffee.net/news with pagination and ad filtering."""
+    """ Scrapes teaandcoffee.net using click-based pagination."""
     source_name = "Tea & Coffee Trade Journal"
-    base_url = "https://www.teaandcoffee.net/news/"
+    url = "https://www.teaandcoffee.net/news/"
     print(f"Scraping {source_name}...")
     
     articles = []
-    current_page_num = 1
+    
+    try:
+        page.goto(url, wait_until=NAVIGATION_WAIT_STRATEGY, timeout=NAVIGATION_TIMEOUT)
+        handle_consent(page, source_name)
+        page.wait_for_selector('div.flex.facetwp-template', state='visible', timeout=SELECTOR_TIMEOUT)
+    except Exception as e:
+        print(f"  Error navigating to or loading initial page at {url}: {e}")
+        if isinstance(e, PlaywrightTimeoutError):
+            save_debug_files(page, "debug_TC_InitialLoad")
+        return articles
 
-    while current_page_num <= MAX_PAGES_PER_SOURCE:
-        # Construct the URL for the current page (URL-based pagination)
-        url = base_url if current_page_num == 1 else f"{base_url}page/{current_page_num}/"
-        print(f"  Navigating to page {current_page_num}: {url}")
+    for page_num in range(1, MAX_PAGES_PER_SOURCE + 1):
+        print(f"  Processing page {page_num}...")
         
-        try:
-            response = page.goto(url, wait_until=NAVIGATION_WAIT_STRATEGY, timeout=NAVIGATION_TIMEOUT)
-            
-            # If the page returns a 404 or similar error (and it's not the first page), stop pagination
-            if response and response.status >= 404 and current_page_num > 1:
-                 print(f"  Page {current_page_num} not found (Status: {response.status}). Stopping pagination.")
-                 break
-
-            # Wait for the specific container holding the articles (more precise than main#main)
-            page.wait_for_selector('div.articles.block.category', state='visible', timeout=SELECTOR_TIMEOUT)
+        loading_spinner = page.locator('div.facetwp-loading')
+        article_locators = page.locator('div.flex.facetwp-template > article.row3')
         
-        except Exception as e:
-            print(f"  Error navigating to or loading content at {url}: {e}")
-            if isinstance(e, PlaywrightTimeoutError):
-                save_debug_files(page, f"debug_TC_Page{current_page_num}")
-            break # Stop if navigation fails
-
-        # Target specific articles within the container
-        # The structure is: div.articles.block.category > article
-        article_locators = page.locator('div.articles.block.category > article')
-
-        if article_locators.count() == 0:
-            print("  No recognizable articles found on this page. Stopping pagination.")
-            break
-
         for item in article_locators.all():
             try:
-                # [MODIFIED] - Improved ad/sponsored content filtering and structure check
-                # Check for explicit ad markers in text or if the item lacks a proper headline link.
-                if item.locator("text=/sponsored|advertisement|AD\s*\|/i").count() > 0 or item.locator('h3 a').count() == 0:
+                if item.locator(r"text=/sponsored|advertisement|AD\s*\|/i").count() > 0 or item.locator('h3 a').count() == 0:
                     continue
 
-                # Robust extraction of elements
                 headline_element = item.locator('h3 a').first
                 headline = headline_element.inner_text(timeout=5000)
                 link = headline_element.get_attribute('href', timeout=5000)
                 
-                # Look for the excerpt specifically
                 snippet_element = item.locator('div.articleExcerpt')
-                snippet = snippet_element.inner_text(timeout=5000) if snippet_element.count() > 0 else ""
+                snippet = snippet_element.inner_text(timeout=5000).strip() if snippet_element.count() > 0 else ""
                 
                 date_element = item.locator('div.meta')
-                article_date = date_element.inner_text(timeout=5000) if date_element.count() > 0 else ""
+                article_date = date_element.inner_text(timeout=5000).strip() if date_element.count() > 0 else ""
 
-                # Basic filtering: ensure headline and link are present
                 if headline and link:
-                    # Ensure link is absolute
-                    full_link = urljoin(base_url, link)
-                    
+                    full_link = urljoin(url, link)
                     articles.append({
-                        "headline": headline.strip(),
-                        "snippet": snippet.strip(),
-                        "source": source_name,
-                        "link": full_link,
-                        "article_date": article_date.strip()
+                        "headline": headline.strip(), "snippet": snippet, "source": source_name,
+                        "link": full_link, "article_date": article_date
                     })
             except Exception as e:
                 print(f"  Could not process an item on {source_name}: {e}")
 
-        current_page_num += 1
-        time.sleep(random.uniform(1, 3)) # Pause slightly between pages
+        if page_num == MAX_PAGES_PER_SOURCE:
+            print("  Reached max page limit.")
+            break
 
+        next_button = page.locator('a.facetwp-page.next')
+        if next_button.count() > 0 and next_button.is_visible():
+            print("  Navigating to next page...")
+            next_button.click()
+            try:
+                loading_spinner.wait_for(state="hidden", timeout=15000)
+                time.sleep(random.uniform(1,2))
+            except PlaywrightTimeoutError:
+                print("  Pagination timed out waiting for content to load. Stopping.")
+                break
+        else:
+            print("  No 'Next' button found. Stopping pagination.")
+            break
+            
     print(f"  Found {len(articles)} articles from {source_name}.")
     return articles
 
 def scrape_bbc_news(page):
-    """Scrapes articles from the BBC News Tea topic page."""
+    """[REFACTORED] Scrapes articles from BBC News with anti-bot measures."""
     source_name = "BBC News"
     url = "https://www.bbc.co.uk/news/topics/c50nyrxjl4lt"
     print(f"Scraping {source_name}...")
@@ -245,67 +237,48 @@ def scrape_bbc_news(page):
     
     try:
         page.goto(url, wait_until=NAVIGATION_WAIT_STRATEGY, timeout=NAVIGATION_TIMEOUT)
-        
-        # Handle Cookie Consent Banners (Critical for BBC)
         handle_consent(page, source_name)
-
-        # Wait for the main container first.
+        # [MODIFIED] Wait for network to be idle to let anti-bot scripts run and settle
+        page.wait_for_load_state('networkidle', timeout=15000)
         page.wait_for_selector('main#main-content', state='visible', timeout=SELECTOR_TIMEOUT)
-
     except Exception as e:
         print(f"  Error navigating, handling consent, or loading main container at {url}: {e}")
         if isinstance(e, PlaywrightTimeoutError):
             save_debug_files(page, "debug_BBC")
         return articles
 
-    # Define the article selectors
-    content_selector = 'div[data-testid="topic-card"], div[data-testid^="promo-"]'
+    # [MODIFIED] More robust selector that doesn't rely solely on test IDs
+    content_selector = 'div[class*="PromoCard"], div[data-testid^="promo-"]'
     
-    # Gracefully handle empty topic pages. Wait briefly (e.g., 5s) to see if articles load via JS.
     try:
-        page.wait_for_selector(content_selector, state='visible', timeout=5000)
+        page.wait_for_selector(content_selector, state='attached', timeout=5000)
     except PlaywrightTimeoutError:
-        # If timeout occurs after 5s, the topic page is likely empty.
         print("  No articles found on BBC Tea topic page after waiting 5s. The topic page might be empty.")
-        return articles # Exit gracefully
+        return articles
 
-    # Proceed with extraction if articles exist
     article_locators = page.locator(content_selector)
     for item in article_locators.all():
         try:
-            # Headline and Link extraction
-            link_element = item.locator('a[data-testid="internal-link"], h2 a, h3 a').first
-
-            # [MODIFIED] - Check if link element exists and is visible
+            link_element = item.locator('h2 a, h3 a').first
             if link_element.count() == 0 or not link_element.is_visible(timeout=5000):
                 continue
 
             headline = link_element.inner_text(timeout=5000)
             link = link_element.get_attribute('href', timeout=5000)
 
-            # Snippet extraction
-            snippet_element = item.locator('p[data-testid="card-description"], p[data-testid="promo-summary"], p').first
+            snippet_element = item.locator('p[data-testid="card-description"], p[class*="Paragraph"]').first
             snippet = snippet_element.inner_text(timeout=5000) if snippet_element.count() > 0 and snippet_element.is_visible(timeout=5000) else ""
 
-            # Date extraction
-            date_element = item.locator('time[data-testid="card-metadata-lastupdated"], time[data-testid="timestamp"], time').first
+            date_element = item.locator('time[data-testid*="timestamp"], time').first
             article_date = date_element.inner_text(timeout=5000) if date_element.count() > 0 and date_element.is_visible(timeout=5000) else ""
             
-            # Basic filtering
             if headline and link:
-                # Ensure link is absolute
                 full_link = urljoin("https://www.bbc.co.uk", link)
-                
-                # Filter out potential non-content links
                 if "/news/" not in full_link and "/sport/" not in full_link:
                     continue
-                    
                 articles.append({
-                    "headline": headline.strip(),
-                    "snippet": snippet.strip(),
-                    "source": source_name,
-                    "link": full_link,
-                    "article_date": article_date.strip()
+                    "headline": headline.strip(), "snippet": snippet.strip(), "source": source_name,
+                    "link": full_link, "article_date": article_date.strip()
                 })
         except Exception as e:
             print(f"  Could not process an item on {source_name}: {e}")
@@ -314,7 +287,7 @@ def scrape_bbc_news(page):
     return articles
 
 def scrape_euronews(page):
-    """Scrapes articles from the Euronews Tea tag page."""
+    """ Scrapes articles from the Euronews Tea tag page."""
     source_name = "Euronews"
     url = "https://www.euronews.com/tag/tea"
     print(f"Scraping {source_name}...")
@@ -323,52 +296,37 @@ def scrape_euronews(page):
     
     try:
         page.goto(url, wait_until=NAVIGATION_WAIT_STRATEGY, timeout=NAVIGATION_TIMEOUT)
-
-        # Handle Cookie Consent (Euronews often uses 'didomi')
         handle_consent(page, source_name)
-
-        # Wait for articles to load. Changed state to 'attached' instead of 'visible'
-        # as optimization CSS might hide elements even when they are in the DOM.
-        page.wait_for_selector('article.m-object', state='attached', timeout=SELECTOR_TIMEOUT)
+        page.wait_for_selector('section[data-block="listing"]', state='visible', timeout=SELECTOR_TIMEOUT)
     except Exception as e:
         print(f"  Error navigating to or loading {url}: {e}")
         if isinstance(e, PlaywrightTimeoutError):
             save_debug_files(page, "debug_Euronews")
         return articles
 
-    # Euronews structure: Exclude articles containing advertising divs.
-    for item in page.locator('article.m-object:not(:has(div.c-advertising))').all():
+    article_selector = 'article.the-media-object:not(.the-media-object--has-sponsored):not(:has-text("In partnership with"))'
+    for item in page.locator(article_selector).all():
         try:
-            # Explicit check for "Sponsored" labels
-            if item.locator('span:has-text("Sponsored"), span:has-text("Advertisement")').count() > 0:
+            headline_element = item.locator('h3.the-media-object__title')
+            link_element = item.locator('a.the-media-object__link')
+            
+            if headline_element.count() == 0 or link_element.count() == 0:
                 continue
 
-            # Headline and Link
-            headline_element = item.locator('a.m-object__title__link')
-            # [MODIFIED] - Ensure the headline element exists before proceeding
-            if headline_element.count() == 0: continue
-
-            # Use the 'title' attribute if present, otherwise the inner text
-            headline = headline_element.first.get_attribute('title', timeout=5000) or headline_element.first.inner_text(timeout=5000)
-            link = headline_element.first.get_attribute('href', timeout=5000)
+            headline = headline_element.first.inner_text(timeout=5000)
+            link = link_element.first.get_attribute('href', timeout=5000)
             
-            # Snippet (Euronews often doesn't show snippets on tag pages)
-            snippet = "" 
+            snippet_element = item.locator('div.the-media-object__description')
+            snippet = snippet_element.inner_text(timeout=5000) if snippet_element.count() > 0 else ""
 
-            # Date (Difficult to extract reliably on this view)
-            article_date = ""
+            date_element = item.locator('div.the-media-object__date > time')
+            article_date = date_element.get_attribute('datetime', timeout=5000) if date_element.count() > 0 else ""
 
-            # Basic filtering
             if headline and link:
-                # Ensure link is absolute
                 full_link = urljoin("https://www.euronews.com", link)
-                
                 articles.append({
-                    "headline": headline.strip(),
-                    "snippet": snippet.strip(),
-                    "source": source_name,
-                    "link": full_link,
-                    "article_date": article_date.strip()
+                    "headline": headline.strip(), "snippet": snippet.strip(), "source": source_name,
+                    "link": full_link, "article_date": article_date.strip()
                 })
         except Exception as e:
             print(f"  Could not process an item on {source_name}: {e}")
@@ -377,7 +335,7 @@ def scrape_euronews(page):
     return articles
 
 # =============================================================================
-# HTML INJECTION (No significant changes needed here)
+# HTML INJECTION
 # =============================================================================
 
 def inject_html(articles):
@@ -391,54 +349,59 @@ def inject_html(articles):
         print(f"Error: {HTML_FILE} not found. Cannot inject articles.")
         return
     
-    # Find the injection markers
     start_tag = soup.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
     end_tag = soup.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
     
+    # Self-healing logic if tags are missing
     if not start_tag or not end_tag:
-        print("Could not find the and tags in the HTML file.")
-        return
-        
-    # Clear existing content between the tags robustly
+        print(f"Warning: Could not find or tags in {HTML_FILE}.")
+        body_tag = soup.find('body')
+        if body_tag:
+            print("  Tags not found. Appending them to the body.")
+            # [MODIFIED] Fixed bug that caused IndexError
+            body_tag.append(Comment(" START_NEWS "))
+            body_tag.append(Comment(" END_NEWS "))
+            start_tag = soup.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
+            end_tag = soup.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
+        else:
+            print(f"Error: Could not find body tag in {HTML_FILE}. Cannot inject articles.")
+            return
+
+    # Clear existing content between the tags
     current = start_tag.next_sibling
     while current and current != end_tag:
         next_tag = current.next_sibling
         if hasattr(current, 'decompose'):
             current.decompose()
         else:
-            # Handle navigable strings (like whitespace)
             current.extract()
         current = next_tag
         
-    # Generate HTML for the articles
     articles_html = ""
     for article in articles:
-        # Handle potential None values for snippet
-        snippet_text = article['snippet'] if article['snippet'] else ""
+        # [MODIFIED] Use dictionary-style access for sqlite3.Row objects
+        snippet_text = article['snippet'] or ""
+        headline_text = article['headline'] or "No headline"
+        link_url = article['link'] or "#"
+        source_name = article['source'] or "Unknown Source"
         
-        # Format source and date display
-        if article.get('article_date'):
-            source_date_text = f"{article['source']} - <span class=\"article-date\">{article['article_date']}</span>"
-        else:
-            # Fallback: Use the scraped date if the article date is missing
+        date_display = (article['article_date'] or "").strip()
+        if not date_display:
             try:
-                # Parse ISO format (handles UTC 'Z' or timezone offsets)
-                scraped_date_str = article['scraped_date']
-                scraped_dt = datetime.fromisoformat(scraped_date_str.replace('Z', '+00:00'))
-                
-                # Format for display
-                formatted_date = scraped_dt.strftime("%d %b %Y")
-                source_date_text = f"{article['source']} - <span class=\"article-date\">{formatted_date}</span>"
-            except Exception as e:
-                # Final fallback if parsing fails
-                source_date_text = article['source']
-
+                scraped_dt = datetime.fromisoformat(article['scraped_date'].replace('Z', '+00:00'))
+                date_display = scraped_dt.strftime("%d %b %Y")
+            except (ValueError, KeyError):
+                date_display = ""
+        
+        source_date_text = source_name
+        if date_display:
+             source_date_text += f" - <span class=\"article-date\">{date_display}</span>"
         
         articles_html += f"""
             <article class="news-item">
                 <div class="text-content">
-                    <a href="{article['link']}" class="main-link" target="_blank" rel="noopener noreferrer">
-                        <h3>{article['headline']}</h3>
+                    <a href="{link_url}" class="main-link" target="_blank" rel="noopener noreferrer">
+                        <h3>{headline_text}</h3>
                         <p class="snippet">{snippet_text}</p>
                     </a>
                     <div class="source">{source_date_text}</div>
@@ -446,10 +409,8 @@ def inject_html(articles):
             </article>
         """
         
-    # Insert the new HTML after the start tag
     start_tag.insert_after(BeautifulSoup(articles_html, "html.parser"))
     
-    # Write the updated HTML back to the file
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(str(soup))
         
@@ -466,34 +427,26 @@ def main():
 
     all_scraped_articles = []
     
-    # Define the list of scraper functions to run
     scrapers = [
         scrape_tea_and_coffee_news,
         scrape_bbc_news,
         scrape_euronews
     ]
 
-    # Initialize Playwright
     try:
         with sync_playwright() as p:
-            # Set headless=False for local debugging so you can watch the browser.
-            # Set slow_mo=100 to slightly slow down actions, making it easier to follow.
             browser = p.chromium.launch(headless=False, slow_mo=100) 
-            
-            # Create a new context with a realistic User-Agent
             context = browser.new_context(
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
             )
             page = context.new_page()
 
-            # Run each scraper sequentially
             for scraper_func in scrapers:
                 try:
                     scraped_data = scraper_func(page)
                     all_scraped_articles.extend(scraped_data)
                 except Exception as e:
                     print(f"Error running scraper {scraper_func.__name__}: {e}")
-                # Pause between sources
                 time.sleep(random.uniform(2, 5)) 
 
             browser.close()
@@ -504,10 +457,7 @@ def main():
     if not all_scraped_articles:
         print("\nNo articles were successfully scraped in this run.")
     
-    # Process and insert into database
     new_articles_count = 0
-    # Get the current UTC time once for this batch
-    # Ensure the timestamp includes timezone information (+00:00 for UTC)
     scraped_timestamp = datetime.now(timezone.utc).isoformat()
 
     try:
@@ -531,12 +481,10 @@ def main():
 
     print(f"\nScraping complete. Added {new_articles_count} new articles to the database.")
 
-    # Retrieve all articles for HTML injection
     try:
         with sqlite3.connect(DB_FILE) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            # Order primarily by scraped date (newest first)
             cursor.execute("""
                 SELECT headline, snippet, source, link, article_date, scraped_date
                 FROM articles
@@ -550,7 +498,6 @@ def main():
         print(f"Database retrieval error: {e}")
         all_db_articles = []
 
-    # Inject articles into the HTML
     if all_db_articles:
         inject_html(all_db_articles)
     else:
