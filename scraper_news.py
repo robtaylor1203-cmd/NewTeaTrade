@@ -94,7 +94,7 @@ def handle_consent(page, source_name):
     consent_config = {
         "BBC News": {
             "selectors": [
-                'button:has-text("Accept additional cookies")', # From screenshot
+                'button:has-text("Accept additional cookies")',
                 'button[aria-label*="agree" i]',
                 'button:has-text("Yes, I agree")',
                 'button[data-testid="banner-accept"]',
@@ -193,7 +193,10 @@ def scrape_tea_and_coffee_news(page):
                 
                 snippet_element = item.locator('div.articleExcerpt')
                 snippet = snippet_element.inner_text(timeout=5000).strip() if snippet_element.count() > 0 else ""
-                
+                # [MODIFIED] Clean up the snippet text
+                if snippet.upper().startswith("NEWS"):
+                    snippet = snippet[4:].strip()
+
                 date_element = item.locator('div.meta')
                 article_date = date_element.inner_text(timeout=5000).strip() if date_element.count() > 0 else ""
 
@@ -228,7 +231,7 @@ def scrape_tea_and_coffee_news(page):
     return articles
 
 def scrape_bbc_news(page):
-    """[REFACTORED] Scrapes articles from BBC News with anti-bot measures."""
+    """Scrapes articles from BBC News with anti-bot measures."""
     source_name = "BBC News"
     url = "https://www.bbc.co.uk/news/topics/c50nyrxjl4lt"
     print(f"Scraping {source_name}...")
@@ -238,7 +241,6 @@ def scrape_bbc_news(page):
     try:
         page.goto(url, wait_until=NAVIGATION_WAIT_STRATEGY, timeout=NAVIGATION_TIMEOUT)
         handle_consent(page, source_name)
-        # [MODIFIED] Wait for network to be idle to let anti-bot scripts run and settle
         page.wait_for_load_state('networkidle', timeout=15000)
         page.wait_for_selector('main#main-content', state='visible', timeout=SELECTOR_TIMEOUT)
     except Exception as e:
@@ -247,7 +249,6 @@ def scrape_bbc_news(page):
             save_debug_files(page, "debug_BBC")
         return articles
 
-    # [MODIFIED] More robust selector that doesn't rely solely on test IDs
     content_selector = 'div[class*="PromoCard"], div[data-testid^="promo-"]'
     
     try:
@@ -349,23 +350,23 @@ def inject_html(articles):
         print(f"Error: {HTML_FILE} not found. Cannot inject articles.")
         return
     
-    start_tag = soup.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
-    end_tag = soup.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
+    # [MODIFIED] Target the correct container for injection
+    injection_point = soup.find('div', id='news-container')
+    if not injection_point:
+        print(f"Error: Could not find <div id='news-container'> in {HTML_FILE}. Cannot inject articles.")
+        return
+
+    start_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
+    end_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
     
-    # Self-healing logic if tags are missing
+    # Self-healing logic if tags are missing from the correct container
     if not start_tag or not end_tag:
-        print(f"Warning: Could not find or tags in {HTML_FILE}.")
-        body_tag = soup.find('body')
-        if body_tag:
-            print("  Tags not found. Appending them to the body.")
-            # [MODIFIED] Fixed bug that caused IndexError
-            body_tag.append(Comment(" START_NEWS "))
-            body_tag.append(Comment(" END_NEWS "))
-            start_tag = soup.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
-            end_tag = soup.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
-        else:
-            print(f"Error: Could not find body tag in {HTML_FILE}. Cannot inject articles.")
-            return
+        print(f"Warning: Injection markers not found inside #news-container. Rebuilding container.")
+        injection_point.clear() 
+        injection_point.append(Comment(" START_NEWS "))
+        injection_point.append(Comment(" END_NEWS "))
+        start_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
+        end_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
 
     # Clear existing content between the tags
     current = start_tag.next_sibling
@@ -379,7 +380,7 @@ def inject_html(articles):
         
     articles_html = ""
     for article in articles:
-        # [MODIFIED] Use dictionary-style access for sqlite3.Row objects
+        # [MODIFIED] Correctly access data from sqlite3.Row object (like a dictionary)
         snippet_text = article['snippet'] or ""
         headline_text = article['headline'] or "No headline"
         link_url = article['link'] or "#"
