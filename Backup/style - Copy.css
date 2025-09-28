@@ -252,109 +252,6 @@ footer { font-size: 12px; color: #70757a; width: 100%; text-align: center; paddi
 .visual-card-meta { font-size: 12px; color: #5f6368; }
 
 
-/* ========================================================================== */
-/* === ADDITIONS FOR NEWS PAGINATION AND FILTERING (ADHERING TO GLOBAL STYLES) === */
-/* ========================================================================== */
-
-/* --- News Filter Bar Styling --- */
-#news-filter-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    /* Matches the visual separation used elsewhere (e.g., .page-search-wrapper) */
-    padding-bottom: 16px;
-    border-bottom: 1px solid #ebebeb;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.news-filter-controls {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-/* Styling inputs/selects to match existing .filter-dropdown and .page-search-bar */
-#keyword-filter, #source-filter {
-    height: 44px;
-    padding: 0 16px;
-    font-size: 15px;
-    border-radius: 8px; /* Matching .filter-dropdown radius */
-    border: 1px solid #dadce0; /* Match existing border color */
-    background-color: #fff;
-    font-family: 'Roboto', sans-serif; /* Ensure font matches global */
-    color: #202124;
-}
-
-#keyword-filter {
-    min-width: 250px;
-}
-
-#source-filter {
-    cursor: pointer;
-}
-
-#keyword-filter:focus, #source-filter:focus {
-    outline: none;
-    border-color: #1a73e8; /* Match existing focus color from .filter-dropdown:focus */
-}
-
-#article-count {
-    font-size: 14px;
-    color: #5f6368; /* Match existing secondary text color */
-    font-weight: 500;
-}
-
-/* Utility class for hiding elements (used by JavaScript) */
-.hidden {
-    display: none !important;
-}
-
-/* --- Pagination Styling --- */
-#pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 24px;
-    gap: 20px;
-}
-
-/* Styling buttons to match existing .apply-button */
-.page-btn {
-    background-color: #1a73e8; /* Match existing primary color */
-    color: #fff;
-    border: none;
-    border-radius: 999px; /* Match existing pill shape from .apply-button */
-    padding: 10px 20px; /* Slightly adjusted padding */
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    font-family: 'Roboto', sans-serif;
-}
-
-.page-btn:hover:not(:disabled) {
-    background-color: #185abc; /* Match existing hover state */
-}
-
-.page-btn:disabled {
-    background-color: #dadce0; /* Disabled state color */
-    cursor: not-allowed;
-    opacity: 0.8;
-}
-
-#page-info {
-    font-size: 14px;
-    font-weight: 500;
-    color: #3c4043; /* Match existing text color */
-}
-
-/* ========================================================================== */
-/* === END OF ADDITIONS === */
-/* ========================================================================== */
-
-
 /* --- Responsive Styles --- */
 
 /* Medium devices (Tablets, 900px and down) */
@@ -367,7 +264,7 @@ footer { font-size: 12px; color: #70757a; width: 100%; text-align: center; paddi
     /* Mobile Navigation Implementation */
     .mobile-menu-toggle { display: block; }
     .header-search-wrapper { display: none; } /* Hide search bar on mobile header */
-     
+    
     .secondary-nav { 
         position: absolute; 
         top: 64px; /* Height of the top bar */
@@ -380,7 +277,7 @@ footer { font-size: 12px; color: #70757a; width: 100%; text-align: center; paddi
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     .secondary-nav.is-active { display: block; }
-     
+    
     .secondary-nav ul { 
         flex-direction: column; 
         height: auto; 
@@ -396,27 +293,9 @@ footer { font-size: 12px; color: #70757a; width: 100%; text-align: center; paddi
     }
     .secondary-nav li:last-child a { border-bottom: none; }
     .secondary-nav a.active { border-bottom: none; color: #1a73e8; }
-     
+    
     /* Report Viewer Responsiveness */
     .comparison-grid { grid-template-columns: 1fr; }
-
-    /* (ADDITION) News Filter Bar Responsiveness */
-    #news-filter-bar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .news-filter-controls {
-        width: 100%;
-        flex-direction: column;
-    }
-    #keyword-filter, #source-filter {
-        width: 100%;
-        min-width: auto;
-    }
-    #article-count {
-        text-align: center;
-        margin-top: 8px;
-    }
 }
 
 /* Small devices (Phones, 600px and down) */
@@ -428,13 +307,13 @@ footer { font-size: 12px; color: #70757a; width: 100%; text-align: center; paddi
     /* Homepage/Corporate Adjustments */
     .logo h1 { font-size: 72px; }
     .sub-logo { letter-spacing: 5px; margin: 0 0 30px 5px; }
-     
+    
     /* News Layout Adjustment (Mobile view for compact style) */
      .news-item .image-link {
-          margin-left: 16px;
+         margin-left: 16px;
      }
      .news-item .main-link h3 {
-          font-size: 16px;
+         font-size: 16px;
      }
 
     /* Dashboard/Data Library Adjustments */
@@ -442,7 +321,7 @@ footer { font-size: 12px; color: #70757a; width: 100%; text-align: center; paddi
     .slicer-controls { width: 100%; }
     .slicer-button { flex: 1; text-align: center; }
     .page-search-bar { max-width: 100%; }
-     
+    
     .jobs-container, .product-grid-container, .filter-bar { padding-left: 16px; padding-right: 16px; }
 
     .data-library-page .page-container, .dashboard-page .page-container, .market-reports-page .page-container, .visuals-page .page-container {
