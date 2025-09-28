@@ -9,21 +9,23 @@ import os
 from bs4 import BeautifulSoup, Comment
 import re
 
-# NEW IMPORT: Required for anti-bot detection evasion
+# Import for anti-bot detection evasion
 try:
+    # Ensure you have installed this: pip install playwright-stealth
     from playwright_stealth import stealth_sync
     STEALTH_AVAILABLE = True
 except ImportError:
     STEALTH_AVAILABLE = False
-    print("\n*** WARNING: playwright-stealth not installed. Scrapes on protected sites (BBC, East African) are likely to fail.")
+    print("\n*** NOTE: playwright-stealth not installed. Scrapes may be less reliable, especially on Bing.")
     print("Please install it: pip install playwright-stealth ***\n")
 
 # Fuzzywuzzy setup
 try:
+    # Ensure you have installed this: pip install fuzzywuzzy python-Levenshtein
     from fuzzywuzzy import fuzz
     FUZZY_INSTALLED = True
 except ImportError:
-    print("Warning: fuzzywuzzy not found. Deduplication will be less effective. Install with: pip install fuzzywuzzy python-Levenshtein")
+    print("Warning: fuzzywuzzy not found. Deduplication will be less effective.")
     FUZZY_INSTALLED = False
     class fuzz:
         @staticmethod
@@ -33,11 +35,11 @@ except ImportError:
 DB_FILE = "news.db"
 HTML_FILE = "news.html"
 MAX_PAGES_PER_SOURCE = 5 
+BING_TARGET_ARTICLES = 200 # Target count for Bing News
 
 # Configuration for stability
 SELECTOR_TIMEOUT = 35000 
-# Increased navigation timeout globally due to very slow sites like East African
-NAVIGATION_TIMEOUT = 120000 # 2 minutes
+NAVIGATION_TIMEOUT = 90000 # 1.5 minutes
 NAVIGATION_WAIT_STRATEGY = "domcontentloaded" 
 
 # =============================================================================
@@ -63,6 +65,7 @@ def article_exists(headline, link, conn):
     if not link:
         return False
         
+    # Clean the link (remove query/tracking parameters)
     parsed_url = urlparse(link)
     if parsed_url.scheme and parsed_url.netloc:
         clean_link = parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path
@@ -71,6 +74,7 @@ def article_exists(headline, link, conn):
 
     try:
         cursor = conn.cursor()
+        # Check if the exact link or the cleaned link path exists in the database 
         cursor.execute("SELECT 1 FROM articles WHERE link = ? OR link LIKE ?", (link, clean_link + '%',))
         if cursor.fetchone():
             return True
@@ -118,15 +122,16 @@ def save_debug_files(page, prefix="debug"):
 def handle_consent(page, source_name):
     """Handles specific cookie consent banners using an iterative approach."""
     consent_config = {
-        "BBC News": {"selectors": [
-            'button[data-testid="accept-all"]', 'button:has-text("Accept additional cookies")', 
-            'button[aria-label*="agree" i]', 'button:has-text("Yes, I agree")',
-            'button:has-text("Accept recommended cookies")', '#bbcprivacy-continue-button', '#blq-global-http-consent-accept'
-            ]},
         "Euronews": {"selectors": ['#didomi-notice-agree-button', 'button:has-text("Agree and close")']},
         "Tea & Coffee Trade Journal": {"selectors": ['button:has-text("Accept")']},
         "World Tea News": {"selectors": ['button[id="ketch-banner-button-primary"]']},
-        "The East African": {"selectors": ['button:has-text("I ACCEPT")', 'button:has-text("I AGREE")']},
+        # Expanded Bing News selectors (covering various regional IDs and labels)
+        "Bing News": {"selectors": [
+            'button#bnp_btn_accept', 'button[id*="accept"]', 
+            'button:has-text("Accept all")', 'button:has-text("Accept")', 
+            'button:has-text("Agree")', 'button:has-text("I agree")',
+            'label[for="bnp_cookie_all"]', 'label:has-text("Accept")'
+            ]},
     }
     
     # Specific handling for World Tea News survey pop-up (iframe)
@@ -155,24 +160,29 @@ def handle_consent(page, source_name):
         print(f"  [Consent] Checking for {source_name} banners...")
         banner_handled = False
         
-        # Increased initial wait for very slow sites like The East African
-        initial_timeout = 20000 if source_name == "The East African" else 10000
+        initial_timeout = 15000 # Give ample time for banners
 
         for i in range(3): # Try up to 3 times for sequential banners
             button = page.locator(combined_selector).first
             try:
                 timeout_val = initial_timeout if i == 0 else 5000
                 button.wait_for(state='visible', timeout=timeout_val) 
-                print(f"  [Consent] Found banner. Clicking button.")
+                print(f"  [Consent] Found banner. Clicking button/label.")
+                # force=True is important for labels or obscured elements
                 button.click(timeout=5000, force=True)
-                button.wait_for(state="hidden", timeout=10000)
+                # Wait for the button to potentially disappear
+                try:
+                     button.wait_for(state="hidden", timeout=5000)
+                except PlaywrightTimeoutError:
+                     pass # Continue even if the button doesn't hide, as long as the click succeeded
+                
                 banner_handled = True
                 time.sleep(random.uniform(1.5, 3)) # Randomized pause
             except PlaywrightTimeoutError:
                 break 
         
         if not banner_handled:
-            print(f"  [Consent] No automatic consent found for {source_name}.")
+            print(f"  [Consent] No automatic consent found for {source_name}. Please click manually if present.")
 
         return banner_handled
             
@@ -183,6 +193,9 @@ def handle_consent(page, source_name):
 # =============================================================================
 # SCRAPER FUNCTIONS
 # =============================================================================
+
+# (scrape_tea_and_coffee_news, scrape_euronews, scrape_world_tea_news remain unchanged, 
+# but are included here for completeness)
 
 def scrape_tea_and_coffee_news(page):
     source_name = "Tea & Coffee Trade Journal"
@@ -209,14 +222,20 @@ def scrape_tea_and_coffee_news(page):
             
         for item in page.locator('div.flex.facetwp-template > article.row3').all():
             try:
+                # Filter out ads/sponsored content
                 if item.locator(r"text=/sponsored|advertisement|AD\s*\|/i").count() > 0 or item.locator('h3 a').count() == 0: continue
+                
                 headline = item.locator('h3 a').first.inner_text()
                 link = item.locator('h3 a').first.get_attribute('href')
                 snippet_el = item.locator('div.articleExcerpt')
                 snippet = snippet_el.inner_text().strip() if snippet_el.count() > 0 else ""
+                
+                # Clean up snippet if it starts with "NEWS"
                 if snippet.upper().startswith("NEWS"): snippet = snippet[4:].strip()
+                
                 date_el = item.locator('div.meta')
                 article_date = date_el.inner_text().strip() if date_el.count() > 0 else ""
+                
                 if headline and link: articles.append({"headline": headline.strip(), "snippet": snippet, "source": source_name, "link": urljoin(url, link), "article_date": article_date})
             except Exception as e:
                 print(f"  Could not process an item: {e}")
@@ -228,102 +247,13 @@ def scrape_tea_and_coffee_news(page):
             print("  Navigating to next page...")
             next_button.click()
             try: 
+                # Wait for the loading indicator to disappear
                 page.locator('div.facetwp-loading').wait_for(state="hidden", timeout=20000)
                 time.sleep(random.uniform(2, 5)) # Randomized wait after load
             except PlaywrightTimeoutError: print("  Pagination timed out. Stopping."); break
         else: print("  No 'Next' button found. Stopping."); break
     print(f"  Found {len(articles)} articles from {source_name}.")
     return articles
-
-# UPDATED FUNCTION: Relies on Stealth for anti-bot measures
-def scrape_bbc_news(page):
-    """Scrapes BBC News search results for 'tea industry'."""
-    source_name = "BBC News"
-    url = "https://www.bbc.co.uk/search?q=tea+industry&filter=news&s=latest"
-    print(f"Scraping {source_name} (Using Search Approach)...")
-    articles = []
-
-    try:
-        # Using domcontentloaded is usually sufficient if stealth is working
-        page.goto(url, timeout=NAVIGATION_TIMEOUT, wait_until="domcontentloaded")
-        
-        handle_consent(page, source_name)
-        
-        time.sleep(random.uniform(2, 4))
-        
-        article_selector = 'div[data-testid="liverpool-card"]'
-        
-        try:
-            # Wait for the first result card to appear (increased timeout)
-            page.wait_for_selector(article_selector, timeout=45000)
-        except PlaywrightTimeoutError:
-             print(f"  [ERROR] Timeout waiting for search results ({article_selector}). Anti-bot measures might still be active despite stealth.")
-             save_debug_files(page, f"debug_{source_name}_ResultsTimeout")
-             return articles
-
-        # Define selectors for extraction
-        headline_link_selector = 'a[data-testid="card-headline"]'
-        snippet_selector = 'p[data-testid="card-description"]'
-        date_selector = 'span[data-testid*="card-metadata-last"]' 
-
-        # Find all article elements
-        article_elements = page.query_selector_all(article_selector)
-        
-        if not article_elements:
-            print(f"  [WARNING] No articles found on {source_name} despite selector presence.")
-            save_debug_files(page, f"debug_{source_name}_NoArticles")
-            return articles
-
-        processed_links = set()
-
-        for article_element in article_elements:
-            try:
-                headline_link_el = article_element.query_selector(headline_link_selector)
-                snippet_el = article_element.query_selector(snippet_selector)
-                date_el = article_element.query_selector(date_selector)
-
-                if headline_link_el:
-                    headline = headline_link_el.inner_text().strip()
-                    link = headline_link_el.get_attribute("href")
-                    snippet = snippet_el.inner_text().strip() if snippet_el else ""
-                    article_date = date_el.inner_text().strip() if date_el else ""
-                    
-                    # Clean up the date string
-                    if article_date.lower().startswith("last updated"):
-                        article_date = article_date[12:].strip()
-                    elif article_date.lower().startswith("updated"):
-                        article_date = article_date[7:].strip()
-
-                    # Ensure the link is absolute
-                    if link and not link.startswith('http'):
-                        link = urljoin("https://www.bbc.co.uk", link)
-
-                    # Basic filter to ensure it looks like a news article link (filters some audio/video programme links)
-                    if headline and link and ("bbc.co.uk/news/" in link or "bbc.com/news/" in link):
-                        if link in processed_links:
-                            continue
-                        processed_links.add(link)
-                        
-                        articles.append({
-                            "headline": headline, "snippet": snippet, "source": source_name,
-                            "link": link, "article_date": article_date
-                        })
-
-            except Exception as e:
-                print(f"  [ERROR] Error processing an individual article link: {e}")
-                continue
-
-        print(f"  Found {len(articles)} articles from {source_name}.")
-        return articles
-
-    except PlaywrightTimeoutError:
-        print(f"  [ERROR] Navigation timeout while processing {source_name}.")
-        save_debug_files(page, f"debug_{source_name}_NavTimeout")
-    except Exception as e:
-        print(f"  [ERROR] An unexpected error occurred while scraping {source_name}: {e}")
-        save_debug_files(page, f"debug_{source_name}_Error")
-    return articles
-
 
 def scrape_euronews(page):
     source_name = "Euronews"
@@ -339,17 +269,22 @@ def scrape_euronews(page):
         if isinstance(e, PlaywrightTimeoutError): save_debug_files(page, "debug_Euronews")
         return articles
         
+    # Iterate through articles, skipping sponsored ones
     for item in page.locator('article.the-media-object:not(:has-text("In partnership with"))').all():
         try:
             headline_el = item.locator('h3.the-media-object__title')
             link_el = item.locator('a.the-media-object__link')
             if headline_el.count() == 0 or link_el.count() == 0: continue
+            
             headline = headline_el.first.inner_text()
             link = link_el.first.get_attribute('href')
             snippet_el = item.locator('div.the-media-object__description')
             snippet = snippet_el.inner_text() if snippet_el.count() > 0 else ""
             date_el = item.locator('div.the-media-object__date > time')
+            
+            # Euronews stores the exact date in the 'datetime' attribute
             article_date = date_el.get_attribute('datetime') if date_el.count() > 0 else ""
+            
             if headline and link: articles.append({"headline": headline.strip(), "snippet": snippet.strip(), "source": source_name, "link": urljoin(url, link), "article_date": article_date.strip()})
         except Exception as e:
             print(f"  Could not process an item: {e}")
@@ -357,12 +292,14 @@ def scrape_euronews(page):
     return articles
 
 def scrape_world_tea_news(page):
+    """Scrapes World Tea News using JSON-LD extraction with pagination."""
     source_name = "World Tea News"
     base_url = "https://www.worldteanews.com/whats-brewing"
     print(f"Scraping {source_name} (Using JSON-LD + Pagination)...")
     
     all_articles = []
 
+    # Drupal pagination (page=0 is the first page, page=1 the second, etc.)
     for page_num in range(MAX_PAGES_PER_SOURCE):
         
         if page_num == 0:
@@ -373,16 +310,22 @@ def scrape_world_tea_news(page):
         print(f"  Processing page {page_num + 1}/{MAX_PAGES_PER_SOURCE} (URL: {current_url})...")
 
         try:
+            # Navigate to the page.
             response = page.goto(current_url, timeout=NAVIGATION_TIMEOUT, wait_until=NAVIGATION_WAIT_STRATEGY)
             
+            # Handle consent banners/popups only on the first page load
             if page_num == 0:
                 handle_consent(page, source_name)
 
+            # Check if the page loaded successfully
             if response and response.status >= 400:
                  print(f"  [INFO] Page returned status {response.status}. Assuming end of results.")
                  break
             
+            # Get the full HTML content
             html_content = page.content()
+            
+            # Use Regex to find all script tags of type application/ld+json
             pattern = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL)
             matches = pattern.findall(html_content)
             
@@ -392,14 +335,17 @@ def scrape_world_tea_news(page):
             for match in matches:
                 try:
                     data = json.loads(match.strip())
+                    # Look for the specific JSON-LD structure (ItemList)
                     if isinstance(data, dict) and data.get("@type") == "ItemList" and "itemListElement" in data:
                         json_ld_found = True
                         for item in data["itemListElement"]:
+                            # Robust checking of the nested structure
                             if isinstance(item, dict) and item.get("item") and isinstance(item.get("item"), dict) and item["item"].get("@type") == "Article":
                                 article = item["item"]
                                 headline = article.get("name")
                                 link = article.get("url")
                                 snippet = article.get("description")
+                                # Attempt to extract datePublished if present
                                 article_date = article.get("datePublished", "")
                                 
                                 if headline and link:
@@ -441,104 +387,162 @@ def scrape_world_tea_news(page):
     print(f"  Found {len(all_articles)} total articles from {source_name}.")
     return all_articles
 
-# UPDATED FUNCTION: Reordered Consent and increased timeouts
-def scrape_the_east_african(page):
-    source_name = "The East African"
-    url = "https://www.theeastafrican.co.ke/service/search/tea/4783234?query=tea&sortByDate=true"
-    print(f"Scraping {source_name} (Cloudflare Protected)...")
-    articles = []
+# UPDATED FUNCTION: Implemented CSP-Compliant methods (Native Scrolling and Manual Polling)
+def scrape_bing_news(page):
+    """Scrapes Bing News search results using infinite scroll (CSP compliant)."""
+    source_fallback_name = "Bing News"
+    url = "https://www.bing.com/news/search?q=tea&FORM=HDRSC7"
+    print(f"Scraping {source_fallback_name} (Infinite Scroll)...")
     
-    # --- CONFIGURATION ---
-    LOAD_VERIFICATION_TIMEOUT = 90000    # 1.5 minutes to verify content loaded (very slow site)
-    MANUAL_INTERVENTION_TIMEOUT = 120000 # 2 minutes for user to solve captcha
-
-    main_content_selector = 'section.search-page-results'
-    article_selector = 'article.nested-lazy-load'
+    articles = []
+    processed_links = set()
+    MAX_STAGNATION = 5 
+    NEWS_CARD_SELECTOR = '.news-card'
+    SCROLL_WAIT_TIMEOUT = 10 # Time (seconds) to wait/poll for new content after scroll
 
     try:
-        # 1. Navigation (Using NAVIGATION_WAIT_STRATEGY = domcontentloaded)
-        page.goto(url, wait_until=NAVIGATION_WAIT_STRATEGY, timeout=NAVIGATION_TIMEOUT)
+        page.goto(url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT)
+        handle_consent(page, "Bing News")
 
-        # 2. Handle Consent Immediately (Crucial Change: Do this before waiting for content)
-        print("  [INFO] Handling consent immediately (check browser window)...")
-        handle_consent(page, source_name)
-
-        # 3. Load Verification & Cloudflare Check
-        try:
-            print(f"  [INFO] Waiting up to {LOAD_VERIFICATION_TIMEOUT/1000}s for content to load...")
-            page.wait_for_selector(main_content_selector, timeout=LOAD_VERIFICATION_TIMEOUT)
-            print("  [CLOUDFLARE/LOAD] Content loaded successfully.")
-        
-        except PlaywrightTimeoutError:
-            # Content didn't load. Check if it's Cloudflare.
-            is_cloudflare = (page.locator("title:has-text('Just a moment...')").count() > 0 or 
-                             "challenge-platform" in page.url or 
-                             page.locator('text="Verify you are human"').count() > 0)
-
-            if is_cloudflare:
-                print("\n  *** [CLOUDFLARE ALERT] ***")
-                print("  Cloudflare challenge detected.")
-                print("  Please manually solve the captcha/checkbox in the browser window.")
-                print(f"  Waiting up to {MANUAL_INTERVENTION_TIMEOUT/1000}s for manual intervention...")
-                
-                try:
-                    # Wait for the content, indicating the challenge is passed.
-                    page.wait_for_selector(main_content_selector, timeout=MANUAL_INTERVENTION_TIMEOUT)
-                    print("  [CLOUDFLARE] Challenge passed. Continuing...")
-                except PlaywrightTimeoutError:
-                    print("  [ERROR] Timeout waiting for manual Cloudflare verification.")
-                    save_debug_files(page, "debug_EastAfrican_CloudflareTimeout")
-                    return articles
-            else:
-                # Timed out, but not Cloudflare.
-                print(f"  [ERROR] Failed to load content within the timeout period. Site may be down or extremely slow.")
-                save_debug_files(page, "debug_EastAfrican_LoadFail")
-                return articles
-
-        # 4. Final check for results
-        try:
-            # Wait for the first result to attach (confirms dynamic search finished)
-            page.wait_for_selector(article_selector, state='attached', timeout=SELECTOR_TIMEOUT)
-        except PlaywrightTimeoutError:
-            print(f"  [WARNING] No articles found on {source_name} search page after waiting. Check selectors or search results.")
-            save_debug_files(page, "debug_EastAfrican_NoArticles")
-            return articles
+        # Wait for the main news container
+        page.wait_for_selector('div#algocore', timeout=SELECTOR_TIMEOUT)
 
     except Exception as e:
-        print(f"  [ERROR] An unexpected error occurred during navigation/bypass for {source_name}: {e}")
-        save_debug_files(page, "debug_EastAfrican_Error")
+        print(f"  [ERROR] Initial load or consent failed for {source_fallback_name}: {e}")
+        save_debug_files(page, "debug_BingNews_InitialLoad")
         return articles
 
-    # 5. Extraction
-    for item in page.locator(article_selector).all():
+    stagnation_count = 0
+    
+    # --- Infinite Scroll Loop ---
+    while len(articles) < BING_TARGET_ARTICLES:
+        
+        # 1. Capture current count of cards (before extraction/scroll)
+        initial_card_count = page.locator(NEWS_CARD_SELECTOR).count()
+        
+        # 2. Extract data from visible cards
+        # We must re-query the locator on every loop iteration to get fresh elements
+        current_cards = page.locator(NEWS_CARD_SELECTOR).all()
+        
+        new_items_found = 0
+        # Iterate over all cards currently on the page
+        for card in current_cards:
+            try:
+                # --- Data Extraction ---
+                title_el = card.locator('a.title').first
+                if title_el.count() == 0: continue
+
+                headline = title_el.inner_text().strip()
+                
+                # Prioritize the 'data-url' attribute for the direct link
+                link = title_el.get_attribute('data-url')
+                if not link:
+                    # Fallback to the Bing redirect link ('href')
+                    link = title_el.get_attribute('href')
+
+                # CRITICAL CHECK: Skip if already processed in this session
+                if not link or link in processed_links:
+                    continue
+
+                # Snippet
+                snippet_el = card.locator('.snippet').first
+                snippet = snippet_el.inner_text().strip() if snippet_el.count() > 0 else ""
+
+                # Original Source (e.g., Reuters, Bloomberg) - Robust extraction
+                original_source = ""
+                # Attempt 1: Modern Bing layout using data-testid and aria-label
+                provider_container = card.locator('[data-testid="news-source-container"] > div').first
+                if provider_container.count() > 0:
+                        aria_label = provider_container.get_attribute('aria-label')
+                        if aria_label and aria_label.startswith("Provider: "):
+                            original_source = aria_label.replace("Provider: ", "").strip()
+                
+                # Attempt 2: Fallback using structural selector
+                if not original_source:
+                    source_link_el = card.locator('div.source > a').first
+                    if source_link_el.count() > 0:
+                        original_source = source_link_el.inner_text().strip()
+
+                # Date/Time
+                date_el = card.locator('.time').first
+                article_date = date_el.inner_text().strip() if date_el.count() > 0 else ""
+
+                # --- Data Storage ---
+                if headline and link:
+                    display_source = original_source if original_source else source_fallback_name
+                    
+                    articles.append({
+                        "headline": headline, "snippet": snippet, "source": display_source,
+                        "link": link, "article_date": article_date
+                    })
+                    processed_links.add(link)
+                    new_items_found += 1
+
+                    if len(articles) >= BING_TARGET_ARTICLES:
+                        break
+
+            except Exception as e:
+                # Suppress individual card errors and continue
+                pass
+
+        # 3. Check if target reached after extraction loop
+        if len(articles) >= BING_TARGET_ARTICLES:
+            print(f"  [INFO] Target article count ({BING_TARGET_ARTICLES}) reached.")
+            break
+
+        # 4. Stagnation Check (Initial)
+        if new_items_found > 0:
+            stagnation_count = 0
+            print(f"  [INFO] Current article count: {len(articles)}. Scrolling for more...")
+        # If new_items_found is 0, we proceed to scroll/wait, and check stagnation after the wait.
+
+        # 5. Scroll down (CSP Compliant Method)
+        # Scroll the *last* element found into view. This triggers the infinite scroll loader.
         try:
-            link_el_container = item.locator('div.text-content > a').first
-            if link_el_container.count() == 0: continue
+            last_card = page.locator(NEWS_CARD_SELECTOR).last
+            # Use Playwright's built-in method instead of direct JavaScript evaluation
+            last_card.scroll_into_view_if_needed(timeout=5000)
+        except PlaywrightTimeoutError:
+            print("    [INFO] Timeout while trying to scroll last element into view.")
+            # If scrolling fails, we count it towards stagnation later
+            pass
+        
+        # 6. Active Wait for New Content (CSP Compliant Manual Polling)
+        # Replaces page.wait_for_function() which caused the CSP error.
+        
+        start_wait_time = time.time()
+        content_loaded = False
+        
+        # Poll the count manually in Python.
+        while time.time() - start_wait_time < SCROLL_WAIT_TIMEOUT:
+            try:
+                # Check the count again
+                current_count = page.locator(NEWS_CARD_SELECTOR).count()
+                if current_count > initial_card_count:
+                    content_loaded = True
+                    break
+                # Pause briefly before checking again
+                time.sleep(0.5) 
+            except Exception:
+                # Handle potential navigation issues during polling
+                break
 
-            link = link_el_container.get_attribute('href')
+        # 7. Stagnation Check (Post-Wait)
+        if not content_loaded:
+            # If the count didn't increase within the timeout
+            stagnation_count += 1
+            print(f"    [INFO] Timeout waiting for new content after scroll. Stagnation: {stagnation_count}/{MAX_STAGNATION}.")
+        else:
+             # Add a brief randomized pause after new content is detected
+            time.sleep(random.uniform(1, 3))
+
+        if stagnation_count >= MAX_STAGNATION:
+            print("  [INFO] Reached max stagnation limit. Stopping.")
+            break
             
-            headline_el = link_el_container.locator('h3').first
-            if headline_el.count() == 0: continue
-            headline = headline_el.inner_text().strip()
-
-            snippet_el = link_el_container.locator('p').first 
-            snippet = snippet_el.inner_text().strip() if snippet_el.count() > 0 else ""
-
-            date_el = item.locator('div.text-content > p.date').first
-            article_date = date_el.inner_text().strip() if date_el.count() > 0 else ""
-
-            if headline and link:
-                full_link = urljoin(url, link)
-                articles.append({
-                    "headline": headline, "snippet": snippet, "source": source_name,
-                    "link": full_link, "article_date": article_date
-                })
-        except Exception as e:
-            print(f"  Could not process an item: {e}")
-
-    print(f"  Found {len(articles)} articles from {source_name}.")
+    
+    print(f"  Found {len(articles)} articles from Bing News aggregation.")
     return articles
-
 
 # =============================================================================
 # HTML INJECTION
@@ -560,14 +564,17 @@ def inject_html(articles):
         print(f"Error: Could not find <div id='news-container'> in {HTML_FILE}. Cannot inject articles.")
         return
 
+    # Locate injection markers
     start_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
     end_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "END_NEWS" in text)
     
+    # If markers are missing, reset the container
     if not start_tag:
         injection_point.clear() 
         injection_point.append(Comment(" START_NEWS "))
         start_tag = injection_point.find(string=lambda text: isinstance(text, Comment) and "START_NEWS" in text)
         
+    # Clear existing content
     if start_tag:
         current = start_tag.next_sibling
         while current and (not end_tag or current != end_tag):
@@ -586,17 +593,21 @@ def inject_html(articles):
         link_url = article['link'] or "#"
         source_name = article['source'] or "Unknown Source"
         
-        # Date Formatting Logic
+        # Date Formatting Logic (Prioritize article_date, fallback to scraped_date)
         date_display = ""
         article_date_str = article['article_date']
         
+        # 1. Try formatting article_date if it exists
         if article_date_str and article_date_str.strip():
             try:
+                # Attempt to parse ISO format first (common in JSON-LD/Euronews)
                 dt = datetime.fromisoformat(article_date_str.strip().replace('Z', '+00:00'))
                 date_display = dt.strftime("%d %b %Y")
             except ValueError:
+                # Fallback to displaying the raw string if parsing fails (e.g., Bing uses relative dates like '1h ago')
                 date_display = article_date_str.strip()
 
+        # 2. If article_date failed or was empty, try scraped_date
         if not date_display:
             try:
                 scraped_dt_str = article['scraped_date']
@@ -610,6 +621,7 @@ def inject_html(articles):
         if date_display:
              source_date_text += f" - <span class=\"article-date\">{date_display}</span>"
         
+        # Build the HTML structure
         articles_html += f"""
             <article class="news-item">
                 <div class="text-content">
@@ -622,16 +634,18 @@ def inject_html(articles):
             </article>
         """
     
+    # Insert the new HTML
     if start_tag:
         start_tag.insert_after(BeautifulSoup(articles_html, "html.parser"))
     
+    # Write back to the file
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(str(soup))
         
     print(f"Successfully injected {len(articles)} articles into {HTML_FILE}.")
 
 # =============================================================================
-# MAIN EXECUTION (Stealth Applied Here)
+# MAIN EXECUTION (CSP Bypass Applied Here)
 # =============================================================================
 
 def main():
@@ -642,23 +656,28 @@ def main():
 
     all_scraped_articles = []
     
+    # Updated list of scrapers including Bing News
     scrapers = [
         scrape_tea_and_coffee_news,
-        scrape_bbc_news,
         scrape_euronews,
         scrape_world_tea_news,
-        scrape_the_east_african
+        scrape_bing_news,
     ]
 
     try:
         with sync_playwright() as p:
-            # headless=False is essential for difficult sites and Cloudflare bypass.
-            # slow_mo increased slightly to further mimic human interaction speed.
+            # headless=False (visible browser) is recommended for monitoring infinite scroll.
             browser = p.chromium.launch(headless=False, slow_mo=150) 
+            
+            # --- CONTEXT SETUP WITH CSP BYPASS ---
+            # We set bypass_csp=True to mitigate strict CSP issues globally, 
+            # even though we also updated the Bing scraper to be compliant.
             context = browser.new_context(
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-                viewport={'width': 1920, 'height': 1080} # Set a realistic viewport
+                viewport={'width': 1920, 'height': 1080},
+                bypass_csp=True # FIX: Added to mitigate strict CSP issues
             )
+            # -------------------------------------
             
             page = context.new_page()
             
@@ -704,6 +723,7 @@ def main():
     try:
         with sqlite3.connect(DB_FILE) as conn:
             for article in all_scraped_articles:
+                # Check for existence before insertion
                 if not article_exists(article.get('headline'), article.get('link'), conn):
                     try:
                         conn.execute("""
@@ -715,6 +735,7 @@ def main():
                         ))
                         new_articles_count += 1
                     except sqlite3.IntegrityError:
+                        # Handle potential duplicates missed by article_exists
                         pass
             conn.commit()
     except sqlite3.Error as e:
@@ -728,12 +749,12 @@ def main():
         with sqlite3.connect(DB_FILE) as conn:
             conn.row_factory = sqlite3.Row 
             cursor = conn.cursor()
+            # Sorting by scraped_date DESC ensures the newest finds are prioritized.
             cursor.execute("""
-                SELECT headline, snippet, source, link, article_date, scraped_date,
-                       COALESCE(NULLIF(article_date, ''), scraped_date) as sort_date
+                SELECT headline, snippet, source, link, article_date, scraped_date
                 FROM articles
-                ORDER BY sort_date DESC
-                LIMIT 300
+                ORDER BY scraped_date DESC, id DESC
+                LIMIT 500
             """)
             all_db_articles = cursor.fetchall()
     except sqlite3.Error as e:
