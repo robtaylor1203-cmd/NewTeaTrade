@@ -10,16 +10,17 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    # Increase timeout as scraping (especially Bing infinite scroll) can take time
     timeout-minutes: 20 
     
+    # [MODIFIED] Add this permissions block to allow the job to write to the repository
+    permissions:
+      contents: write
+
     steps:
       - name: Check out repository
-        # Updated to the latest version
         uses: actions/checkout@v4
 
       - name: Set up Python
-        # Updated to the latest version
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -27,15 +28,12 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          # Install all required packages
           pip install playwright beautifulsoup4 fuzzywuzzy python-levenshtein playwright-stealth
 
       - name: Install Playwright browsers and dependencies
-        # This step is crucial for Playwright to run on Ubuntu (installs browsers and OS deps)
         run: python -m playwright install --with-deps
 
       - name: Run news scraper
-        # Set the CI environment variable so the script detects it and runs in headless mode
         env:
           CI: true
         run: python scraper_news.py
@@ -45,12 +43,9 @@ jobs:
           git config --global user.name "Automated News Scraper"
           git config --global user.email "actions@github.com"
           
-          # Add both the database AND the HTML file
           git add news.db news.html
           
-          # Commit only if there are changes in the staged files.
-          # If 'git diff --staged --quiet' finds changes, it exits with 1, triggering the '||' (OR) command.
+          # Commit only if there are changes
           git diff --staged --quiet --exit-code || (echo "Changes detected. Committing..." && git commit -m "📰 Automated Update: Latest news articles scraped")
           
-          # Push the changes back to the repository
           git push
