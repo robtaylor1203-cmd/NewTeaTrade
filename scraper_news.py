@@ -678,7 +678,6 @@ def main():
             
             # --- CONTEXT SETUP WITH CSP BYPASS ---
             # We set bypass_csp=True to mitigate strict CSP issues globally,
-            )
             # -------------------------------------
             
             page = context.new_page()
