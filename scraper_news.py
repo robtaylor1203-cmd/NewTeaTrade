@@ -676,9 +676,11 @@ def main():
             browser = p.chromium.launch(headless=is_ci, slow_mo=50 if is_ci else 150) 
             # -----------------------------
             
-            # --- CONTEXT SETUP WITH CSP BYPASS ---
-            # We set bypass_csp=True to mitigate strict CSP issues globally,
-            # -------------------------------------
+            # [MODIFIED] Corrected the script by re-adding this line
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                bypass_csp=True
+            )
             
             page = context.new_page()
             
