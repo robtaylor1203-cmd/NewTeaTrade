@@ -1,37 +1,56 @@
 name: Scrape Latest News
 
 on:
-  # This makes the job run automatically every day at 10:00 AM UTC
+  # Runs automatically every day at 05:00 UTC (06:00 BST / 05:00 GMT)
   schedule:
-    - cron: '0 10 * * *'
-  # This allows you to manually run the job from the Actions tab on GitHub
+    - cron: '0 5 * * *'
+  # Allows manual execution
   workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    # Increase timeout as scraping (especially Bing infinite scroll) can take time
+    timeout-minutes: 20 
+    
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        # Updated to the latest version
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        # Updated to the latest version
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install Python dependencies
         run: |
-          pip install playwright pandas fuzzywuzzy python-levenshtein
-          python -m playwright install --with-deps
+          python -m pip install --upgrade pip
+          # Install all required packages
+          pip install playwright beautifulsoup4 fuzzywuzzy python-levenshtein playwright-stealth
+
+      - name: Install Playwright browsers and dependencies
+        # This step is crucial for Playwright to run on Ubuntu (installs browsers and OS deps)
+        run: python -m playwright install --with-deps
 
       - name: Run news scraper
+        # Set the CI environment variable so the script detects it and runs in headless mode
+        env:
+          CI: true
         run: python scraper_news.py
 
       - name: Commit and push if there are changes
         run: |
           git config --global user.name "Automated News Scraper"
           git config --global user.email "actions@github.com"
-          git add news.db
-          # The following command only commits if there were changes to the file
-          git diff --quiet --exit-code news.db || git commit -m "📰 Update news database with latest articles"
+          
+          # Add both the database AND the HTML file
+          git add news.db news.html
+          
+          # Commit only if there are changes in the staged files.
+          # If 'git diff --staged --quiet' finds changes, it exits with 1, triggering the '||' (OR) command.
+          git diff --staged --quiet --exit-code || (echo "Changes detected. Committing..." && git commit -m "📰 Automated Update: Latest news articles scraped")
+          
+          # Push the changes back to the repository
           git push

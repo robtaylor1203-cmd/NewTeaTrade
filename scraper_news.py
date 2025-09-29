@@ -666,16 +666,18 @@ def main():
 
     try:
         with sync_playwright() as p:
-            # headless=False (visible browser) is recommended for monitoring infinite scroll.
-            browser = p.chromium.launch(headless=False, slow_mo=150) 
+            
+            # --- DYNAMIC HEADLESS MODE ---
+            # Check if running in GitHub Actions (CI environment variable is automatically set by GitHub)
+            is_ci = os.getenv("CI") == "true"
+            
+            # Run headless if in CI (is_ci=True), otherwise keep the browser visible (is_ci=False)
+            # Reduce slow_mo in CI as it speeds up execution and we cannot watch it.
+            browser = p.chromium.launch(headless=is_ci, slow_mo=50 if is_ci else 150) 
+            # -----------------------------
             
             # --- CONTEXT SETUP WITH CSP BYPASS ---
-            # We set bypass_csp=True to mitigate strict CSP issues globally, 
-            # even though we also updated the Bing scraper to be compliant.
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-                viewport={'width': 1920, 'height': 1080},
-                bypass_csp=True # FIX: Added to mitigate strict CSP issues
+            # We set bypass_csp=True to mitigate strict CSP issues globally,
             )
             # -------------------------------------
             
