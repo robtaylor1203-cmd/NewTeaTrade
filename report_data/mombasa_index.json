@@ -1,0 +1,32 @@
+[
+  {
+    "sale_number": "2025-41",
+    "sale_date": "2025-09-29",
+    "filename": "mombasa_2025_41.json",
+    "location": "Mombasa"
+  },
+  {
+    "sale_number": "2025-39",
+    "sale_date": "2025-09-30",
+    "filename": "mombasa_2025_39.json",
+    "location": "Mombasa"
+  },
+  {
+    "sale_number": "2025-38",
+    "sale_date": "2025-09-10",
+    "filename": "mombasa_2025_38.json",
+    "location": "Mombasa"
+  },
+  {
+    "sale_number": "2025-37",
+    "sale_date": "2025-09-16",
+    "filename": "mombasa_2025_37.json",
+    "location": "Mombasa"
+  },
+  {
+    "sale_number": "2025-35",
+    "sale_date": "2025-09-02",
+    "filename": "mombasa_2025_35.json",
+    "location": "Mombasa"
+  }
+]

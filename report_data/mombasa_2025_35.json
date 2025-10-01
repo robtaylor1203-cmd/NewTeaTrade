@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "sale_number": "2025-35",
+    "sale_date": "2025-09-02",
+    "location": "Mombasa",
+    "generated_at": "2025-10-01T22:37:54.257639"
+  },
+  "kpis": {
+    "TOTAL_VOLUME": "177,541",
+    "AVG_PRICE": "$1.89",
+    "PRICE_CHANGE": "N/A (First Sale)",
+    "PRICE_CHANGE_CLASS": "neutral",
+    "SELL_THROUGH_RATE": "0.00%",
+    "REALIZATION_RATE": "N/A"
+  },
+  "charts": {
+    "buyers": {
+      "config": {
+        "view": {
+          "continuousWidth": 300,
+          "continuousHeight": 300
+        }
+      },
+      "data": {
+        "name": "data-3148df086dcbcd79739ef5f6f26d76eb"
+      },
+      "mark": {
+        "type": "bar"
+      },
+      "encoding": {
+        "color": {
+          "field": "value_usd",
+          "legend": null,
+          "scale": {
+            "scheme": "yellowgreenblue"
+          },
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "buyer",
+            "type": "nominal"
+          },
+          {
+            "field": "value_usd",
+            "format": "$,.0f",
+            "type": "quantitative"
+          }
+        ],
+        "x": {
+          "field": "value_usd",
+          "title": "Value (USD)",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "buyer",
+          "sort": "-x",
+          "title": "Buyer",
+          "type": "nominal"
+        }
+      },
+      "title": "Top 10 Buyers (by Value)",
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json",
+      "datasets": {
+        "data-3148df086dcbcd79739ef5f6f26d76eb": [
+          {
+            "buyer": "GTC",
+            "value_usd": 62944.291
+          },
+          {
+            "buyer": "MCF",
+            "value_usd": 39137.49
+          },
+          {
+            "buyer": "CTC",
+            "value_usd": 25970.26
+          },
+          {
+            "buyer": "JFL",
+            "value_usd": 25327.466
+          },
+          {
+            "buyer": "MCL",
+            "value_usd": 25160.57
+          },
+          {
+            "buyer": "LAB",
+            "value_usd": 21662.839
+          },
+          {
+            "buyer": "SSO",
+            "value_usd": 19044.02
+          },
+          {
+            "buyer": "MIL",
+            "value_usd": 18111.02
+          },
+          {
+            "buyer": "DKL",
+            "value_usd": 15671.96
+          },
+          {
+            "buyer": "ATL",
+            "value_usd": 11000.71
+          }
+        ]
+      }
+    },
+    "grades": {
+      "config": {
+        "view": {
+          "continuousWidth": 300,
+          "continuousHeight": 300
+        }
+      },
+      "data": {
+        "name": "data-e443dbde8811dcd703c0f8c30f1a3a9c"
+      },
+      "mark": {
+        "type": "bar",
+        "color": "#61dafb"
+      },
+      "encoding": {
+        "tooltip": [
+          {
+            "field": "grade",
+            "type": "nominal"
+          },
+          {
+            "field": "avg_price",
+            "format": "$.2f",
+            "type": "quantitative"
+          }
+        ],
+        "x": {
+          "field": "grade",
+          "sort": "-y",
+          "title": "Grade",
+          "type": "nominal"
+        },
+        "y": {
+          "field": "avg_price",
+          "title": "Average Price (USD/kg)",
+          "type": "quantitative"
+        }
+      },
+      "title": "Key CTC Grade Performance",
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json",
+      "datasets": {
+        "data-e443dbde8811dcd703c0f8c30f1a3a9c": [
+          {
+            "grade": "BP1",
+            "total_value": 33176.78,
+            "total_volume": 16693.0,
+            "avg_price": 1.987466602767627
+          },
+          {
+            "grade": "PD",
+            "total_value": 94596.455,
+            "total_volume": 50086.7,
+            "avg_price": 1.8886541736628688
+          },
+          {
+            "grade": "PF1",
+            "total_value": 143041.32,
+            "total_volume": 65053.0,
+            "avg_price": 2.198842789725301
+          }
+        ]
+      }
+    }
+  },
+  "tables": {
+    "gardens": [
+      {
+        "mark": "MUNUNGA",
+        "total_volume": "1,238",
+        "avg_price": "$3.56"
+      },
+      {
+        "mark": "GISOVU",
+        "total_volume": "556",
+        "avg_price": "$3.49"
+      },
+      {
+        "mark": "MUSHUBI",
+        "total_volume": "359",
+        "avg_price": "$3.41"
+      },
+      {
+        "mark": "GACHARAGE",
+        "total_volume": "418",
+        "avg_price": "$3.39"
+      },
+      {
+        "mark": "IMENTI",
+        "total_volume": "966",
+        "avg_price": "$3.39"
+      },
+      {
+        "mark": "KITABI",
+        "total_volume": "1,032",
+        "avg_price": "$3.34"
+      },
+      {
+        "mark": "MUNGANIA",
+        "total_volume": "588",
+        "avg_price": "$3.33"
+      },
+      {
+        "mark": "KIMUNYE",
+        "total_volume": "1,095",
+        "avg_price": "$3.33"
+      },
+      {
+        "mark": "NDIMA",
+        "total_volume": "556",
+        "avg_price": "$3.31"
+      },
+      {
+        "mark": "NYABIHU",
+        "total_volume": "421",
+        "avg_price": "$3.29"
+      }
+    ]
+  }
+}
