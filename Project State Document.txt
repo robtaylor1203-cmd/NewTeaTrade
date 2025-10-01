@@ -1,4 +1,4 @@
-Consolidated Project State Document (PSD) - v0.6
+Consolidated Project State Document (PSD) - v0.7
 1. Project Overview & Core Objectives
 Project Name: TeaTrade
 
@@ -6,71 +6,112 @@ High-Level Goal: To centralise the global tea trade industry, establishing TeaTr
 
 Key Deliverables:
 
-A comprehensive database of global tea auction results, consolidated weekly.
+A comprehensive database of global tea auction results, consolidated weekly. 
 
-An aggregation platform for industry news.
+An aggregation platform for industry news. 
 
-A dedicated jobs board for the tea sector.
+A dedicated jobs board for the tea sector. 
 
 A directory of tea products.
 
-A powerful backend data pipeline to automate the collection, processing, and storage of all data.
+A powerful backend data pipeline to automate the collection, processing, and storage of all data. 
 
-An automated market reports library populated by web scrapers.
+An automated market reports library populated by web scrapers. 
 
-A data warehouse capable of handling significant weekly data intake (est. 20,000+ rows/week) to enable future analytics.
+A data warehouse capable of handling significant weekly data intake (est. 20,000+ rows/week) to enable future analytics. 
 
-Core Mandate: The existing user interface and "Google-like" feel of the website are to be preserved and built upon.
 
-1.1. Development Environment & Constraints
-Operating System: Windows (HP Laptop)
+Core Mandate: The existing user interface and "Google-like" feel of the website are to be preserved and built upon. 
 
-Terminal/Shell: Git Bash
+2. Development Environment & Constraints
 
-User Expertise: Beginner. All code modifications must be delivered as complete, full files. No partial code snippets or instructions to "replace a section" should be used.
+Operating System: Windows (HP Laptop) 
 
-2. Tech Stack & Architecture
-Frontend: HTML, CSS, vanilla JavaScript.
 
-Backend Language: Python.
+Terminal/Shell: Git Bash 
 
-Scraping Engine: Playwright.
 
-Data Handling/Processing: Pandas, lxml, fuzzywuzzy.
+User Expertise: Beginner. 
 
-Database: SQLite (news.db) for storing scraped articles.
+All code modifications must be delivered as complete, full files. 
 
-HTML Generation: BeautifulSoup4 for dynamically building the news.html page.
+No partial code snippets or instructions to "replace a section" should be used. 
 
-Automation: GitHub Actions for daily, automated scraping and site-building.
+3. Tech Stack & Architecture
 
-3. Key Decisions & Rationale
-(2025-09-24) Project state management: Will be handled via a PROJECT_STATE.md file.
+Frontend: HTML, CSS, vanilla JavaScript. 
 
-(2025-09-24) Technology selection: Python with Playwright is chosen as the primary scraping stack.
 
-(2025-09-26) News Data Storage: A file-based SQLite database (news.db) was chosen for persistence and to facilitate smart deduplication.
+Backend Language: Python. 
 
-(2025-09-26) Automation: GitHub Actions will be used to run the scraper and build the news page on a daily schedule.
 
-(2025-09-26) Development Workflow: The project will use a single, all-in-one script (scraper_news.py) to scrape, update the database, and rebuild the news.html file in one run. The build_news_page.py script has been deprecated.
+Scraping Engine: Playwright. 
 
-4. Current Status & Next Steps
-Last Completed Task: Successfully developed and tested the all-in-one news scraper (scraper_news.py) for teaandcoffee.net. The script now scrapes, updates the database, and rebuilds the news.html file correctly.
 
-Current Focus: Expanding the news scraper to include more sources to create a comprehensive and automated daily news feed.
+Data Handling/Processing: Pandas, lxml, fuzzywuzzy, tabula-py, requests. 
 
-Immediate Blockers: None.
+Database:
+
+SQLite (
+
+news.db) for storing scraped articles. 
+
+SQLite (market_data.db) for storing market report data and auction results.
+
+
+HTML Generation: BeautifulSoup4 for dynamically building the news.html page. 
+
+
+Automation: GitHub Actions for daily/weekly automated scraping and site-building. 
+
+Market Reports Architecture: A modular design consisting of a master script (main_runner.py), a centralized database manager (db_manager.py), and individual scraper modules located in a scrapers/ directory.
+
+4. Key Decisions & Rationale
+
+(2025-09-24) Project state management: Will be handled via a PROJECT_STATE.md file. 
+
+
+(2025-09-24) Technology selection: Python with Playwright is chosen as the primary scraping stack. 
+
+
+(2025-09-26) News Data Storage: A file-based SQLite database (news.db) was chosen for persistence and smart deduplication. 
+
+
+(2025-09-26) Automation: GitHub Actions will be used to run the scraper and build the news page on a daily schedule. 
+
+
+(2025-09-26) News Scraper Workflow: The project successfully used a single, all-in-one script (scraper_news.py) to scrape, update the database, and rebuild the news.html file. The 
+
+build_news_page.py script has been deprecated. 
+
+(2025-09-29) [NEW] Market Reports Architecture: The initial all-in-one script approach for market reports proved difficult to debug. A decision was made to refactor to a modular architecture. This new design separates concerns, making each part of the system simpler to develop, test, and maintain. It consists of a master runner, a database manager, and individual, single-purpose scraper files.
+
+5. Current Status & Next Steps
+Last Completed Task:
+
+News Scraper: The all-in-one news scraper (scraper_news.py) and its automation via GitHub Actions are considered complete.
+
+Market Reports: The project has been successfully refactored into a new modular architecture. The database manager (db_manager.py), the master script (main_runner.py), and the first individual scraper (scrapers/atb_ltd_scraper.py) have been created.
+
+Current Focus: Building out the individual scraper modules for the market reports library.
+
+Immediate Blockers:
+
+The J.Thomas auction site is not serving data correctly. The corresponding scraper is complete but on hold. 
 
 Next Action Items:
 
-Expand News Scraper: Add new functions to scraper_news.py to scrape more sources from our list (e.g., BBC News, Yahoo News, and others).
+Create a new scraper module (e.g., scrapers/tbea_scraper.py) inside the scrapers/ directory, using atb_ltd_scraper.py as a template.
 
-Refine GitHub Action: Ensure the .github/workflows/scrape_news.yml file is correctly configured to run the all-in-one scraper script.
+Develop the scraping logic within the new module to handle its specific target website.
 
-[Parked] The J.Thomas auction site is not serving data correctly. The corresponding scraper is complete but on hold.
+Import the new module into main_runner.py and add it to the scrapers_to_run list.
 
-5. Data Sources
-Market Reports: A comprehensive list of URLs has been provided for auction centers including Mombasa, Colombo, Limbe, Kolkata, Guwahati, Siliguri, South India, Jakarta, and Bangladesh. These are stored in Market Report Sources.txt.
+Repeat this process for all remaining data sources.
 
-News: A list of 14 primary news outlets and search engine results pages has been provided. These are stored in News sources.txt.
+6. Data Sources
+
+Market Reports: A comprehensive list of URLs for auction centers is stored in Market Report Sources.txt. 
+
+
+News: A list of 14 primary news outlets is stored in News sources.txt. 

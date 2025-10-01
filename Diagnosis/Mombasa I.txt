@@ -1,0 +1,350 @@
+mikin@LAPTOP-PVAMKA66 MINGW64 ~/projects/NewTeaTrade (main)
+$ python process_mombasa_data.py
+INFO: --- Starting Mombasa Data Warehouse Processor ---
+INFO: Initializing database schema...
+INFO: Scanning directory: C:\Users\mikin\projects\NewTeaTrade\Mombasa
+INFO: Found 13 XLSX files.
+INFO:
+[INFO] Skipping time-series file: Auction Quantity 2025.xlsx
+INFO:
+[HANDLER] AuctionSummary: AuctionSummary_[2025-37]_020925.xlsx
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] AuctionSummary_[2025-37]_020925.xlsx::Detail (Sale: 2025-37)
+INFO:     [SUCCESS] Inserted 3187 new lot records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-37]_020925.xlsx::Main Summary (Type: Main)
+INFO:     [SUCCESS] Inserted 9 new summary records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-37]_020925.xlsx::Secondary Summary (Type: Secondary)
+INFO:     [SUCCESS] Inserted 18 new summary records.
+INFO:
+[HANDLER] AuctionSummary: AuctionSummary_[2025-38]_100925.xlsx
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] AuctionSummary_[2025-38]_100925.xlsx::Detail (Sale: 2025-38)
+INFO:     [SUCCESS] Inserted 2951 new lot records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-38]_100925.xlsx::Main Summary (Type: Main)
+INFO:     [SUCCESS] Inserted 9 new summary records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-38]_100925.xlsx::Secondary Summary (Type: Secondary)
+INFO:     [SUCCESS] Inserted 16 new summary records.
+INFO:
+[HANDLER] AuctionSummary: AuctionSummary_[2025-39]_150925.xlsx
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] AuctionSummary_[2025-39]_150925.xlsx::Detail (Sale: 2025-39)
+INFO:     [SUCCESS] Inserted 2916 new lot records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-39]_150925.xlsx::Main Summary (Type: Main)
+INFO:     [SUCCESS] Inserted 9 new summary records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-39]_150925.xlsx::Secondary Summary (Type: Secondary)
+INFO:     [SUCCESS] Inserted 17 new summary records.
+INFO:
+[HANDLER] AuctionSummary: AuctionSummary_[2025-41]_290925.xlsx
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] AuctionSummary_[2025-41]_290925.xlsx::Detail (Sale: 2025-41)
+INFO:     [SUCCESS] Inserted 2538 new lot records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-41]_290925.xlsx::Main Summary (Type: Main)
+INFO:     [SUCCESS] Inserted 9 new summary records.
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING SUMMARY] AuctionSummary_[2025-41]_290925.xlsx::Secondary Summary (Type: Secondary)
+INFO:     [SUCCESS] Inserted 16 new summary records.
+INFO:
+[HANDLER] CompleteOfferLots: CompleteOfferLots_2025-37_020925.xlsx
+INFO:   [INFO] Found headers on row 7 for sheet ABBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::ABBL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet AMBR
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::AMBR (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet ANJL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::ANJL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet ATBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::ATBL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet ATLS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::ATLS (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet BICL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::BICL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet BTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::BTBL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet CENT
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::CENT (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet COMK
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::COMK (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet CTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::CTBL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet PRME
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::PRME (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet PTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::PTBL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet TBEA
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::TBEA (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet TTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::TTBL (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet UNTB
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::UNTB (Sale: 2025-37)
+INFO:   [INFO] Found headers on row 7 for sheet VENS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-37_020925.xlsx::VENS (Sale: 2025-37)
+INFO:
+[HANDLER] CompleteOfferLots: CompleteOfferLots_2025-38_100925.xlsx
+INFO:   [INFO] Found headers on row 7 for sheet ABBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::ABBL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet AMBR
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::AMBR (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet ANJL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::ANJL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet ATBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::ATBL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet ATLS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::ATLS (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet BICL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::BICL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet BTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::BTBL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet CENT
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::CENT (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet COMK
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::COMK (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet CTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::CTBL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet PRME
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::PRME (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet PTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::PTBL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet TBEA
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::TBEA (Sale: 2025-38)
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [INFO] Found headers on row 7 for sheet TTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::TTBL (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet UNTB
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::UNTB (Sale: 2025-38)
+INFO:   [INFO] Found headers on row 7 for sheet VENS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-38_100925.xlsx::VENS (Sale: 2025-38)
+INFO:
+[HANDLER] CompleteOfferLots: CompleteOfferLots_2025-39_150925.xlsx
+INFO:   [INFO] Found headers on row 7 for sheet ABBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::ABBL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet AMBR
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::AMBR (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet ANJL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::ANJL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet ATBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::ATBL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet ATLS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::ATLS (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet BICL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::BICL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet BTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::BTBL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet CENT
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::CENT (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet COMK
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::COMK (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet CTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::CTBL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet PRME
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::PRME (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet PTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::PTBL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet TBEA
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::TBEA (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet TTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::TTBL (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet UNTB
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::UNTB (Sale: 2025-39)
+INFO:   [INFO] Found headers on row 7 for sheet VENS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-39_150925.xlsx::VENS (Sale: 2025-39)
+INFO:
+[HANDLER] CompleteOfferLots: CompleteOfferLots_2025-41_290925.xlsx
+INFO:   [INFO] Found headers on row 7 for sheet ABBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::ABBL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet AMBR
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::AMBR (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet ANJL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::ANJL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet ATBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::ATBL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet ATLS
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::ATLS (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet BICL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::BICL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet BTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::BTBL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet CENT
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::CENT (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet COMK
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::COMK (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet CTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::CTBL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet PRME
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::PRME (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet PTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::PTBL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet TBEA
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::TBEA (Sale: 2025-41)
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [INFO] Found headers on row 7 for sheet TTBL
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::TTBL (Sale: 2025-41)
+INFO:   [INFO] Found headers on row 7 for sheet UNTB
+C:\Users\mikin\projects\NewTeaTrade\venv\Lib\site-packages\openpyxl\worksheet\header_footer.py:48: UserWarning: Cannot parse header or footer so it will be ignored
+  warn("""Cannot parse header or footer so it will be ignored""")
+INFO:   [PROCESSING LOTS] CompleteOfferLots_2025-41_290925.xlsx::UNTB (Sale: 2025-41)
+INFO:
+[HANDLER] Standard Format: GeneralReport (84).xlsx
+INFO:   [INFO] Cleaning second row (noise/metadata).
+INFO:   [PROCESSING LOTS] GeneralReport (84).xlsx::General Report (Sale: UnknownYear-35)
+INFO:     [SUCCESS] Inserted 3408 new lot records.
+INFO:
+[HANDLER] Standard Format: GeneralReport (87).xlsx
+INFO:   [INFO] Cleaning second row (noise/metadata).
+INFO:   [PROCESSING LOTS] GeneralReport (87).xlsx::General Report (Sale: UnknownYear-37)
+INFO:     [SUCCESS] Inserted 3184 new lot records.
+INFO:
+[HANDLER] Standard Format: GeneralReport (90).xlsx
+INFO:   [INFO] Cleaning second row (noise/metadata).
+INFO:   [PROCESSING LOTS] GeneralReport (90).xlsx::General Report (Sale: UnknownYear-39)
+INFO:     [SUCCESS] Inserted 2917 new lot records.
+INFO:
+[HANDLER] Standard Format: Sale 38_Catalogue_10_09_2025 09_32_31 AM.xlsx
+INFO:   [PROCESSING LOTS] Sale 38_Catalogue_10_09_2025 09_32_31 AM.xlsx::Sheet1 (Sale: 2025-38)
+INFO:     [SUCCESS] Inserted 145 new lot records.
+INFO:
+--- Finished Processor. Total time: 17.10 seconds ---
+(venv)

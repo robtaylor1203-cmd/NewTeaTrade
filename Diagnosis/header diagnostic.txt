@@ -1,0 +1,927 @@
+mikin@LAPTOP-PVAMKA66 MINGW64 ~/projects/NewTeaTrade (main)
+$ python diagnose_headers.py
+--- Starting Excel Header Diagnostics ---
+Scanning directory: C:\Users\mikin\projects\NewTeaTrade\Mombasa
+
+
+--------------------------------------------------
+FILE: Auction Quantity 2025.xlsx
+--------------------------------------------------
+
+  SHEET: 'Sheet1'
+    -> Headers Found (Row 1): ['From Date/Sale No', "Ttl'25", 'Main', 'Sec', 'Kenya', 'Foreign', 'Reprints', 'Fresh', 'Unnamed: 8', "Ttl'24", 'Main.1', 'Sec.1', 'Kenya.1', 'Foreign.1', 'Reprints.1', 'Fresh.1', 'Unnamed: 16', "Ttl'23", 'Main.2', 'Sec.2', 'Kenya.2', 'Foreign.2', 'Reprints.2', 'Fresh.2', "Ttl'22", 'Main.3', 'Sec.3', 'Kenya.3', 'Foreign.3', 'Reprints.3', 'Fresh.3', "Ttl'21", 'Main.4', 'Sec.4', 'Kenya.4', 'Foreign.4', 'Reprints.4', 'Fresh.4', "Ttl'20", 'Main.5', 'Sec.5', 'Kenya.5', 'Foreign.5', 'Reprints.5', 'Fresh.5', "Ttl'19", 'Main.6', 'Sec.6', 'Kenya.6', 'Foreign.6', 'Reprints.6', 'Fresh.6', "Ttl'18", 'Main.7', 'Sec.7', 'Kenya.7', 'Foreign.7', 'Reprints.7', 'Fresh.7', "Ttl'17", 'Main.8', 'Sec.8', 'Kenya.8', 'Foreign.8', 'Reprints.8', 'Fresh.8', "Ttl '16", 'Main.9', 'Sec.9', 'Kenya.9', 'Foreign.9', 'Reprints.9', 'Fresh.9', "Ttl '15", 'Main.10', 'Sec.10', 'Kenya.10', 'Foreign.10', 'Reprints.10', 'Fresh.10', "Ttl. '14", 'Main.11', 'Sec.11', 'Kenya.11', 'Foreign.11', 'Reprints.11', 'Fresh.11', '  Ttl.’13', 'Main.12', 'Sec.12', 'Kenya.12', 'Foreign.12', 'Reprints.12', 'Fresh.12', '  Ttl.’12', 'Reprints.13', 'Fresh.13', '  Ttl.’11', 'Reprints.14', 'Fresh.14', '  Ttl.’10', 'Reprints.15', 'Fresh.15', '  Ttl.’09', 'Reprints.16', 'Fresh.16', '  Ttl.’08', 'Reprints.17', 'Fresh.17']
+
+    -> Data Preview (First 5 rows):
+| From Date/Sale No   |   Ttl'25 |   Main |   Sec |   Kenya |   Foreign |   Reprints |   Fresh |   Unnamed: 8 |   Ttl'24 |   Main.1 |   Sec.1 |   Kenya.1 |   Foreign.1 |   Reprints.1 |   Fresh.1 |   Unnamed: 16 |   Ttl'23 |   Main.2 |   Sec.2 |   Kenya.2 |   Foreign.2 |   Reprints.2 |   Fresh.2 |   Ttl'22 |   Main.3 |   Sec.3 |   Kenya.3 |   Foreign.3 |   Reprints.3 |   Fresh.3 |   Ttl'21 |   Main.4 |   Sec.4 |   Kenya.4 |   Foreign.4 |   Reprints.4 |   Fresh.4 |   Ttl'20 |   Main.5 |   Sec.5 |   Kenya.5 |   Foreign.5 |   Reprints.5 |   Fresh.5 |   Ttl'19 |   Main.6 |   Sec.6 |   Kenya.6 |   Foreign.6 |   Reprints.6 |   Fresh.6 |   Ttl'18 |   Main.7 |   Sec.7 |   Kenya.7 |   Foreign.7 |   Reprints.7 |   Fresh.7 |   Ttl'17 |   Main.8 |   Sec.8 |   Kenya.8 |   Foreign.8 |   Reprints.8 |   Fresh.8 |   Ttl '16 |   Main.9 |   Sec.9 |   Kenya.9 |   Foreign.9 |   Reprints.9 |   Fresh.9 |   Ttl '15 |   Main.10 |   Sec.10 |   Kenya.10 |   Foreign.10 |   Reprints.10 |   Fresh.10 |   Ttl. '14 |   Main.11 |   Sec.11 |   Kenya.11 |   Foreign.11 |   Reprints.11 |   Fresh.11 |     Ttl.’13 |   Main.12 |   Sec.12 |   Kenya.12 |   Foreign.12 |   Reprints.12 |   Fresh.12 |     Ttl.’12 |   Reprints.13 |   Fresh.13 |     Ttl.’11 |   Reprints.14 |   Fresh.14 |     Ttl.’10 |   Reprints.15 |   Fresh.15 |     Ttl.’09 |   Reprints.16 |   Fresh.16 |     Ttl.’08 |   Reprints.17 |   Fresh.17 |
+|:--------------------|---------:|-------:|------:|--------:|----------:|-----------:|--------:|-------------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|--------------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|---------:|---------:|--------:|----------:|------------:|-------------:|----------:|----------:|---------:|--------:|----------:|------------:|-------------:|----------:|----------:|----------:|---------:|-----------:|-------------:|--------------:|-----------:|-----------:|----------:|---------:|-----------:|-------------:|--------------:|-----------:|------------:|----------:|---------:|-----------:|-------------:|--------------:|-----------:|------------:|--------------:|-----------:|------------:|--------------:|-----------:|------------:|--------------:|-----------:|------------:|--------------:|-----------:|------------:|--------------:|-----------:|
+| 06.01.25 sale 01    |   160297 | 139800 | 20497 |  128659 |     31638 |      27859 |  132438 |          nan |   225395 |   200715 |   24680 |    186095 |       39300 |        63340 |    162055 |
+ nan |   219850 |   193460 |   26390 |    174920 |       44930 |        48000 |    171850 |   191560 |   162380 |   29180 |    150300 |       41260 |        21380 |    170180 |   162320 |   134980 |   27340 |    120100 |       42220 |        16620 |    145700 |   178431 |   156160 |   22271 |    137320 |       41111 |        17140 |    161291 |   165608 |   138918 |   26690 |    121208 |       44400 |        18898 |    146710 |   170046 |   141174 |   28872 |    125375 |       44671 |        11240 |    158806 |   145148 |   123698 |   21450 |    111560 |       33588 |        16838 |    128310 |    148491 |   131220 |   17271 |    117100 |       31391 |        14860 |    133631 |    147165 |    126843 |    20322 |     106664 |        40501 |         25302 |     121863 |      99710 |     78879 |    20831 |      67319 |        32391 |          6050 |      93660 |      117360 |    100100 |    17260 |      83720 |        33640 |         14159 |     103201 |      134414 |         17563 |     116851 |      110049 |          9333 |     100716 |      123891 |         13320 |     110571 |      112584 |          7060 |     105524 |      106895 |             0 |     106895 |
+| 13.01.25 sale 02    |   178178 | 158740 | 19438 |  146280 |     31898 |      44780 |  133398 |          nan |   245602 |   220940 |   24662 |    205540 |       40062 |        75042 |    170560 |
+ nan |   217121 |   192860 |   24261 |    169800 |       47321 |        48440 |    168681 |   193696 |   165860 |   27836 |    149858 |       43838 |        31718 |    161978 |   168210 |   140780 |   27430 |    124270 |       43940 |        14880 |    153330 |   175264 |   151200 |   24064 |    136304 |       38960 |        18330 |    156934 |   161048 |   133999 |   27049 |    117929 |       43119 |        14280 |    146768 |   165476 |   138297 |   27179 |    121137 |       44339 |         9000 |    156476 |   140125 |   120085 |   20040 |    108225 |       31900 |        14165 |    125960 |    139820 |   123020 |   16800 |    108060 |       31760 |         8720 |    131100 |    144311 |    123015 |    21296 |     102630 |        41681 |         26001 |     118310 |     103466 |     81020 |    22446 |      67344 |        36122 |          4842 |      98624 |      117457 |     97579 |    19878 |      84040 |        33417 |         15137 |     102320 |      122895 |         11978 |     110917 |      111580 |          6540 |     105040 |      115308 |          5640 |     109668 |      102935 |          3360 |      99575 |       94581 |          4320 |      90261 |
+| 20.01.25 sale 03    |   175578 | 155220 | 20358 |  141480 |     34098 |      29000 |  146578 |          nan |   276100 |   252880 |   23220 |    236260 |       39840 |       104840 |    171260 |
+ nan |   233890 |   207950 |   25940 |    183270 |       50620 |        52760 |    181130 |   194009 |   165070 |   28939 |    151820 |       42189 |        21409 |    172600 |   156689 |   131540 |   25149 |    118249 |       38440 |        13840 |    142849 |   173200 |   150380 |   22820 |    136580 |       36620 |        13960 |    159240 |   187639 |   150620 |   37019 |    139900 |       47739 |        11960 |    175679 |   179439 |   142620 |   36819 |    132260 |       47179 |         5100 |    174339 |   145014 |   120239 |   24775 |    109160 |       35854 |         8120 |    136894 |    159276 |   139636 |   19640 |    125316 |       33960 |         6320 |    152956 |    154710 |    126920 |    27790 |     110770 |        43940 |         19660 |     135050 |     136808 |    109773 |    27035 |      93481 |        43327 |         11624 |     125184 |      118579 |     98220 |    20359 |      84800 |        33779 |          6460 |     112119 |      145391 |         11340 |     134051 |      140344 |         14000 |     126344 |      137105 |          5300 |     131805 |      113293 |          4040 |     109253 |       91934 |          1770 |      90164 |
+| 27.01.25 sale 04    |   205279 | 177500 | 27779 |  162140 |     43139 |      18940 |  186339 |          nan |   303919 |   269880 |   34039 |    254359 |       49560 |       106360 |    197559 |
+ nan |   239000 |   206640 |   32360 |    186760 |       52240 |        43660 |    195340 |   217006 |   177446 |   39560 |    166486 |       50520 |        22840 |    194166 |   205600 |   170099 |   35501 |    156660 |       48940 |        11940 |    193660 |   212779 |   177220 |   35559 |    162700 |       50079 |        16900 |    195879 |   193693 |   160835 |   32858 |    145880 |       47813 |        16640 |    177053 |   168677 |   140560 |   28117 |    126520 |       42157 |         7640 |    161037 |   138097 |   115140 |   22957 |    105100 |       32997 |        13078 |    125019 |    188659 |   162580 |   26079 |    148560 |       40099 |        20780 |    167879 |    139364 |    117850 |    21514 |     102569 |        36795 |         11024 |     128340 |     128878 |    107699 |    21179 |      93030 |        35848 |          3838 |     125040 |      145370 |    119379 |    25991 |     102712 |        42658 |         11899 |     133471 |      148370 |         11686 |     136684 |      118193 |          2894 |     115299 |      136391 |         13538 |     122853 |      107500 |          2940 |     104560 |       94454 |          2963 |      91491 |
+| 03.02.25 sale 05    |   209997 | 184799 | 25198 |  166240 |     43757 |      25558 |  184439 |          nan |   290299 |   260760 |   29539 |    245640 |       44659 |       101840 |    188459 |
+ nan |   226680 |   200180 |   26500 |    180820 |       45860 |        47800 |    178880 |   194209 |   165460 |   28749 |    152538 |       41671 |        23338 |    170871 |   206528 |   174980 |   31548 |    161630 |       44898 |        12680 |    193848 |   212580 |   178760 |   33820 |    164100 |       48480 |        20280 |    192300 |   192328 |   160500 |   31828 |    144030 |       48298 |        16879 |    175449 |   162534 |   134774 |   27760 |    119994 |       42540 |        11140 |    151394 |   124938 |   104278 |   20660 |     94458 |       30480 |         7618 |    117320 |    159398 |   139020 |   20378 |    121140 |       38258 |         7940 |    151458 |    138215 |    116362 |    21853 |     103040 |        35175 |          8320 |     129895 |     125207 |    102840 |    22367 |      89550 |        35657 |          3740 |     121467 |      129240 |    110360 |    18880 |      95180 |        34060 |         12200 |     117040 |      128876 |          8079 |     120797 |      109142 |          1940 |     107202 |      137936 |         11598 |     126338 |      102487 |          4736 |      97751 |      102168 |           740 |     101428 |
+
+
+
+  SHEET: 'Sheet2'
+    -> Status: Sheet is empty.
+
+  SHEET: 'Sheet3'
+    -> Status: Sheet is empty.
+
+--------------------------------------------------
+FILE: AuctionSummary_[2025-37]_020925.xlsx
+--------------------------------------------------
+
+  SHEET: 'Main Summary'
+    -> Headers Found (Row 1): ['MAIN AUCTION', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3']
+
+    -> Data Preview (First 5 rows):
+| MAIN AUCTION   | Unnamed: 1   | Unnamed: 2   | Unnamed: 3   |
+|:---------------|:-------------|:-------------|:-------------|
+| nan            | nan          | nan          | nan          |
+| Region/Grade   | Lots         | Pkgs         | Kilos        |
+| BP1            | 13           | 520          | 28924        |
+| D1             | 7            | 280          | 22320        |
+| PD             | 5            | 200          | 13956        |
+
+
+
+  SHEET: 'Secondary Summary'
+    -> Headers Found (Row 1): ['SECONDARY AUCTION', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3']
+
+    -> Data Preview (First 5 rows):
+| SECONDARY AUCTION   | Unnamed: 1   | Unnamed: 2   | Unnamed: 3   |
+|:--------------------|:-------------|:-------------|:-------------|
+| nan                 | nan          | nan          | nan          |
+| Region/Grade        | Lots         | Pkgs         | Kilos        |
+| DUST                | 3            | 60           | 2988         |
+| F1                  | 19           | 380          | 16432        |
+| FNGS                | 5            | 100          | 4268         |
+
+
+
+  SHEET: 'Detail'
+    -> Headers Found (Row 1): ['Auction', 'Type', 'Broker', 'LotNo', 'Garden', 'Grade', 'Invoice', 'Pkgs', 'Kilos', 'RP', 'Country', 'Rift', 'Zone', 'RA', 'Whse', 'Producer', '2025/35 High', '2025/35 Low', '2025/34 High', '2025/34 Low']
+
+    -> Data Preview (First 5 rows):
+| Auction   | Type   | Broker   |   LotNo | Garden   | Grade   | Invoice   |   Pkgs |   Kilos |   RP | Country   |   Rift |   Zone | RA   | Whse   | Producer   |   2025/35 High |   2025/35 Low |   2025/34 High |   2025/34 Low |
+|:----------|:-------|:---------|--------:|:---------|:--------|:----------|-------:|--------:|-----:|:----------|-------:|-------:|:-----|:-------|:-----------|---------------:|--------------:|---------------:|--------------:|
+| 2025/37   | M2     | VENS     |   16494 | ANKOLE   | PF1     | UK510878F |     40 |    2200 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |              0 |             0 |
+104 |           104 |
+| 2025/37   | M2     | VENS     |   16495 | ANKOLE   | PF1     | UK510895F |     40 |    2200 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |              0 |             0 |
+104 |           104 |
+| 2025/37   | M1     | VENS     |   16496 | ANKOLE   | PD      | UK510876F |     40 |    2600 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |            106 |           106 |
+ 96 |            94 |
+| 2025/37   | M1     | VENS     |   16497 | ANKOLE   | PD      | UK510880F |     40 |    2600 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |            106 |           106 |
+ 96 |            94 |
+| 2025/37   | M1     | VENS     |   16498 | ANKOLE   | PD      | UK510887F |     40 |    2600 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |            106 |           106 |
+ 96 |            94 |
+
+
+
+--------------------------------------------------
+FILE: AuctionSummary_[2025-38]_100925.xlsx
+--------------------------------------------------
+
+  SHEET: 'Main Summary'
+    -> Headers Found (Row 1): ['MAIN AUCTION', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3']
+
+    -> Data Preview (First 5 rows):
+| MAIN AUCTION   | Unnamed: 1   | Unnamed: 2   | Unnamed: 3   |
+|:---------------|:-------------|:-------------|:-------------|
+| nan            | nan          | nan          | nan          |
+| Region/Grade   | Lots         | Pkgs         | Kilos        |
+| BP1            | 24           | 960          | 53174        |
+| D1             | 5            | 200          | 15800        |
+| PD             | 2            | 80           | 5656         |
+
+
+
+  SHEET: 'Secondary Summary'
+    -> Headers Found (Row 1): ['SECONDARY AUCTION', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3']
+
+    -> Data Preview (First 5 rows):
+| SECONDARY AUCTION   | Unnamed: 1   | Unnamed: 2   | Unnamed: 3   |
+|:--------------------|:-------------|:-------------|:-------------|
+| nan                 | nan          | nan          | nan          |
+| Region/Grade        | Lots         | Pkgs         | Kilos        |
+| DUST                | 6            | 120          | 7056         |
+| F1                  | 6            | 120          | 5376         |
+| Burundi             | 12           | 240          | 12432        |
+
+
+
+  SHEET: 'Detail'
+    -> Headers Found (Row 1): ['Auction', 'Type', 'Broker', 'LotNo', 'Garden', 'Grade', 'Invoice', 'Pkgs', 'Kilos', 'RP', 'Country', 'Rift', 'Zone', 'RA', 'Whse', 'Producer', '2025/36 High', '2025/36 Low', '2025/35 High', '2025/35 Low']
+
+    -> Data Preview (First 5 rows):
+| Auction   | Type   | Broker   |   LotNo | Garden   | Grade   | Invoice   |   Pkgs |   Kilos |   RP | Country   |   Rift |   Zone | RA   | Whse   | Producer   |   2025/36 High |   2025/36 Low |   2025/35 High |   2025/35 Low |
+|:----------|:-------|:---------|--------:|:---------|:--------|:----------|-------:|--------:|-----:|:----------|-------:|-------:|:-----|:-------|:-----------|---------------:|--------------:|---------------:|--------------:|
+| 2025/38   | M2     | VENS     |   17139 | ANKOLE   | PF1     | UK510888F |     40 |    2200 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |            107 |           107 |
+  0 |             0 |
+| 2025/38   | M2     | VENS     |   17140 | ANKOLE   | PF1     | UK510901F |     40 |    2200 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |            107 |           107 |
+  0 |             0 |
+| 2025/38   | M1     | VENS     |   17141 | ANKOLE   | PD      | UK510749F |     40 |    2596 |    1 | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |             98 |            98 |
+106 |           106 |
+| 2025/38   | M1     | VENS     |   17142 | ANKOLE   | PD      | UK510840F |     40 |    2596 |    1 | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |             98 |            98 |
+106 |           106 |
+| 2025/38   | M1     | VENS     |   17143 | ANKOLE   | PD      | UK510900F |     40 |    2600 |  nan | Uganda    |    nan |    nan | RA   | BAL078 | MRUL       |             98 |            98 |
+106 |           106 |
+
+
+
+--------------------------------------------------
+FILE: CompleteOfferLots_2025-37_020925.xlsx
+--------------------------------------------------
+
+  SHEET: 'ABBL'
+    -> Headers Found (Row 1): ['ABBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ABBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'AMBR'
+    -> Headers Found (Row 1): ['AMBR', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| AMBR               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'ANJL'
+    -> Headers Found (Row 1): ['ANJL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ANJL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'ATBL'
+    -> Headers Found (Row 1): ['ATBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ATBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'ATLS'
+    -> Headers Found (Row 1): ['ATLS', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ATLS               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'BICL'
+    -> Headers Found (Row 1): ['BICL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| BICL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'BTBL'
+    -> Headers Found (Row 1): ['BTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| BTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'CENT'
+    -> Headers Found (Row 1): ['CENT', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| CENT               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'COMK'
+    -> Headers Found (Row 1): ['COMK', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| COMK               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'CTBL'
+    -> Headers Found (Row 1): ['CTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| CTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'PRME'
+    -> Headers Found (Row 1): ['PRME', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| PRME               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'PTBL'
+    -> Headers Found (Row 1): ['PTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| PTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'TBEA'
+    -> Headers Found (Row 1): ['TBEA', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| TBEA               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'TTBL'
+    -> Headers Found (Row 1): ['TTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| TTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'UNTB'
+    -> Headers Found (Row 1): ['UNTB', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| UNTB               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+  SHEET: 'VENS'
+    -> Headers Found (Row 1): ['VENS', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| VENS               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/37      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/35       | 2025/35       | 2025/34       | 2025/34       |
+
+
+
+--------------------------------------------------
+FILE: CompleteOfferLots_2025-38_100925.xlsx
+--------------------------------------------------
+
+  SHEET: 'ABBL'
+    -> Headers Found (Row 1): ['ABBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ABBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'AMBR'
+    -> Headers Found (Row 1): ['AMBR', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| AMBR               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'ANJL'
+    -> Headers Found (Row 1): ['ANJL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ANJL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'ATBL'
+    -> Headers Found (Row 1): ['ATBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ATBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'ATLS'
+    -> Headers Found (Row 1): ['ATLS', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| ATLS               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'BICL'
+    -> Headers Found (Row 1): ['BICL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| BICL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'BTBL'
+    -> Headers Found (Row 1): ['BTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| BTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'CENT'
+    -> Headers Found (Row 1): ['CENT', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| CENT               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'COMK'
+    -> Headers Found (Row 1): ['COMK', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| COMK               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'CTBL'
+    -> Headers Found (Row 1): ['CTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| CTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'PRME'
+    -> Headers Found (Row 1): ['PRME', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| PRME               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'PTBL'
+    -> Headers Found (Row 1): ['PTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| PTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'TBEA'
+    -> Headers Found (Row 1): ['TBEA', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| TBEA               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'TTBL'
+    -> Headers Found (Row 1): ['TTBL', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| TTBL               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'UNTB'
+    -> Headers Found (Row 1): ['UNTB', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| UNTB               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+  SHEET: 'VENS'
+    -> Headers Found (Row 1): ['VENS', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+    -> Data Preview (First 5 rows):
+| VENS               | Unnamed: 1   |   Unnamed: 2 |   Unnamed: 3 | Unnamed: 4
+              |   Unnamed: 5 |   Unnamed: 6 |   Unnamed: 7 |   Unnamed: 8 |   Unnamed: 9 | Unnamed: 10   | Unnamed: 11   | Unnamed: 12   | Unnamed: 13   |
+|:-------------------|:-------------|-------------:|-------------:|:-------------------------------------------------|-------------:|-------------:|-------------:|-------------:|-------------:|:--------------|:--------------|:--------------|:--------------|
+| DETAILED CATALOGUE | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale No:           | 2025/38      |          nan |          nan | Pls mark 'X' in last column named Require SAMPLE |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| Sale Date:         | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | nan
+  | nan           | nan           | nan           |
+| nan                | nan          |          nan |          nan | nan
+              |          nan |          nan |          nan |          nan |          nan | 2025/36       | 2025/36       | 2025/35       | 2025/35       |
+
+
+
+--------------------------------------------------
+FILE: GeneralReport (84).xlsx
+--------------------------------------------------
+
+  SHEET: 'General Report'
+    -> Headers Found (Row 1): ['Broker', 'Lot No', 'Selling Mark', 'Grade', 'Invoice No', 'Sub Elevation', 'Sale Code', 'Category', 'RP', 'RA', 'Certifications', 'Bags', 'Net Weight', 'Total Weight', 'Primary Standard', 'Primary Adjective', 'Standard 01', 'Adjective 01', 'Standard 02', 'Adjective 02', 'Standard 03', 'Adjective 03', 'Remarks', 'Liquor Remarks ', 'Valuation', 'Asking Price', 'Baseline Price', 'Registered Bid', 'Unnamed: 28', 'Unnamed: 29', 'Second Highest Bid', 'Unnamed: 31', 'Unnamed: 32', 'Total Price', 'Status', 'Purchased Price', 'Buyer', 'Buyer Name', 'Factory', 'Producer Country', 'Warehouse company', 'Warehouse location', 'Manufactured Date', 'Outlot Setting Type', 'Selling End Time', 'Producer', 'Final Buyer', 'Unnamed: 47', 'Unnamed: 48', 'Final Price', 'Unnamed: 50', 'Transaction Type']
+
+    -> Data Preview (First 5 rows):
+| Broker   |   Lot No | Selling Mark   | Grade   | Invoice No   |   Sub Elevation | Sale Code    | Category   | RP   | RA   |   Certifications |   Bags |   Net Weight |   Total Weight |   Primary Standard |   Primary Adjective |   Standard 01 |   Adjective 01 |   Standard 02 |   Adjective 02 |   Standard 03 |   Adjective 03 |   Remarks |   Liquor Remarks  |   Valuation | Asking Price   |   Baseline Price | Registered Bid   | Unnamed: 28   | Unnamed: 29                      | Second Highest Bid   | Unnamed: 31   | Unnamed: 32                      |   Total Price | Status   |   Purchased Price | Buyer   | Buyer Name                       | Factory   | Producer Country   | Warehouse company   | Warehouse location         | Manufactured Date   | Outlot Setting Type   | Selling End Time        | Producer
+           | Final Buyer                      | Unnamed: 47   | Unnamed: 48        | Final Price   | Unnamed: 50   |   Transaction Type |
+|:---------|---------:|:---------------|:--------|:-------------|----------------:|:-------------|:-----------|:-----|:-----|-----------------:|-------:|-------------:|---------------:|-------------------:|--------------------:|--------------:|---------------:|--------------:|---------------:|--------------:|---------------:|----------:|------------------:|------------:|:---------------|-----------------:|:-----------------|:--------------|:---------------------------------|:---------------------|:--------------|:---------------------------------|--------------:|:---------|------------------:|:--------|:---------------------------------|:----------|:-------------------|:--------------------|:---------------------------|:--------------------|:----------------------|:------------------------|:---------------------------------|:---------------------------------|:--------------|:-------------------|:--------------|:--------------|-------------------:|
+| nan      |      nan | nan            | nan     | nan          |             nan | nan          | nan        | nan  | nan  |              nan |    nan |          nan |            nan |                nan |                 nan |           nan |            nan |           nan |            nan |           nan |            nan |       nan |               nan |         nan | Amount         |              nan | Amount           | Buyer Code    | Buyer Company                    | Amount               | Buyer Code    | Buyer Company                    |         nan   | nan      |            nan    | nan     | nan                              | nan       | nan                | nan                 | nan
+       | nan                 | nan                   | nan                     | nan
+           | Buyer Company Name               | Buyer Code    | Buyer Company User | Price         | Total Value   |                nan |
+| ABBL     |    47996 | GITHONGO       | PF1     | GG25260065   |             nan | Sale 35 - M2 | M2         | No   | Yes  |              nan |     40 |           68 |           2720 |                nan |                 nan |           nan |            nan |           nan |            nan |           nan |            nan |       nan |               nan |         nan | 3.46           |              nan | 3.41             | ATL           | ABBAS TRADERS LTD                | 3.36                 | GTC
+  | GLOBAL TEA & COMMODITIES (K) LTD |        9275.2 | Sold     |              3.41 | ATL     | ABBAS TRADERS LTD                | GITHONGO  | Kenya              | CTCW                | CTCL-KTDA MIRITINI COMPLEX | 2025/07/29          | Other Factories       | 02/09/2025 12:49:12:300 | KTDA MANAGEMENT SERVICES LIMITED | ABBAS TRADERS LTD                | ATL           | Hasnain            | 3.41          | 9275.2        |                nan |
+| ABBL     |    47997 | GITHONGO       | PF1     | GG25260075   |             nan | Sale 35 - M2 | M2         | No   | Yes  |              nan |     40 |           68 |           2720 |                nan |                 nan |           nan |            nan |           nan |            nan |           nan |            nan |       nan |               nan |         nan | 3.46           |              nan | 3.36             | GTC           | GLOBAL TEA & COMMODITIES (K) LTD | nan                  | nan
+  | nan                              |        9139.2 | Sold     |              3.36 | GTC     | GLOBAL TEA & COMMODITIES (K) LTD | GITHONGO  | Kenya              | CTCW                | CTCL-KTDA MIRITINI COMPLEX | 2025/07/31          | Other Factories       | 02/09/2025 12:49:24:293 | KTDA MANAGEMENT SERVICES LIMITED | GLOBAL TEA & COMMODITIES (K) LTD | GTC           | Faisal             | 3.36          | 9139.2        |                nan |
+| ABBL     |    47998 | GITHONGO       | PD      | GG25260081   |             nan | Sale 35 - M1 | M1         | No   | Yes  |              nan |     40 |           75 |           3000 |                nan |                 nan |           nan |            nan |           nan |            nan |           nan |            nan |       nan |               nan |         nan | 3.2            |              nan | 3.2              | ATL           | ABBAS TRADERS LTD                | 3.18                 | GTC
+  | GLOBAL TEA & COMMODITIES (K) LTD |        9600   | Sold     |              3.2  | ATL     | ABBAS TRADERS LTD                | GITHONGO  | Kenya              | CTCW                | CTCL-KTDA MIRITINI COMPLEX | 2025/08/01          | Other Factories       | 01/09/2025 12:38:15:713 | KTDA MANAGEMENT SERVICES LIMITED | ABBAS TRADERS LTD                | ATL           | Hasnain            | 3.2           | 9600          |                nan |
+| ABBL     |    47999 | MUNUNGA        | BP1     | NU25260106   |             nan | Sale 35 - M3 | M3         | No   | Yes  |              nan |     40 |           62 |           2480 |                nan |                 nan |           nan |            nan |           nan |            nan |           nan |            nan |       nan |               nan |         nan | 3              |              nan | 2.86             | AEL           | AL-EMIR LTD                      | 2.84                 | GTC
+  | GLOBAL TEA & COMMODITIES (K) LTD |        7092.8 | Sold     |              2.86 | AEL     | AL-EMIR LTD                      | MUNUNGA   | Kenya              | CTCW                | MIRITINI COMPLEX           | 2025/07/25          | Other Factories       | 02/09/2025 10:20:23:610 | KTDA MANAGEMENT SERVICES LIMITED | AL-EMIR LTD                      | AEL           | Collins Ivayo      | 2.86          | 7092.8        |                nan |
+
+
+
+--------------------------------------------------
+FILE: Sale 38_Catalogue_10_09_2025 09_32_31 AM.xlsx
+--------------------------------------------------
+
+  SHEET: 'Sheet1'
+    -> Headers Found (Row 1): ['Broker', 'Category', 'Factory', 'Selling Mark - MF Mark', 'Lot No', 'Reprint', 'Bags', 'Net Weight', 'Grade', 'Invoice No', 'Asking Price', 'Rainforest', 'Certifications', 'Sale Date', 'Total Weight', 'Tare Weight', 'Total Gross Weight', 'Warrant Number', 'Original Weight', 'Warehouse', 'Warehouse Location', 'Manufactured Date', 'Producer Name', 'Producer Code', 'Resale Buyer']
+
+    -> Data Preview (First 5 rows):
+| Broker   | Category   | Factory   | Selling Mark - MF Mark   |   Lot No | Reprint   |   Bags |   Net Weight | Grade   | Invoice No   |   Asking Price | Rainforest   |   Certifications | Sale Date   |   Total Weight |   Tare Weight |   Total Gross Weight |   Warrant Number |   Original Weight | Warehouse   |   Warehouse Location | Manufactured Date   | Producer Name                    | Producer Code   |   Resale Buyer |
+|:---------|:-----------|:----------|:-------------------------|---------:|:----------|-------:|-------------:|:--------|:-------------|---------------:|:-------------|-----------------:|:------------|---------------:|--------------:|---------------------:|-----------------:|------------------:|:------------|---------------------:|:--------------------|:---------------------------------|:----------------|---------------:|
+| ABBL     | M5         | CHELAL    | CHELAL -                 |    48803 | No        |     20 |           34 | OP1     | CL25260177   |              0 | Yes          |              nan | 2025-09-22  |            680 |            32 |                  712 |              nan |                 0 | CTCW        |                  nan | 2025-08-05          | KTDA MANAGEMENT SERVICES LIMITED | KTDA            |            nan |
+| ABBL     | M5         | CHELAL    | CHELAL -                 |    48804 | No        |     20 |           25 | OPA     | CL25260127   |              0 | Yes          |              nan | 2025-09-22  |            500 |            30 |                  530 |              nan |                 0 | CTCW        |                  nan | 2025-07-07          | KTDA MANAGEMENT SERVICES LIMITED | KTDA            |            nan |
+| ABBL     | M5         | CHELAL    | CHELAL -                 |    48805 | No        |     20 |           45 | FBOPF   | CL25260197   |              0 | Yes          |              nan | 2025-09-22  |            900 |            30 |                  930 |              nan |                 0 | CTCW        |                  nan | 2025-08-11          | KTDA MANAGEMENT SERVICES LIMITED | KTDA            |            nan |
+| ABBL     | M5         | KIMUNYE   | KIMUNYE -                |    48806 | No        |     20 |           45 | FBOPF   | KM24251954   |              0 | Yes          |              nan | 2025-09-22  |            900 |            23 |                  923 |              nan |                 0 | CTCW        |                  nan | 2025-06-05          | KTDA MANAGEMENT SERVICES LIMITED | KTDA            |            nan |
+| ABBL     | M5         | IMENTI    | IMENTI -                 |    48807 | No        |     20 |           25 | OPA     | IM25260176   |              0 | Yes          |              nan | 2025-09-22  |            500 |            34 |                  534 |              nan |                 0 | CTCW        |                  nan | 2025-06-26          | KTDA MANAGEMENT SERVICES LIMITED | KTDA            |            nan |
+
+
+
+--- Finished Diagnostics ---
+Please copy the output above and send it back for analysis.
+(venv)

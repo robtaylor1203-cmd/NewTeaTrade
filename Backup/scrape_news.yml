@@ -1,0 +1,51 @@
+name: Scrape Latest News
+
+on:
+  # Runs automatically every day at 05:00 UTC (06:00 BST / 05:00 GMT)
+  schedule:
+    - cron: '0 5 * * *'
+  # Allows manual execution
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20 
+    
+    # [MODIFIED] Add this permissions block to allow the job to write to the repository
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright beautifulsoup4 fuzzywuzzy python-levenshtein playwright-stealth
+
+      - name: Install Playwright browsers and dependencies
+        run: python -m playwright install --with-deps
+
+      - name: Run news scraper
+        env:
+          CI: true
+        run: python scraper_news.py
+
+      - name: Commit and push if there are changes
+        run: |
+          git config --global user.name "Automated News Scraper"
+          git config --global user.email "actions@github.com"
+          
+          git add news.db news.html
+          
+          # Commit only if there are changes
+          git diff --staged --quiet --exit-code || (echo "Changes detected. Committing..." && git commit -m "📰 Automated Update: Latest news articles scraped")
+          
+          git push

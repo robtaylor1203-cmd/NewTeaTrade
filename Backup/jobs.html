@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tea Industry Jobs - TeaTrade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="jobs-page">
+    <header class="site-header">
+        <div class="header-top-bar">
+            <a href="index.html" class="header-logo"><h1>Tea<span>Trade</span></h1></a>
+            <div class="header-search-wrapper"><input type="text" class="header-search-bar" placeholder="Job title or keyword"></div>
+            <div class="user-actions">
+                <a href="#" title="Create Account"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg></a>
+                <a href="#" title="Sign In"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></a>
+            </div>
+            <!-- ADDED: Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+        <nav class="secondary-nav">
+            <ul>
+                <li><a href="news.html">News</a></li>
+                <li><a href="jobs.html" class="active">Jobs</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="corporate.html">Corporate</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="filter-bar">
+        <button class="filter-chip">Full-time</button>
+        <button class="filter-chip">Part-time</button>
+        <button class="filter-chip">United Kingdom</button>
+        <button class="filter-chip">Global</button>
+    </div>
+    <main class="jobs-container">
+        <div class="job-list-pane" id="job-list-container"><p style="padding: 16px;">Loading jobs...</p></div>
+        <div class="job-details-pane" id="job-details-container"><div class="job-details-content"><p>Select a job to see details.</p></div></div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const jobListContainer = document.getElementById('job-list-container');
+            const jobDetailsContainer = document.getElementById('job-details-container');
+            let jobsData = []; 
+
+            const renderJobDetails = (job) => {
+                let responsibilitiesHtml = job.description.responsibilities.map(item => `<li>${item}</li>`).join('');
+                let qualificationsHtml = job.description.qualifications.map(item => `<li>${item}</li>`).join('');
+                
+                // Add a back button specifically for mobile view
+                const backButtonHtml = window.innerWidth <= 900 ? `<button id="back-to-jobs" style="margin-bottom: 16px; background: none; border: none; color: #1a73e8; font-size: 16px; cursor: pointer; padding: 0;">&larr; Back to List</button>` : '';
+
+                jobDetailsContainer.innerHTML = `<div class="job-details-content">${backButtonHtml}<h2 class="job-title-full">${job.title}</h2><p class="company-name-full">${job.company} &middot; ${job.location}</p><a href="${job.link}" target="_blank" rel="noopener noreferrer"><button class="apply-button">View Opportunity</button></a><hr class="divider"><p>${job.description.intro}</p><h4>Responsibilities:</h4><ul>${responsibilitiesHtml}</ul><h4>Qualifications:</h4><ul>${qualificationsHtml}</ul></div>`;
+                
+                // On mobile, switch view to the details pane
+                if (window.innerWidth <= 900) {
+                    jobListContainer.style.display = 'none';
+                    jobDetailsContainer.style.display = 'block';
+                    window.scrollTo(0, 0); 
+
+                    // Add event listener for the back button
+                    document.getElementById('back-to-jobs')?.addEventListener('click', () => {
+                        jobListContainer.style.display = 'block';
+                        jobDetailsContainer.style.display = 'none';
+                        document.querySelectorAll('.job-card.active').forEach(card => card.classList.remove('active'));
+                    });
+                }
+            };
+
+            // Functionality to manage view state on mobile/desktop
+            const setupResponsiveView = () => {
+                if (window.innerWidth <= 900) {
+                    // On mobile, if a job is not actively selected (e.g. on initial load or after clicking back), show list and hide details
+                    if (!document.querySelector('.job-card.active')) {
+                         jobDetailsContainer.style.display = 'none';
+                         jobListContainer.style.display = 'block';
+                    }
+                } else {
+                    // On desktop, always show both
+                    jobDetailsContainer.style.display = 'block';
+                    jobListContainer.style.display = 'block';
+                }
+            };
+
+            window.addEventListener('resize', setupResponsiveView);
+            
+            fetch('jobs.json').then(response => response.json()).then(data => {
+                jobsData = data;
+                jobListContainer.innerHTML = '';
+                if (jobsData && jobsData.length > 0) {
+                    jobsData.forEach((job, index) => {
+                        const jobCard = document.createElement('div');
+                        jobCard.className = 'job-card';
+                        jobCard.dataset.index = index;
+                        jobCard.innerHTML = `<div class="job-card-header"><h3 class="job-title">${job.title}</h3><p class="company-name">${job.company}</p><p class="location">${job.location} (${job.type})</p></div><p class="job-snippet">${job.snippet}</p>`;
+                        jobCard.addEventListener('click', () => {
+                            document.querySelectorAll('.job-card.active').forEach(card => card.classList.remove('active'));
+                            jobCard.classList.add('active');
+                            renderJobDetails(job);
+                        });
+                        jobListContainer.appendChild(jobCard);
+                    });
+                    
+                    // Load the first job automatically only on desktop/tablet
+                    if (window.innerWidth > 900) {
+                         if (jobListContainer.firstChild) {
+                            jobListContainer.firstChild.classList.add('active');
+                         }
+                        renderJobDetails(jobsData[0]);
+                    }
+                   
+                } else {
+                     jobListContainer.innerHTML = '<p style="padding: 16px;">No jobs found.</p>';
+                }
+                // Set up the view after data is loaded
+                setupResponsiveView();
+            }).catch(error => { console.error('Error fetching jobs data:', error); jobListContainer.innerHTML = '<p style="padding: 16px;">Error loading jobs.</p>'; });
+        });
+    </script>
+    <!-- ADDED: script.js link -->
+    <script src="script.js"></script>
+</body>
+</html>
