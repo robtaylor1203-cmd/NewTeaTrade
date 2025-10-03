@@ -3,21 +3,46 @@
     "sale_number": "2025-38",
     "sale_date": "2025-09-10",
     "location": "Mombasa",
-    "generated_at": "2025-10-03T17:19:11.327561"
+    "year": 2025,
+    "sale_num_only": 38,
+    "generated_at": "2025-10-03T18:52:46.021618"
   },
   "kpis": {
     "TOTAL_VOLUME": "0",
     "AVG_PRICE": "$0.00",
-    "PRICE_CHANGE": "N/A (No Sales)",
+    "PRICE_CHANGE": "N/A",
     "PRICE_CHANGE_CLASS": "neutral",
+    "PRICE_CHANGE_NUMERIC": 0,
     "SELL_THROUGH_RATE": "0.00%",
-    "REALIZATION_RATE": "N/A"
+    "SELL_THROUGH_RATE_RAW": 0.0,
+    "REALIZATION_RATE": "N/A",
+    "SNAPSHOT": "Awaiting sales results. Offers published."
   },
   "charts": {
     "buyers": {},
     "grades": {}
   },
   "tables": {
-    "gardens": []
+    "gardens": [],
+    "sell_through": [
+      {
+        "Metric": "Lots Offered",
+        "Value": "3,096"
+      },
+      {
+        "Metric": "Lots Sold",
+        "Value": "0"
+      },
+      {
+        "Metric": "Rate",
+        "Value": "0.00%"
+      }
+    ],
+    "realization": [
+      {
+        "Metric": "Status",
+        "Value": "Insufficient Data"
+      }
+    ]
   }
 }

@@ -1,32 +1,47 @@
 [
   {
     "sale_number": "2025-41",
+    "sale_num_only": 41,
     "sale_date": "2025-09-29",
+    "year": 2025,
     "filename": "mombasa_2025_41.json",
-    "location": "Mombasa"
+    "location": "Mombasa",
+    "snapshot": "Awaiting sales results. Offers published."
   },
   {
     "sale_number": "2025-39",
+    "sale_num_only": 39,
     "sale_date": "2025-09-30",
+    "year": 2025,
     "filename": "mombasa_2025_39.json",
-    "location": "Mombasa"
+    "location": "Mombasa",
+    "snapshot": "Prices significantly higher (+1.71%). Fair demand; selective buying."
   },
   {
     "sale_number": "2025-38",
+    "sale_num_only": 38,
     "sale_date": "2025-09-10",
+    "year": 2025,
     "filename": "mombasa_2025_38.json",
-    "location": "Mombasa"
+    "location": "Mombasa",
+    "snapshot": "Awaiting sales results. Offers published."
   },
   {
     "sale_number": "2025-37",
+    "sale_num_only": 37,
     "sale_date": "2025-09-16",
+    "year": 2025,
     "filename": "mombasa_2025_37.json",
-    "location": "Mombasa"
+    "location": "Mombasa",
+    "snapshot": "Prices significantly higher (+4.44%). Fair demand; selective buying."
   },
   {
     "sale_number": "2025-35",
+    "sale_num_only": 35,
     "sale_date": "2025-09-02",
+    "year": 2025,
     "filename": "mombasa_2025_35.json",
-    "location": "Mombasa"
+    "location": "Mombasa",
+    "snapshot": "Prices generally steady (N/A (First Sale)). Low demand; significant withdrawals."
   }
 ]

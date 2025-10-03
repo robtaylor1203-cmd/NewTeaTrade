@@ -3,15 +3,20 @@
     "sale_number": "2025-39",
     "sale_date": "2025-09-30",
     "location": "Mombasa",
-    "generated_at": "2025-10-03T17:19:11.369097"
+    "year": 2025,
+    "sale_num_only": 39,
+    "generated_at": "2025-10-03T18:52:46.053925"
   },
   "kpis": {
     "TOTAL_VOLUME": "162,658",
     "AVG_PRICE": "$2.01",
+    "PRICE_CHANGE_NUMERIC": 1.7100676984434233,
     "PRICE_CHANGE": "+1.71%",
     "PRICE_CHANGE_CLASS": "positive",
     "SELL_THROUGH_RATE": "84.81%",
-    "REALIZATION_RATE": "N/A"
+    "SELL_THROUGH_RATE_RAW": 0.848079561042524,
+    "REALIZATION_RATE": "N/A",
+    "SNAPSHOT": "Prices significantly higher (+1.71%). Fair demand; selective buying."
   },
   "charts": {
     "buyers": {
@@ -31,9 +36,6 @@
         "color": {
           "field": "value_usd",
           "legend": null,
-          "scale": {
-            "scheme": "yellowgreenblue"
-          },
           "type": "quantitative"
         },
         "tooltip": [
@@ -117,8 +119,7 @@
         "name": "data-0a0dd3d8c553244b872816057f8a3703"
       },
       "mark": {
-        "type": "bar",
-        "color": "#61dafb"
+        "type": "bar"
       },
       "encoding": {
         "tooltip": [
@@ -173,54 +174,74 @@
   "tables": {
     "gardens": [
       {
-        "mark": "GATARE",
-        "total_volume": "341",
-        "avg_price": "$4.22"
+        "Garden": "GATARE",
+        "Volume (kg)": "341",
+        "Avg Price": "$4.22"
       },
       {
-        "mark": "GATHUTHI",
-        "total_volume": "283",
-        "avg_price": "$3.71"
+        "Garden": "GATHUTHI",
+        "Volume (kg)": "283",
+        "Avg Price": "$3.71"
       },
       {
-        "mark": "IGEMBE",
-        "total_volume": "75",
-        "avg_price": "$3.62"
+        "Garden": "IGEMBE",
+        "Volume (kg)": "75",
+        "Avg Price": "$3.62"
       },
       {
-        "mark": "MUNUNGA",
-        "total_volume": "1,390",
-        "avg_price": "$3.60"
+        "Garden": "MUNUNGA",
+        "Volume (kg)": "1,390",
+        "Avg Price": "$3.60"
       },
       {
-        "mark": "NDIMA",
-        "total_volume": "284",
-        "avg_price": "$3.60"
+        "Garden": "NDIMA",
+        "Volume (kg)": "284",
+        "Avg Price": "$3.60"
       },
       {
-        "mark": "GITHONGO",
-        "total_volume": "621",
-        "avg_price": "$3.59"
+        "Garden": "GITHONGO",
+        "Volume (kg)": "621",
+        "Avg Price": "$3.59"
       },
       {
-        "mark": "KIEGOI",
-        "total_volume": "598",
-        "avg_price": "$3.59"
+        "Garden": "KIEGOI",
+        "Volume (kg)": "598",
+        "Avg Price": "$3.59"
       },
       {
-        "mark": "GISOVU",
-        "total_volume": "553",
-        "avg_price": "$3.58"
+        "Garden": "GISOVU",
+        "Volume (kg)": "553",
+        "Avg Price": "$3.58"
       },
       {
-        "mark": "IMENTI",
-        "total_volume": "840",
-        "avg_price": "$3.57"
+        "Garden": "IMENTI",
+        "Volume (kg)": "840",
+        "Avg Price": "$3.57"
       },
       {
-        "mark": "MAKOMBOKI",
-        "total_volume": "949",
-        "avg_price": "$3.54"
+        "Garden": "MAKOMBOKI",
+        "Volume (kg)": "949",
+        "Avg Price": "$3.54"
+      }
+    ],
+    "sell_through": [
+      {
+        "Metric": "Lots Offered",
+        "Value": "2,916"
+      },
+      {
+        "Metric": "Lots Sold",
+        "Value": "2,473"
+      },
+      {
+        "Metric": "Rate",
+        "Value": "84.81%"
+      }
+    ],
+    "realization": [
+      {
+        "Metric": "Status",
+        "Value": "Insufficient Data"
       }
     ]
   }
