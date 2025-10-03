@@ -5,7 +5,7 @@
     "location": "Mombasa",
     "year": 2025,
     "sale_num_only": 38,
-    "generated_at": "2025-10-03T19:31:48.152630"
+    "generated_at": "2025-10-03T19:58:25.763153"
   },
   "kpis": {
     "TOTAL_VOLUME": "0",
@@ -19,11 +19,10 @@
     "SNAPSHOT": "Awaiting sales results. Offers published."
   },
   "charts": {
-    "buyers": {},
-    "grades": {}
+    "interactive_dashboard": {},
+    "buyers": {}
   },
   "tables": {
-    "gardens": [],
     "sell_through": [
       {
         "Metric": "Lots Offered",
@@ -43,6 +42,7 @@
         "Metric": "Status",
         "Value": "Insufficient Data"
       }
-    ]
+    ],
+    "raw_sales_data": []
   }
 }
