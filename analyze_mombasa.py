@@ -208,7 +208,7 @@ def generate_snapshot(kpis):
     return snapshot
 
 # =============================================================================
-# Interactive Chart Generation (UPDATED FOR ALTAIR 5)
+# Interactive Chart Generation (ALTAIR 5 COMPATIBLE)
 # =============================================================================
 
 def create_price_distribution_chart(sales_df_week, brush):
@@ -273,7 +273,6 @@ def create_interactive_charts(sales_df_week):
     Coordinates the creation of interactive charts.
     """
     # Define the brush locally.
-    # ALTAIR 5 UPDATE: alt.selection_interval() is still valid for creating the brush object.
     local_brush = alt.selection_interval(encodings=['x'])
 
     return {
@@ -319,7 +318,7 @@ def create_buyer_chart(sales_df_week):
     return chart.to_dict()
 
 # =============================================================================
-# Advanced Analysis (Candlestick and Insights) (UPDATED FOR ALTAIR 5)
+# Advanced Analysis (Candlestick and Insights) (ALTAIR 5 COMPATIBLE)
 # =============================================================================
 
 def analyze_price_movements(sales_df_week, sales_df_all):
@@ -400,9 +399,9 @@ def create_candlestick_chart(movement_df):
 
     input_dropdown = alt.binding_select(options=marks, name='Select Garden: ')
     
-    # ALTAIR 5 UPDATE: Use selection_point instead of selection_single
-    # ALTAIR 5 UPDATE: Use 'value' instead of 'init' for initialization
-    selection = alt.selection_point(fields=['mark'], bind=input_dropdown, value={'mark': marks[0]})
+    # ALTAIR 5 UPDATE: Use selection_point
+    # CRITICAL FIX: The 'value' must be a LIST of dictionaries when 'fields' are specified.
+    selection = alt.selection_point(fields=['mark'], bind=input_dropdown, value=[{'mark': marks[0]}])
 
     # Base chart definition
     base = alt.Chart(movement_df).transform_filter(
@@ -437,7 +436,7 @@ def create_candlestick_chart(movement_df):
     )
 
     # Combine layers and add the selection mechanism
-    # ALTAIR 5 UPDATE: Use add_params instead of add_selection
+    # ALTAIR 5 UPDATE: Use add_params
     chart = alt.layer(wicks, body).add_params(selection)
 
     return chart.to_dict()
@@ -490,7 +489,10 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 
     # Calculate forthcoming volume
     try:
-        future_sales = sorted(offers_df_all[offers_df_all['sale_number'] > week_number]['sale_number'].unique())
+        # Ensure comparison is robust against potential mixed types by comparing strings if necessary
+        current_week_str = str(week_number)
+        future_sales = sorted([s for s in offers_df_all['sale_number'].dropna().unique() if str(s) > current_week_str])
+
     except TypeError:
         logging.warning("Could not compare sale numbers (type mismatch). Skipping forecast calculation.")
         return outlook
@@ -498,7 +500,8 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 
     if future_sales:
         next_sale_number = future_sales[0]
-        outlook["next_sale"] = next_sale_number
+        outlook["next_sale"] = str(next_sale_number) # Ensure consistency
+        # Use the actual sale number object from the list for filtering
         next_week_offers = offers_df_all[offers_df_all['sale_number'] == next_sale_number]
 
         if 'quantity_kgs' in next_week_offers.columns:
@@ -514,7 +517,7 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 # =============================================================================
 
 def main():
-    logging.info("Starting Mombasa Data Analysis (Altair 5 Compatibility Mode)...")
+    logging.info("Starting Mombasa Data Analysis (Finalized Compatibility Mode)...")
 
     if not os.path.exists(DATA_OUTPUT_DIR): os.makedirs(DATA_OUTPUT_DIR)
 
@@ -596,7 +599,8 @@ def main():
         # Structure the report data
         report_data = {
             'metadata': {
-                'sale_number': week_number, 'sale_date': week_date, 'location': location,
+                'sale_number': str(week_number), # Ensure consistency
+                'sale_date': week_date, 'location': location,
                 'year': year, 'sale_num_only': sale_num_only, 'generated_at': datetime.datetime.now().isoformat()
             },
             'kpis': kpis,
@@ -616,7 +620,7 @@ def main():
 
             # Add details to index
             report_index.append({
-                'sale_number': week_number,
+                'sale_number': str(week_number),
                 'sale_num_only': sale_num_only,
                 'sale_date': week_date,
                 'year': year,
