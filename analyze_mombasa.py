@@ -14,7 +14,7 @@ DATA_OUTPUT_DIR = "report_data"
 INDEX_FILE = os.path.join(DATA_OUTPUT_DIR, "mombasa_index.json")
 PRIMARY_COLOR = "#4285F4" # Google Blue
 CHART_HEIGHT = 320
-PLACEHOLDER = "N/A (Pending)" # Placeholder for missing analytical data
+PLACEHOLDER = "N/A (Pending)"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='ANALYZER: %(message)s', handlers=[logging.StreamHandler(sys.stdout)])
@@ -23,6 +23,7 @@ alt.data_transformers.disable_max_rows()
 
 # =============================================================================
 # Helper Functions (Database and Cleaning)
+# (These functions remain the same, included for completeness)
 # =============================================================================
 
 def connect_db():
@@ -36,12 +37,10 @@ def connect_db():
 def clean_text_column(df, column_name):
     if column_name in df.columns:
         df[column_name] = df[column_name].astype(str).str.strip().str.upper()
-        # Replace noise with pd.NA initially; placeholders are added later in prepare_sales_data
         df[column_name] = df[column_name].replace(NOISE_VALUES, pd.NA)
     return df
 
 def fetch_data(conn):
-    # (This function remains the same as the previous robust version, included for completeness)
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='auction_sales';")
@@ -86,47 +85,39 @@ def fetch_data(conn):
     except Exception as e:
         logging.error(f"Error fetching data: {e}", exc_info=True); sys.exit(1)
 
-# UPDATED: Relaxed requirements and robust handling of missing analytical data
 def prepare_sales_data(sales_df_raw):
-    # Essential columns for identifying a valid financial transaction
     essential_cols = ['quantity_kgs', 'price', 'sale_number', 'lot_number']
 
     if sales_df_raw.empty:
         return pd.DataFrame()
 
-    # Check if essential columns exist
     if not all(col in sales_df_raw.columns for col in essential_cols):
         logging.warning("Missing essential columns (Qty, Price, Sale#, Lot#) in raw data.")
         return pd.DataFrame()
 
     sales_df = sales_df_raw.copy()
 
-    # Filter for valid transactions (non-null essentials and positive values)
+    # Filter for valid transactions
     sales_df = sales_df.dropna(subset=essential_cols)
     sales_df = sales_df[(sales_df['quantity_kgs'] > 0) & (sales_df['price'] > 0)]
 
     if sales_df.empty:
         return pd.DataFrame()
 
-    # Calculate value
     sales_df['value_usd'] = sales_df['price'] * sales_df['quantity_kgs']
 
-    # Define analytical columns (used in charts, but not essential for KPIs)
+    # Handle missing analytical data gracefully
     analytical_cols = ['mark', 'grade', 'buyer', 'broker']
-
-    # Handle missing analytical data gracefully (use placeholder instead of dropping rows)
     for col in analytical_cols:
         if col in sales_df.columns:
-            # Ensure column is treated as string, fillna (including pd.NA) with the placeholder
             sales_df[col] = sales_df[col].astype(str).fillna(PLACEHOLDER)
-            # Specific check for 'nan' or '<NA>' string resulting from conversions
             sales_df[col] = sales_df[col].replace(['nan', '<NA>'], PLACEHOLDER)
 
     return sales_df
 
 # =============================================================================
 # Analysis Functions (KPIs and Forecast)
-# (These functions remain the same as the previous robust versions)
+# (These functions remain the same, included for completeness)
 # =============================================================================
 def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, offers_df_week):
     """Combines KPI calculation, forecast analysis, and snapshot generation."""
@@ -144,30 +135,31 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
         kpis['TOTAL_VOLUME'] = f"{total_volume:,.0f}"; kpis['AVG_PRICE'] = f"${avg_price:.2f}"
 
         # Calculate Price Change vs Previous Week
-        current_sale_number = sales_df_week['sale_number'].iloc[0]
-        if not sales_df_all.empty and 'quantity_kgs' in sales_df_all.columns:
-            previous_sales = sales_df_all[sales_df_all['sale_number'] < current_sale_number]
-            if not previous_sales.empty:
-                previous_sale_number = previous_sales['sale_number'].max()
-                prev_week_df = sales_df_all[sales_df_all['sale_number'] == previous_sale_number]
-                
-                if not prev_week_df.empty and 'value_usd' in prev_week_df.columns:
-                    prev_volume = prev_week_df['quantity_kgs'].sum()
-                    prev_avg_price = prev_week_df['value_usd'].sum() / prev_volume if prev_volume > 0 else 0
+        # Check added to ensure sales_df_week is not empty before accessing iloc[0]
+        if not sales_df_week.empty:
+            current_sale_number = sales_df_week['sale_number'].iloc[0]
+            if not sales_df_all.empty and 'quantity_kgs' in sales_df_all.columns:
+                previous_sales = sales_df_all[sales_df_all['sale_number'] < current_sale_number]
+                if not previous_sales.empty:
+                    previous_sale_number = previous_sales['sale_number'].max()
+                    prev_week_df = sales_df_all[sales_df_all['sale_number'] == previous_sale_number]
+                    
+                    if not prev_week_df.empty and 'value_usd' in prev_week_df.columns:
+                        prev_volume = prev_week_df['quantity_kgs'].sum()
+                        prev_avg_price = prev_week_df['value_usd'].sum() / prev_volume if prev_volume > 0 else 0
 
-                    if prev_avg_price > 0:
-                        change = ((avg_price - prev_avg_price) / prev_avg_price) * 100
-                        kpis['PRICE_CHANGE_NUMERIC'] = change
-                        kpis['PRICE_CHANGE'] = f"{change:+.2f}%"
-                        if change > 0.5: kpis['PRICE_CHANGE_CLASS'] = 'positive'
-                        elif change < -0.5: kpis['PRICE_CHANGE_CLASS'] = 'negative'
-                        else: kpis['PRICE_CHANGE_CLASS'] = 'neutral'
+                        if prev_avg_price > 0:
+                            change = ((avg_price - prev_avg_price) / prev_avg_price) * 100
+                            kpis['PRICE_CHANGE_NUMERIC'] = change
+                            kpis['PRICE_CHANGE'] = f"{change:+.2f}%"
+                            if change > 0.5: kpis['PRICE_CHANGE_CLASS'] = 'positive'
+                            elif change < -0.5: kpis['PRICE_CHANGE_CLASS'] = 'negative'
+                            else: kpis['PRICE_CHANGE_CLASS'] = 'neutral'
 
         if 'PRICE_CHANGE' not in kpis:
             kpis['PRICE_CHANGE'] = "N/A (First Sale)"; kpis['PRICE_CHANGE_CLASS'] = 'neutral'; kpis['PRICE_CHANGE_NUMERIC'] = 0
 
     # 2. Forecast Analysis (Sell-Through)
-    # We use the raw dataframes here as prepare_sales_data filters based on positive price/qty
     offers_calc = offers_df_week.copy(); sales_calc = sales_df_week_raw.copy()
     lots_offered = 0; lots_sold = 0
 
@@ -175,7 +167,6 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
         lots_offered = offers_calc[['broker', 'lot_number']].drop_duplicates().shape[0]
 
     if not sales_calc.empty and all(col in sales_calc.columns for col in ['broker', 'lot_number']):
-        # A lot is considered sold if it appears in the sales list, regardless of price/qty validity
         lots_sold = sales_calc[['broker', 'lot_number']].drop_duplicates().shape[0]
 
     sell_through_rate = (lots_sold / lots_offered) if lots_offered > 0 else 0
@@ -217,13 +208,11 @@ def generate_snapshot(kpis):
     return snapshot
 
 # =============================================================================
-# Interactive Chart Generation (REFACTORED FOR SCOPE)
+# Interactive Chart Generation (UPDATED FOR ALTAIR 5)
 # =============================================================================
 
-# The global 'brush' definition is removed. It is now managed by create_interactive_charts.
-
 def create_price_distribution_chart(sales_df_week, brush):
-    """Creates the main price distribution histogram. Takes brush as an argument."""
+    """Creates the main price distribution histogram."""
     if sales_df_week.empty or 'price' not in sales_df_week.columns: return {}
     
     height = 180 
@@ -237,13 +226,15 @@ def create_price_distribution_chart(sales_df_week, brush):
         title="Price Distribution (Click and drag to filter below)",
         height=height,
         width='container'
-    ).add_selection(
+    # ALTAIR 5 UPDATE: Use add_params instead of add_selection
+    ).add_params(
         brush
     )
     return chart.to_dict()
 
 def create_grade_performance_chart(sales_df_week, brush):
-    """Creates the grade performance chart, filtered by the brush. Takes brush as an argument."""
+    # (Remains the same)
+    """Creates the grade performance chart, filtered by the brush."""
     if sales_df_week.empty or 'grade' not in sales_df_week.columns: return {}
 
     chart = alt.Chart(sales_df_week).mark_bar(color=PRIMARY_COLOR).encode(
@@ -260,7 +251,8 @@ def create_grade_performance_chart(sales_df_week, brush):
     return chart.to_dict()
 
 def create_broker_performance_chart(sales_df_week, brush):
-    """Creates the broker performance chart, filtered by the brush. Takes brush as an argument."""
+    # (Remains the same)
+    """Creates the broker performance chart, filtered by the brush."""
     if sales_df_week.empty or 'broker' not in sales_df_week.columns: return {}
 
     chart = alt.Chart(sales_df_week).mark_bar(color=PRIMARY_COLOR).encode(
@@ -278,9 +270,10 @@ def create_broker_performance_chart(sales_df_week, brush):
 
 def create_interactive_charts(sales_df_week):
     """
-    CRITICAL FIX: Coordinates the creation of interactive charts, ensuring the selection (brush) is unique per report.
+    Coordinates the creation of interactive charts.
     """
-    # Define the brush locally here. This ensures a unique brush object for every week processed.
+    # Define the brush locally.
+    # ALTAIR 5 UPDATE: alt.selection_interval() is still valid for creating the brush object.
     local_brush = alt.selection_interval(encodings=['x'])
 
     return {
@@ -291,6 +284,7 @@ def create_interactive_charts(sales_df_week):
 
 
 def create_buyer_chart(sales_df_week):
+    # (Remains the same)
     """Generates a chart for the Top 15 Buyers."""
     if sales_df_week.empty or 'buyer' not in sales_df_week.columns or 'value_usd' not in sales_df_week.columns: return {}
 
@@ -325,16 +319,21 @@ def create_buyer_chart(sales_df_week):
     return chart.to_dict()
 
 # =============================================================================
-# Advanced Analysis (Candlestick and Insights)
+# Advanced Analysis (Candlestick and Insights) (UPDATED FOR ALTAIR 5)
 # =============================================================================
 
 def analyze_price_movements(sales_df_week, sales_df_all):
+    # (This function remains the same)
     """Calculates data required for Candlestick chart and generates insights."""
     
     required_cols = ['mark', 'grade', 'price', 'quantity_kgs', 'sale_number']
     if sales_df_week.empty or not all(c in sales_df_week.columns for c in required_cols):
         return pd.DataFrame(), "Awaiting current week data or missing key columns for trend analysis."
 
+    # Ensure sales_df_week is not empty before accessing iloc[0]
+    if sales_df_week.empty:
+         return pd.DataFrame(), "Awaiting current week data for trend analysis."
+         
     current_sale_number = sales_df_week['sale_number'].iloc[0]
     previous_sales = sales_df_all[sales_df_all['sale_number'] < current_sale_number]
 
@@ -357,7 +356,7 @@ def analyze_price_movements(sales_df_week, sales_df_all):
         open=('price', 'mean')
     ).reset_index()
 
-    # 3. Merge Data (Inner join ensures we only compare items sold in both weeks)
+    # 3. Merge Data
     movement_df = pd.merge(current_metrics, prev_metrics, on=['mark', 'grade'], how='inner')
 
     # 4. Calculate Movement
@@ -367,7 +366,6 @@ def analyze_price_movements(sales_df_week, sales_df_all):
 
     # 5. Generate Insights (Top Movers)
     insights = []
-    # Filter for significant volume and ignore placeholders
     significant_volume_df = movement_df[(movement_df['volume'] > 500) & (movement_df['mark'] != PLACEHOLDER)]
     
     top_risers = significant_volume_df.sort_values(by='change_pct', ascending=False).head(3)
@@ -395,14 +393,16 @@ def create_candlestick_chart(movement_df):
     if movement_df.empty:
         return {}
 
-    # Define the selection mechanism (Dropdown for Garden/Mark)
-    # FIX: Filter out the placeholder values before creating dropdown options
+    # Define the selection mechanism
     marks = sorted([m for m in movement_df['mark'].unique().tolist() if m != PLACEHOLDER])
     
     if not marks: return {}
 
     input_dropdown = alt.binding_select(options=marks, name='Select Garden: ')
-    selection = alt.selection_single(fields=['mark'], bind=input_dropdown, init={'mark': marks[0]})
+    
+    # ALTAIR 5 UPDATE: Use selection_point instead of selection_single
+    # ALTAIR 5 UPDATE: Use 'value' instead of 'init' for initialization
+    selection = alt.selection_point(fields=['mark'], bind=input_dropdown, value={'mark': marks[0]})
 
     # Base chart definition
     base = alt.Chart(movement_df).transform_filter(
@@ -437,13 +437,15 @@ def create_candlestick_chart(movement_df):
     )
 
     # Combine layers and add the selection mechanism
-    chart = alt.layer(wicks, body).add_selection(selection)
+    # ALTAIR 5 UPDATE: Use add_params instead of add_selection
+    chart = alt.layer(wicks, body).add_params(selection)
 
     return chart.to_dict()
 
 
 # =============================================================================
 # Data Export and Forward Outlook
+# (These functions remain the same)
 # =============================================================================
 
 def generate_raw_data_export(sales_df_week):
@@ -469,12 +471,11 @@ def generate_raw_data_export(sales_df_week):
     if 'Lot' in export_df.columns:
         export_df['Lot'] = export_df['Lot'].astype(str)
 
-    # Replace NaNs with None for JSON compatibility (for numeric columns, strings handled by prepare_sales_data)
+    # Replace NaNs with None for JSON compatibility
     export_df = export_df.replace({np.nan: None})
     return export_df.to_dict(orient='records')
 
 def generate_forecast_outlook(week_number, location, offers_df_all):
-    # (This function remains the same, included for completeness)
     """Generates forward-looking information."""
     
     outlook = {
@@ -513,13 +514,12 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 # =============================================================================
 
 def main():
-    logging.info("Starting Mombasa Data Analysis (Comprehensive Fix Mode)...")
+    logging.info("Starting Mombasa Data Analysis (Altair 5 Compatibility Mode)...")
 
     if not os.path.exists(DATA_OUTPUT_DIR): os.makedirs(DATA_OUTPUT_DIR)
 
     conn = connect_db()
     sales_df_raw, offers_df_raw = fetch_data(conn)
-    # Prepare the data using the robust function
     sales_df_all = prepare_sales_data(sales_df_raw)
 
     # Determine unique weeks
@@ -529,7 +529,13 @@ def main():
     if 'sale_number' in offers_df_raw.columns and not offers_df_raw.empty:
         all_weeks.extend(offers_df_raw['sale_number'].dropna().unique())
 
-    all_weeks = sorted(list(set(all_weeks)))
+    # Ensure sorting is robust against potential mixed types
+    try:
+        all_weeks = sorted(list(set(all_weeks)))
+    except TypeError as e:
+        logging.warning(f"Sorting weeks failed due to mixed types, attempting string sort: {e}")
+        all_weeks = sorted([str(w) for w in list(set(all_weeks))])
+
 
     if len(all_weeks) == 0:
         logging.info("No sale data found in database. Exiting."); return
@@ -540,12 +546,11 @@ def main():
     for week_number in all_weeks:
         logging.info(f"Processing Sale: {week_number}")
 
-        # Get the raw data for the week (needed for accurate sell-through calculation)
+        # Get the raw data for the week
         sales_week_raw = sales_df_raw[sales_df_raw['sale_number'] == week_number] if not sales_df_raw.empty else pd.DataFrame()
         offers_week = offers_df_raw[offers_df_raw['sale_number'] == week_number] if not offers_df_raw.empty else pd.DataFrame()
         
-        # Get the prepared (cleaned and filtered) data for the week (needed for KPIs and Charts)
-        # We use the pre-prepared 'sales_df_all' for efficiency
+        # Get the prepared (cleaned and filtered) data for the week
         sales_week = sales_df_all[sales_df_all['sale_number'] == week_number] if not sales_df_all.empty else pd.DataFrame()
 
         # Metadata
@@ -569,11 +574,10 @@ def main():
         # Run Analysis (KPIs and Forecast)
         kpis, forecast_tables = analyze_kpis_and_forecast(sales_week, sales_df_all, sales_week_raw, offers_week)
 
-        # Advanced Analysis (Candlestick data and Insights)
+        # Advanced Analysis
         movement_data, analytical_insights = analyze_price_movements(sales_week, sales_df_all)
 
-        # Generate Charts (Refactored)
-        # Start with the interactive charts which handle their own brush localization
+        # Generate Charts (Refactored and Updated for Altair 5)
         charts = create_interactive_charts(sales_week)
         
         # Add the non-interactive charts
@@ -625,6 +629,7 @@ def main():
 
     # Save the index file
     try:
+        # Ensure sorting is consistent by converting to string
         report_index.sort(key=lambda x: str(x['sale_number']), reverse=True)
         with open(INDEX_FILE, 'w') as f:
             json.dump(report_index, f, indent=2)
