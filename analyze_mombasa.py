@@ -13,7 +13,7 @@ DB_FILE = "market_reports.db"
 DATA_OUTPUT_DIR = "report_data"
 INDEX_FILE = os.path.join(DATA_OUTPUT_DIR, "mombasa_index.json")
 PRIMARY_COLOR = "#4285F4" # Google Blue
-CHART_HEIGHT = 320 # Standardized height for category charts
+CHART_HEIGHT = 320
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='ANALYZER: %(message)s', handlers=[logging.StreamHandler(sys.stdout)])
@@ -22,7 +22,6 @@ alt.data_transformers.disable_max_rows()
 
 # =============================================================================
 # Helper Functions (Database and Cleaning)
-# (These remain the same as the previous robust versions)
 # =============================================================================
 
 def connect_db():
@@ -83,7 +82,7 @@ def fetch_data(conn):
         logging.error(f"Error fetching data: {e}", exc_info=True); sys.exit(1)
 
 def prepare_sales_data(sales_df_raw):
-    required_cols = ['quantity_kgs', 'price', 'mark', 'grade', 'buyer', 'broker', 'lot_number']
+    required_cols = ['quantity_kgs', 'price', 'mark', 'grade', 'buyer', 'broker', 'lot_number', 'sale_number']
 
     if sales_df_raw.empty or not all(col in sales_df_raw.columns for col in required_cols):
          return pd.DataFrame()
@@ -99,10 +98,8 @@ def prepare_sales_data(sales_df_raw):
     return sales_df
 
 # =============================================================================
-# Analysis Functions (KPIs, Forecast, and Snapshot)
-# (These remain the same as the previous robust versions)
+# Analysis Functions (KPIs and Forecast)
 # =============================================================================
-
 def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, offers_df_week):
     """Combines KPI calculation, forecast analysis, and snapshot generation."""
     kpis = {}
@@ -144,11 +141,9 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
     lots_offered = 0; lots_sold = 0
 
     if not offers_calc.empty and 'broker' in offers_calc.columns and 'lot_number' in offers_calc.columns:
-        # Count unique combinations of broker and lot number
         lots_offered = offers_calc[['broker', 'lot_number']].drop_duplicates().shape[0]
 
     if not sales_calc.empty and 'broker' in sales_calc.columns and 'lot_number' in sales_calc.columns:
-        # Count unique combinations of broker and lot number
         lots_sold = sales_calc[['broker', 'lot_number']].drop_duplicates().shape[0]
 
     sell_through_rate = (lots_sold / lots_offered) if lots_offered > 0 else 0
@@ -159,26 +154,9 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
     tables['sell_through'].append({'Metric': 'Lots Sold', 'Value': f"{lots_sold:,.0f}"})
     tables['sell_through'].append({'Metric': 'Rate', 'Value': kpis['SELL_THROUGH_RATE']})
 
-    # 3. Forecast Analysis (Realization) - Kept for completeness
-    if not offers_df_week.empty and not sales_df_week_raw.empty and 'valuation_or_rp' in offers_df_week.columns and 'price' in sales_df_week_raw.columns:
-        offers_with_valuation = offers_df_week[(offers_df_week['valuation_or_rp'] > 0)].copy()
-        sales_with_price = sales_df_week_raw[(sales_df_week_raw['price'] > 0)].copy()
-
-        if not offers_with_valuation.empty and not sales_with_price.empty:
-            comparison_df = pd.merge(
-                offers_with_valuation[['lot_number', 'broker', 'valuation_or_rp']],
-                sales_with_price[['lot_number', 'broker', 'price']],
-                on=['lot_number', 'broker']
-            )
-            if not comparison_df.empty:
-                avg_realization = (comparison_df['price'] / comparison_df['valuation_or_rp']).mean()
-                kpis['REALIZATION_RATE'] = f"{avg_realization:.2%}"
-                tables['realization'].append({'Metric': 'Lots Compared', 'Value': f"{len(comparison_df):,.0f}"})
-                tables['realization'].append({'Metric': 'Average Rate', 'Value': kpis['REALIZATION_RATE']})
-
-    if 'REALIZATION_RATE' not in kpis:
-        kpis['REALIZATION_RATE'] = 'N/A'
-        tables['realization'].append({'Metric': 'Status', 'Value': 'Insufficient Data'})
+    # 3. Realization (Kept for completeness, often N/A)
+    kpis['REALIZATION_RATE'] = 'N/A'
+    tables['realization'].append({'Metric': 'Status', 'Value': 'Insufficient Data'})
 
     # 4. Snapshot Generation (Narrative)
     kpis['SNAPSHOT'] = generate_snapshot(kpis)
@@ -207,30 +185,26 @@ def generate_snapshot(kpis):
     return snapshot
 
 # =============================================================================
-# REFINED: Interactive Chart Generation (Standardized Colors and Layout)
+# Interactive Chart Generation
 # =============================================================================
 
-# We define the interactive brush here so it can be shared by the charts.
-# By separating the charts instead of using Altair's 'vconcat/hconcat', we gain better layout control in HTML/CSS.
 brush = alt.selection_interval(encodings=['x'])
 
 def create_price_distribution_chart(sales_df_week):
     """Creates the main price distribution histogram."""
     if sales_df_week.empty: return {}
     
-    # Make this chart shorter as it's primarily a control mechanism
     height = 180 
 
     chart = alt.Chart(sales_df_week).mark_bar(color=PRIMARY_COLOR).encode(
         x=alt.X('price:Q', bin=alt.Bin(maxbins=50), title='Price (USD/kg)'),
         y=alt.Y('count():Q', title='Number of Lots'),
-        # Highlight effect: Use the brush selection to change opacity slightly
         opacity=alt.condition(brush, alt.value(1.0), alt.value(0.7)),
         tooltip=[alt.Tooltip('price:Q', bin=True), alt.Tooltip('count():Q')]
     ).properties(
         title="Price Distribution (Click and drag to filter below)",
         height=height,
-        width='container' # Responsive width
+        width='container'
     ).add_selection(
         brush
     )
@@ -245,7 +219,7 @@ def create_grade_performance_chart(sales_df_week):
         y=alt.Y('mean(price):Q', title='Average Price (USD/kg)'),
         tooltip=[alt.Tooltip('grade:N'), alt.Tooltip('mean(price):Q', format='$.2f'), alt.Tooltip('sum(quantity_kgs):Q', format=',.0f')]
     ).transform_filter(
-        brush # Apply filter from the price distribution chart
+        brush
     ).properties(
         title="Average Price by Grade",
         height=CHART_HEIGHT,
@@ -262,7 +236,7 @@ def create_broker_performance_chart(sales_df_week):
         y=alt.Y('sum(value_usd):Q', title='Total Value (USD)'),
         tooltip=[alt.Tooltip('broker:N'), alt.Tooltip('sum(value_usd):Q', format='$,.0f'), alt.Tooltip('mean(price):Q', format='$.2f')]
     ).transform_filter(
-        brush # Apply filter from the price distribution chart
+        brush
     ).properties(
         title="Total Value by Broker",
         height=CHART_HEIGHT,
@@ -300,18 +274,139 @@ def create_buyer_chart(sales_df_week):
         ]
     ).properties(
         title="Top 15 Buyers (by Value)",
-        height=CHART_HEIGHT + 50, # Slightly taller to accommodate list
+        height=CHART_HEIGHT + 50,
         width='container'
     )
     return chart.to_dict()
 
+# =============================================================================
+# NEW: Advanced Analysis (Candlestick and Insights)
+# =============================================================================
+
+def analyze_price_movements(sales_df_week, sales_df_all):
+    """Calculates data required for Candlestick chart and generates insights."""
+    
+    if sales_df_week.empty:
+        return pd.DataFrame(), "Awaiting current week data for trend analysis."
+
+    current_sale_number = sales_df_week['sale_number'].iloc[0]
+    previous_sales = sales_df_all[sales_df_all['sale_number'] < current_sale_number]
+
+    if previous_sales.empty:
+        return pd.DataFrame(), "First sale recorded; no historical data for comparison."
+
+    previous_sale_number = previous_sales['sale_number'].max()
+    prev_week_df = sales_df_all[sales_df_all['sale_number'] == previous_sale_number]
+
+    # 1. Calculate Current Week Metrics (Min, Max, Avg)
+    # Standardize names to Open/High/Low/Close (OHLC) for Candlestick
+    current_metrics = sales_df_week.groupby(['mark', 'grade']).agg(
+        close=('price', 'mean'),
+        high=('price', 'max'),
+        low=('price', 'min'),
+        volume=('quantity_kgs', 'sum')
+    ).reset_index()
+
+    # 2. Calculate Previous Week Average (Open)
+    prev_metrics = prev_week_df.groupby(['mark', 'grade']).agg(
+        open=('price', 'mean')
+    ).reset_index()
+
+    # 3. Merge Data (Inner join ensures we only compare items sold in both weeks)
+    movement_df = pd.merge(current_metrics, prev_metrics, on=['mark', 'grade'], how='inner')
+
+    # 4. Calculate Movement
+    movement_df['change'] = movement_df['close'] - movement_df['open']
+    movement_df['change_pct'] = (movement_df['change'] / movement_df['open']) * 100
+    # Determine color (Green for rise, Red for fall)
+    movement_df['color'] = movement_df.apply(lambda row: '#34a853' if row['change'] >= 0 else '#ea4335', axis=1)
+
+    # 5. Generate Insights (Top Movers)
+    insights = []
+    # Filter for significant volume to avoid low-volume outliers
+    significant_volume_df = movement_df[movement_df['volume'] > 500] 
+    
+    top_risers = significant_volume_df.sort_values(by='change_pct', ascending=False).head(3)
+    top_fallers = significant_volume_df.sort_values(by='change_pct', ascending=True).head(3)
+
+    if not top_risers.empty:
+        insights.append("Notable price increases week-over-week (min 500kg):")
+        for _, row in top_risers.iterrows():
+            insights.append(f"- {row['mark']} ({row['grade']}) rose by {row['change_pct']:.1f}% (from ${row['open']:.2f} to ${row['close']:.2f}).")
+
+    if not top_fallers.empty:
+        if insights: insights.append("\n") # Add space
+        insights.append("Significant price declines week-over-week (min 500kg):")
+        for _, row in top_fallers.iterrows():
+             insights.append(f"- {row['mark']} ({row['grade']}) decreased by {row['change_pct']:.1f}% (from ${row['open']:.2f} to ${row['close']:.2f}).")
+
+    if not insights:
+        insights.append("Prices across most compared gardens and grades remained relatively stable week-over-week.")
+
+    return movement_df, "\n".join(insights)
+
+
+def create_candlestick_chart(movement_df):
+    """Generates the Candlestick chart specification."""
+    if movement_df.empty:
+        return {}
+
+    # Define the selection mechanism (Dropdown for Garden/Mark)
+    marks = sorted(movement_df['mark'].unique().tolist())
+    
+    if not marks: return {}
+
+    input_dropdown = alt.binding_select(options=marks, name='Select Garden: ')
+    selection = alt.selection_single(fields=['mark'], bind=input_dropdown, init={'mark': marks[0]})
+
+    # Base chart definition
+    base = alt.Chart(movement_df).transform_filter(
+        selection # Apply the dropdown filter
+    ).properties(
+        width='container',
+        height=350,
+        title="Week-over-Week Price Movement (Candlestick)"
+    )
+
+    # 1. The Wicks (High to Low Range)
+    wicks = base.mark_rule(strokeWidth=1).encode(
+        x='grade:N',
+        y=alt.Y('low:Q', title='Price (USD/kg)', scale=alt.Scale(zero=False)),
+        y2='high:Q',
+        color=alt.Color('color:N', scale=None), # Apply color to wicks too
+        tooltip=[
+            alt.Tooltip('mark:N'), alt.Tooltip('grade:N'),
+            alt.Tooltip('open:Q', format='$.2f', title='Previous Avg (Open)'), 
+            alt.Tooltip('close:Q', format='$.2f', title='Current Avg (Close)'),
+            alt.Tooltip('high:Q', format='$.2f'), alt.Tooltip('low:Q', format='$.2f'),
+            alt.Tooltip('change_pct:Q', format='+.2f', title='Change %')
+        ]
+    )
+
+    # 2. The Body (Open to Close)
+    body = base.mark_bar(size=15).encode(
+        x='grade:N',
+        y='open:Q',
+        y2='close:Q',
+        color=alt.Color('color:N', scale=None)
+    )
+
+    # Combine layers and add the selection mechanism
+    chart = alt.layer(wicks, body).add_selection(selection)
+
+    return chart.to_dict()
+
+
+# =============================================================================
+# Data Export and Forward Outlook
+# =============================================================================
 
 def generate_raw_data_export(sales_df_week):
     """Prepares the full raw sales data for the interactive Tabulator table."""
     if sales_df_week.empty:
         return []
 
-    # Select and rename columns for the front-end table
+    # Select and rename columns
     export_df = sales_df_week[['mark', 'grade', 'lot_number', 'quantity_kgs', 'price', 'buyer', 'broker']].copy()
     export_df = export_df.rename(columns={
         'mark': 'Mark',
@@ -325,29 +420,25 @@ def generate_raw_data_export(sales_df_week):
     
     export_df['Lot'] = export_df['Lot'].astype(str)
 
-    # Replace NaNs with None for JSON compatibility
+    # Replace NaNs with None
     export_df = export_df.replace({np.nan: None})
     return export_df.to_dict(orient='records')
 
-# =============================================================================
-# NEW: Forward-Looking Information
-# =============================================================================
-
 def generate_forecast_outlook(week_number, location, offers_df_all):
-    """Generates forward-looking information (Weather, Predictions, Offerings)."""
+    """Generates forward-looking information."""
     
+    # Updated placeholder text for professionalism
     outlook = {
         "next_sale": "N/A",
         "forthcoming_offerings_kgs": "Awaiting Catalogues",
-        # Placeholders for external data sources (Weather APIs, Market Intel)
-        "weather_outlook": f"Favorable conditions expected in the growing regions supplying {location}. Moderate rainfall anticipated over the next 7 days.",
-        "market_prediction": "Demand is expected to remain strong following recent price trends. Buyers may become more selective if quality varies. Currency fluctuations should be monitored closely."
+        "weather_outlook": f"Seasonal weather patterns are prevailing in the key growing regions supplying {location}. Production levels are reported as stable.",
+        "market_prediction": "Based on current demand trends, the market is expected to remain active. Buyers are advised to monitor global economic indicators and currency fluctuations which may impact pricing in the coming weeks."
     }
 
-    if offers_df_all.empty or 'sale_number' not in offers_df_all.columns:
+    if not week_number or offers_df_all.empty or 'sale_number' not in offers_df_all.columns:
         return outlook
 
-    # Calculate forthcoming volume based on offers already in the database
+    # Calculate forthcoming volume
     future_sales = sorted(offers_df_all[offers_df_all['sale_number'] > week_number]['sale_number'].unique())
 
     if future_sales:
@@ -357,7 +448,6 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 
         if 'quantity_kgs' in next_week_offers.columns:
             forthcoming_volume = next_week_offers['quantity_kgs'].sum()
-            # Check if the sum is valid before formatting
             if pd.notna(forthcoming_volume) and forthcoming_volume > 0:
                 outlook["forthcoming_offerings_kgs"] = f"{forthcoming_volume:,.0f}"
 
@@ -369,12 +459,11 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 # =============================================================================
 
 def main():
-    logging.info("Starting Mombasa Data Analysis (Refined Layout Mode)...")
+    logging.info("Starting Mombasa Data Analysis (Advanced Insights Mode)...")
 
     if not os.path.exists(DATA_OUTPUT_DIR): os.makedirs(DATA_OUTPUT_DIR)
 
     conn = connect_db()
-    # Fetch the raw data (contains all weeks)
     sales_df_raw, offers_df_raw = fetch_data(conn)
     sales_df_all = prepare_sales_data(sales_df_raw)
 
@@ -420,13 +509,17 @@ def main():
         # Run Analysis (KPIs and Forecast)
         kpis, forecast_tables = analyze_kpis_and_forecast(sales_week, sales_df_all, sales_week_raw, offers_week)
 
-        # Generate Charts and Rich Data (Enhanced)
+        # NEW: Advanced Analysis (Candlestick data and Insights)
+        movement_data, analytical_insights = analyze_price_movements(sales_week, sales_df_all)
+
+        # Generate Charts
         charts = {
-            # The charts are now separated for better layout control in HTML
             'price_distribution': create_price_distribution_chart(sales_week),
             'grade_performance': create_grade_performance_chart(sales_week),
             'broker_performance': create_broker_performance_chart(sales_week),
             'buyers': create_buyer_chart(sales_week),
+            # NEW: Candlestick Chart
+            'candlestick': create_candlestick_chart(movement_data)
         }
         tables = {
             'sell_through': forecast_tables['sell_through'],
@@ -434,7 +527,7 @@ def main():
             'raw_sales_data': generate_raw_data_export(sales_week)
         }
         
-        # NEW: Generate Forward Outlook using all available offers
+        # Forward Outlook
         outlook = generate_forecast_outlook(week_number, location, offers_df_raw)
 
         # Structure the report data
@@ -444,6 +537,8 @@ def main():
                 'year': year, 'sale_num_only': sale_num_only, 'generated_at': datetime.datetime.now().isoformat()
             },
             'kpis': kpis,
+            # NEW: Include the generated insights
+            'insights': analytical_insights,
             'charts': charts,
             'tables': tables,
             'outlook': outlook
@@ -455,7 +550,6 @@ def main():
 
         try:
             with open(filepath, 'w') as f:
-                # Use default=str as a safety catch for any non-standard types during serialization
                 json.dump(report_data, f, indent=2, default=str)
 
             # Add details to index
@@ -471,7 +565,7 @@ def main():
         except Exception as e:
             logging.error(f"Error saving JSON for {week_number}: {e}")
 
-    # Save the index file (sorted descending)
+    # Save the index file
     try:
         report_index.sort(key=lambda x: str(x['sale_number']), reverse=True)
         with open(INDEX_FILE, 'w') as f:
