@@ -6,27 +6,27 @@ import sys
 import datetime
 import altair as alt
 import json
+import numpy as np
 
 # Configuration
 DB_FILE = "market_reports.db"
-DATA_OUTPUT_DIR = "report_data" 
+DATA_OUTPUT_DIR = "report_data"
 INDEX_FILE = os.path.join(DATA_OUTPUT_DIR, "mombasa_index.json")
 
-# Configure logging to stdout for automation capture
-logging.basicConfig(level=logging.INFO, format='ANALYZER: %(message)s', handlers=[logging.StreamHandler(sys.stdout)]) 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='ANALYZER: %(message)s', handlers=[logging.StreamHandler(sys.stdout)])
 NOISE_VALUES = {'NAN', 'NONE', '', '-', 'NIL', 'N/A', 'NULL', 'UNKNOWN'}
+# CRITICAL: Disable max rows for Altair to ensure all data is embedded in the JSON for interactivity
 alt.data_transformers.disable_max_rows()
 
 # =============================================================================
 # Helper Functions (Database and Cleaning)
+# (These remain the same as the previous robust versions)
 # =============================================================================
 
 def connect_db():
-    # VITAL CHECK: Ensure the DB exists before analysis (crucial for GitHub Actions)
     if not os.path.exists(DB_FILE):
-        # If the file is missing, it means the scraping step failed or didn't run.
-        logging.error(f"Database file not found: {DB_FILE}. Ensure scrapers ran successfully."); 
-        # Exit the script immediately if the DB is missing.
+        logging.error(f"Database file not found: {DB_FILE}. Ensure scrapers ran successfully.");
         sys.exit(1)
     try: return sqlite3.connect(DB_FILE)
     except sqlite3.Error as e:
@@ -44,12 +44,11 @@ def fetch_data(conn):
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='auction_sales';")
         if cursor.fetchone() is None:
-            logging.warning("auction_sales table not found. Scrapers may not have populated data yet. Returning empty dataframes.")
+            logging.warning("auction_sales table not found. Returning empty dataframes.")
             return pd.DataFrame(), pd.DataFrame()
 
         sales_df = pd.read_sql_query("SELECT * FROM auction_sales", conn)
-        
-        # Use a try-except for offers as it might not always exist
+
         try:
             offers_df = pd.read_sql_query("SELECT * FROM auction_offers", conn)
         except pd.errors.DatabaseError:
@@ -65,7 +64,7 @@ def fetch_data(conn):
         text_cols_common = ['mark', 'grade', 'broker', 'lot_number', 'sale_number', 'sale_date']
         for df in [sales_df, offers_df]:
             for col in text_cols_common: df = clean_text_column(df, col)
-        
+
         if 'buyer' in sales_df.columns:
              sales_df = clean_text_column(sales_df, 'buyer')
 
@@ -84,7 +83,8 @@ def fetch_data(conn):
         logging.error(f"Error fetching data: {e}", exc_info=True); sys.exit(1)
 
 def prepare_sales_data(sales_df_raw):
-    required_cols = ['quantity_kgs', 'price', 'mark', 'grade', 'buyer']
+    # Ensure required columns for interactive charts and tables are present
+    required_cols = ['quantity_kgs', 'price', 'mark', 'grade', 'buyer', 'broker', 'lot_number']
 
     if sales_df_raw.empty or not all(col in sales_df_raw.columns for col in required_cols):
          return pd.DataFrame()
@@ -101,7 +101,7 @@ def prepare_sales_data(sales_df_raw):
 
 # =============================================================================
 # Analysis Functions (KPIs, Forecast, and Snapshot)
-# (The analysis logic remains the same as provided previously, robust version included below)
+# (These remain the same)
 # =============================================================================
 
 def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, offers_df_week):
@@ -210,63 +210,156 @@ def generate_snapshot(kpis):
     return snapshot
 
 # =============================================================================
-# Chart and Table Generation (Using default Altair colors)
+# NEW: Interactive Chart and Rich Data Generation
 # =============================================================================
 
-def create_buyer_chart(sales_df_week):
-    if sales_df_week.empty or 'buyer' not in sales_df_week.columns or 'value_usd' not in sales_df_week.columns: return {}
-    top_buyers = sales_df_week.groupby('buyer')['value_usd'].sum().nlargest(10).reset_index()
-    if top_buyers.empty: return {}
-    chart = alt.Chart(top_buyers).mark_bar().encode(
-        x=alt.X('value_usd:Q', title='Value (USD)'),
-        y=alt.Y('buyer:N', title='Buyer', sort='-x'),
-        color=alt.Color('value_usd:Q', legend=None),
-        tooltip=[alt.Tooltip('buyer:N'), alt.Tooltip('value_usd:Q', format='$,.0f')]
-    ).properties(title="Top 10 Buyers (by Value)")
-    return chart.to_dict()
+def create_interactive_dashboard(sales_df_week):
+    """Creates a combined, interactive dashboard specification (Cross-filtering)."""
+    if sales_df_week.empty:
+        return {}
 
-def create_grade_chart(sales_df_week):
-    if sales_df_week.empty or 'grade' not in sales_df_week.columns: return {}
-    key_grades = ['BP1', 'PF1', 'PD', 'D1']
-    key_grades_df = sales_df_week[sales_df_week['grade'].isin(key_grades)].copy()
-    if key_grades_df.empty: return {}
-    grade_analysis = key_grades_df.groupby('grade').agg(
-        total_value=('value_usd', 'sum'), total_volume=('quantity_kgs', 'sum')
-    ).reset_index()
-    grade_analysis = grade_analysis[grade_analysis['total_volume'] > 0]
-    if grade_analysis.empty: return {}
-    grade_analysis['avg_price'] = grade_analysis['total_value'] / grade_analysis['total_volume']
+    # Define standard chart height for consistency
+    CHART_HEIGHT = 350
+    # Use a professional blue color consistent with the theme
+    PRIMARY_COLOR = "#4285F4" # Google Blue
 
-    chart = alt.Chart(grade_analysis).mark_bar().encode(
+    # 1. Define Interactive Selections
+    # Brush for continuous data (like price range)
+    brush = alt.selection_interval(encodings=['x'])
+    # Click selection for categorical data (like clicking a grade or broker in the legend)
+    click_selection = alt.selection_multi(fields=['grade', 'broker'], bind='legend')
+
+    # 2. Price Distribution (Horizontal Histogram)
+    # This chart drives the filtering when the user drags a selection
+    price_dist = alt.Chart(sales_df_week).mark_bar(color=PRIMARY_COLOR).encode(
+        x=alt.X('price:Q', bin=alt.Bin(maxbins=30), title='Price (USD/kg)'),
+        y=alt.Y('count():Q', title='Number of Lots'),
+        tooltip=[alt.Tooltip('price:Q', bin=True), alt.Tooltip('count():Q')]
+    ).properties(
+        title="Price Distribution (Click and drag to filter other charts)",
+        height=CHART_HEIGHT,
+        width='container' # Responsive width
+    ).add_selection(
+        brush
+    )
+
+    # 3. Grade Performance
+    # This chart is filtered by the brush AND can filter others via the legend
+    grade_performance = alt.Chart(sales_df_week).mark_bar().encode(
         x=alt.X('grade:N', title='Grade', sort='-y'),
-        y=alt.Y('avg_price:Q', title='Average Price (USD/kg)'),
-        tooltip=[alt.Tooltip('grade:N'), alt.Tooltip('avg_price:Q', format='$.2f')]
-    ).properties(title="Key CTC Grade Performance")
+        y=alt.Y('mean(price):Q', title='Average Price (USD/kg)'),
+        # Color changes when selected in the legend (cross-filtering)
+        color=alt.condition(click_selection, 'grade:N', alt.value('lightgray'), legend=alt.Legend(title="Filter by Grade/Broker")),
+        tooltip=[alt.Tooltip('grade:N'), alt.Tooltip('mean(price):Q', format='$.2f'), alt.Tooltip('sum(quantity_kgs):Q', format=',.0f')]
+    ).transform_filter(
+        brush # Apply filter from the price distribution chart
+    ).properties(
+        title="Average Price by Grade",
+        height=CHART_HEIGHT,
+         width='container'
+    ).add_selection(
+        click_selection
+    )
+
+    # 4. Broker Performance
+    # This chart is filtered by the brush AND can filter others via the legend
+    broker_performance = alt.Chart(sales_df_week).mark_bar().encode(
+         x=alt.X('broker:N', title='Broker', sort='-y'),
+        y=alt.Y('sum(value_usd):Q', title='Total Value (USD)'),
+        color=alt.condition(click_selection, 'broker:N', alt.value('lightgray')),
+        tooltip=[alt.Tooltip('broker:N'), alt.Tooltip('sum(value_usd):Q', format='$,.0f'), alt.Tooltip('mean(price):Q', format='$.2f')]
+    ).transform_filter(
+        brush # Apply filter from the price distribution chart
+    ).properties(
+        title="Total Value by Broker",
+        height=CHART_HEIGHT,
+        width='container'
+    )
+
+    # 5. Combine the charts into a layout
+    # Vertical concatenation (vconcat) and horizontal concatenation (hconcat)
+    dashboard = alt.vconcat(
+        price_dist,
+        alt.hconcat(grade_performance, broker_performance, spacing=30),
+        spacing=30
+    ).resolve_scale(
+        color='independent' # Ensure legends combine correctly
+    ).configure_view(
+        stroke=None # Clean look for the container
+    )
+
+    return dashboard.to_dict()
+
+def create_buyer_chart(sales_df_week):
+    """Generates a chart for the Top 15 Buyers."""
+    CHART_HEIGHT = 350
+    if sales_df_week.empty or 'buyer' not in sales_df_week.columns or 'value_usd' not in sales_df_week.columns: return {}
+
+    # Aggregate data: Calculate total value and volume for each buyer
+    buyer_agg = sales_df_week.groupby('buyer').agg(
+        total_value=('value_usd', 'sum'),
+        total_volume=('quantity_kgs', 'sum')
+    ).reset_index()
+    
+    # Calculate average price
+    buyer_agg['avg_price'] = buyer_agg.apply(lambda row: row['total_value'] / row['total_volume'] if row['total_volume'] > 0 else 0, axis=1)
+
+    # Get Top 15
+    top_buyers = buyer_agg.nlargest(15, 'total_value')
+
+    if top_buyers.empty: return {}
+
+    chart = alt.Chart(top_buyers).mark_bar().encode(
+        y=alt.Y('buyer:N', title='Buyer', sort='-x'),
+        x=alt.X('total_value:Q', title='Value (USD)'),
+        # Use a professional color scale (e.g., 'blues')
+        color=alt.Color('total_value:Q', scale=alt.Scale(scheme='blues'), legend=None),
+        tooltip=[
+            alt.Tooltip('buyer:N'),
+            alt.Tooltip('total_value:Q', format='$,.0f', title='Value (USD)'),
+            alt.Tooltip('total_volume:Q', format=',.0f', title='Volume (kg)'),
+            alt.Tooltip('avg_price:Q', format='$.2f', title='Avg Price')
+        ]
+    ).properties(
+        title="Top 15 Buyers (by Value)",
+        height=CHART_HEIGHT,
+        width='container' # Responsive width
+    )
     return chart.to_dict()
 
-def create_garden_table_data(sales_df_week):
-    if sales_df_week.empty or 'mark' not in sales_df_week.columns: return []
-    garden_analysis = sales_df_week.groupby('mark').agg(
-        total_volume=('quantity_kgs', 'sum'), total_value=('value_usd', 'sum')
-    ).reset_index()
-    garden_analysis = garden_analysis[garden_analysis['total_volume'] > 0]
-    if garden_analysis.empty: return []
-    garden_analysis['avg_price'] = garden_analysis['total_value'] / garden_analysis['total_volume']
-    top_gardens = garden_analysis.sort_values(by='avg_price', ascending=False).head(10)
-    top_gardens = top_gardens.copy()
-    top_gardens['total_volume'] = top_gardens['total_volume'].map('{:,.0f}'.format)
-    top_gardens['avg_price'] = top_gardens['avg_price'].map('${:.2f}'.format)
 
-    # Rename columns for display consistency
-    top_gardens = top_gardens.rename(columns={'mark': 'Garden', 'total_volume': 'Volume (kg)', 'avg_price': 'Avg Price'})
-    return top_gardens[['Garden', 'Volume (kg)', 'Avg Price']].to_dict(orient='records')
+def generate_raw_data_export(sales_df_week):
+    """Prepares the full raw sales data for the interactive Tabulator table."""
+    if sales_df_week.empty:
+        return []
+
+    # Select and rename columns for the front-end table
+    export_df = sales_df_week[['mark', 'grade', 'lot_number', 'quantity_kgs', 'price', 'buyer', 'broker']].copy()
+    export_df = export_df.rename(columns={
+        'mark': 'Mark',
+        'grade': 'Grade',
+        'lot_number': 'Lot',
+        'quantity_kgs': 'KGs',
+        'price': 'Price (USD)',
+        'buyer': 'Buyer',
+        'broker': 'Broker'
+    })
+    
+    # Ensure Lot number is treated as string for consistency
+    export_df['Lot'] = export_df['Lot'].astype(str)
+
+    # Keep data as numbers (int/float) for correct sorting in the frontend table
+    # Replace any NaNs resulting from processing with None for JSON compatibility
+    export_df = export_df.replace({np.nan: None})
+    return export_df.to_dict(orient='records')
+
 
 # =============================================================================
 # Main Processing Loop
 # =============================================================================
 
 def main():
-    logging.info("Starting Mombasa Data Analysis (JSON Generation Mode)...")
+    logging.info("Starting Mombasa Data Analysis (Enhanced Interactive Mode)...")
 
     if not os.path.exists(DATA_OUTPUT_DIR): os.makedirs(DATA_OUTPUT_DIR)
 
@@ -274,13 +367,13 @@ def main():
     sales_df_raw, offers_df_raw = fetch_data(conn)
     sales_df_all = prepare_sales_data(sales_df_raw)
 
-    # Determine unique weeks present in the data
+    # Determine unique weeks
     all_weeks = []
     if 'sale_number' in sales_df_raw.columns and not sales_df_raw.empty:
         all_weeks.extend(sales_df_raw['sale_number'].dropna().unique())
     if 'sale_number' in offers_df_raw.columns and not offers_df_raw.empty:
         all_weeks.extend(offers_df_raw['sale_number'].dropna().unique())
-    
+
     all_weeks = sorted(list(set(all_weeks)))
 
     if len(all_weeks) == 0:
@@ -298,36 +391,34 @@ def main():
 
         # Determine Date and Year
         week_date = "Unknown"; year = "Unknown"
-        if not sales_week_raw.empty and 'sale_date' in sales_week_raw.columns: 
+        if not sales_week_raw.empty and 'sale_date' in sales_week_raw.columns:
             week_date = sales_week_raw['sale_date'].iloc[0]
-        elif not offers_week.empty and 'sale_date' in offers_week.columns: 
+        elif not offers_week.empty and 'sale_date' in offers_week.columns:
             week_date = offers_week['sale_date'].iloc[0]
 
         if week_date != "Unknown":
             try: year = pd.to_datetime(week_date).year
             except: pass
-            
-        # CRITICAL: Extract the simple week number (e.g., '35' from '2025-35')
+
+        # Extract simple week number
         try:
-            # Format as integer to remove leading zeros (e.g. 09 -> 9)
             sale_num_only = int(str(week_number).split('-')[1])
         except (IndexError, ValueError):
-            # Handle cases where the format isn't YYYY-WW
             sale_num_only = week_number
 
-
-        # Run Analysis (Combined function)
+        # Run Analysis (KPIs and Forecast)
         kpis, forecast_tables = analyze_kpis_and_forecast(sales_week, sales_df_all, sales_week_raw, offers_week)
 
-        # Generate Charts and Tables
+        # Generate Charts and Rich Data (Enhanced)
         charts = {
+            'interactive_dashboard': create_interactive_dashboard(sales_week),
             'buyers': create_buyer_chart(sales_week),
-            'grades': create_grade_chart(sales_week),
         }
         tables = {
-            'gardens': create_garden_table_data(sales_week),
             'sell_through': forecast_tables['sell_through'],
-            'realization': forecast_tables['realization']
+            'realization': forecast_tables['realization'],
+            # NEW: Include raw data for the interactive table
+            'raw_sales_data': generate_raw_data_export(sales_week)
         }
 
         # Structure the report data
@@ -347,12 +438,13 @@ def main():
 
         try:
             with open(filepath, 'w') as f:
-                json.dump(report_data, f, indent=2)
+                # Use default=str as a safety catch for any non-standard types during serialization
+                json.dump(report_data, f, indent=2, default=str)
 
-            # Ensure all required fields are added to the index
+            # Add details to index
             report_index.append({
                 'sale_number': week_number,
-                'sale_num_only': sale_num_only, # Must be present
+                'sale_num_only': sale_num_only,
                 'sale_date': week_date,
                 'year': year,
                 'filename': filename,
@@ -364,7 +456,6 @@ def main():
 
     # Save the index file (sorted descending)
     try:
-        # Sort using a robust key that handles potential non-string sale numbers
         report_index.sort(key=lambda x: str(x['sale_number']), reverse=True)
         with open(INDEX_FILE, 'w') as f:
             json.dump(report_index, f, indent=2)

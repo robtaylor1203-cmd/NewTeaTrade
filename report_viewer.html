@@ -10,6 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+    <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
 </head>
 <body class="market-reports-page">
     <header class="site-header">
@@ -37,7 +40,7 @@
     <main class="page-container">
         
         <div style="margin-bottom: 15px;">
-            <a href="market-reports.html" style="text-decoration: none; color: #1a73e8; display: flex; align-items: center;">
+            <a href="market-reports.html" class="back-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 Back to Library
             </a>
@@ -45,14 +48,14 @@
 
         <div class="dashboard-header">
             <h2 class="page-title" id="report-title">Loading Report...</h2>
-            <p id="report-metadata" style="color: #5f6368;"></p>
+            <p id="report-metadata" class="report-meta-text"></p>
         </div>
         
         <div id="report-content" style="display: none;">
             
-            <div class="kpi-card" style="background-color: #f1f3f4; border-left: 4px solid #4285f4; margin-bottom: 20px;">
-                <h3 style="margin-top: 0; color: #3c4043;">Market Snapshot</h3>
-                <p id="kpi-snapshot" style="font-size: 1.1em; font-weight: 500;"></p>
+            <div class="kpi-card snapshot-card">
+                <h3 class="card-title-inline">Market Snapshot</h3>
+                <p id="kpi-snapshot"></p>
             </div>
 
             <div class="kpi-grid">
@@ -74,39 +77,48 @@
                 </div>
             </div>
 
-            <div class="report-grid">
+            <div class="report-layout-grid">
                 
                 <div class="report-column">
                     <div class="report-card">
-                        <h3 class="card-title">Buyer Activity</h3>
-                        <div id="chart-buyers" class="chart-container"></div>
-                    </div>
-                    
-                    <div class="report-card">
-                        <h3 class="card-title">Grade Performance</h3>
-                        <div id="chart-grades" class="chart-container"></div>
+                        <h3 class="card-title">Interactive Market Analysis</h3>
+                        <div id="chart-interactive-dashboard" class="chart-container"></div>
                     </div>
                 </div>
 
                 <div class="report-column">
-                    <div class="report-card">
-                        <h3 class="card-title">Top Gardens (by Price)</h3>
-                        <div id="table-gardens"></div>
-                    </div>
-                    
                      <div class="report-card">
+                        <h3 class="card-title">Buyer Activity</h3>
+                        <div id="chart-buyers" class="chart-container"></div>
+                    </div>
+
+                    <div class="report-card">
                         <h3 class="card-title">Forecast Analysis</h3>
-                        <h4>Sell-Through (Absorption)</h4>
-                        <div id="table-sell-through"></div>
-                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0e0e0;">
-                        <h4>Price Realization (vs Valuation/RP)</h4>
-                        <div id="table-realization"></div>
+                        <div class="forecast-grid">
+                            <div>
+                                <h4>Sell-Through (Absorption)</h4>
+                                <div id="table-sell-through"></div>
+                            </div>
+                            <div>
+                                <h4>Price Realization (vs Valuation)</h4>
+                                <div id="table-realization"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="report-card">
+                <h3 class="card-title">Detailed Sales Data</h3>
+                <div class="table-controls">
+                    <input type="text" id="table-search" placeholder="Search all columns..." class="page-search-bar" style="width: 300px; margin-bottom: 10px;">
+                </div>
+                <div id="table-raw-data"></div>
+            </div>
+
         </div>
         
-        <div id="error-message" style="color: red; display: none;">
+        <div id="error-message" class="error-container">
             <p>Error loading report data. Please check the URL and try again.</p>
         </div>
 
@@ -114,23 +126,41 @@
 
     <script src="script.js"></script>
     <script>
+        let rawDataTable; // Global variable for the Tabulator instance
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize mobile menu (from script.js)
+            // Initialize mobile menu
             if (typeof initializeMobileMenu === 'function') {
                 initializeMobileMenu();
             }
 
-            // Get the data URL from the query parameter (e.g., ?data=...)
+            // Get the data URL from the query parameter
             const urlParams = new URLSearchParams(window.location.search);
             const dataUrl = urlParams.get('data');
 
             if (dataUrl) {
-                // The dataUrl is URL encoded by the Python script, so we must decode it first
                 const decodedUrl = decodeURIComponent(dataUrl);
                 fetchReportData(decodedUrl);
             } else {
                 showError("No data source specified in URL.");
             }
+
+            // Add event listener for the global table search
+            document.getElementById('table-search').addEventListener('keyup', function() {
+                if (rawDataTable) {
+                    // Use Tabulator's filter feature for comprehensive search (OR logic)
+                    var value = this.value;
+                    rawDataTable.setFilter([
+                        [
+                            {field:"Mark", type:"like", value:value},
+                            {field:"Grade", type:"like", value:value},
+                            {field:"Lot", type:"like", value:value},
+                            {field:"Buyer", type:"like", value:value},
+                            {field:"Broker", type:"like", value:value},
+                        ]
+                    ]);
+                }
+            });
         });
 
         async function fetchReportData(url) {
@@ -162,7 +192,7 @@
             document.getElementById('kpi-sell-through').textContent = kpis.SELL_THROUGH_RATE || '--';
             document.getElementById('kpi-snapshot').textContent = kpis.SNAPSHOT || 'Awaiting data.';
 
-            // Handle Price Change styling based on Google's colors
+            // Handle Price Change styling
             const priceChangeElement = document.getElementById('kpi-price-change');
             priceChangeElement.textContent = kpis.PRICE_CHANGE || '--';
             if (kpis.PRICE_CHANGE_CLASS === 'positive') {
@@ -173,14 +203,17 @@
                 priceChangeElement.style.color = 'inherit';
             }
 
-            // 3. Charts (using Vega-Embed to render Altair specs)
+            // 3. Charts (using Vega-Embed)
+            // The Python script defines width='container' for responsiveness
+            renderChart('chart-interactive-dashboard', data.charts.interactive_dashboard);
             renderChart('chart-buyers', data.charts.buyers);
-            renderChart('chart-grades', data.charts.grades);
 
-            // 4. Tables
-            renderTable('table-gardens', data.tables.gardens);
-            renderTable('table-sell-through', data.tables.sell_through);
-            renderTable('table-realization', data.tables.realization);
+            // 4. Standard Tables (Forecast)
+            renderSimpleTable('table-sell-through', data.tables.sell_through);
+            renderSimpleTable('table-realization', data.tables.realization);
+
+            // 5. Interactive Table (Raw Data)
+            renderInteractiveTable(data.tables.raw_sales_data);
             
             // Show content
             document.getElementById('report-content').style.display = 'block';
@@ -188,36 +221,25 @@
 
         function renderChart(elementId, chartSpec) {
             if (chartSpec && Object.keys(chartSpec).length > 0) {
-                // Use Vega-Embed to render the Altair specification
-                // {actions: false} hides the export/view source menu
+                // Use Vega-Embed with {actions: false} to hide the export menu
                 vegaEmbed(`#${elementId}`, chartSpec, {actions: false}).catch(console.error);
             } else {
-                document.getElementById(elementId).innerHTML = "<p class='no-data-message'>No data available for this chart.</p>";
+                document.getElementById(elementId).innerHTML = "<p class='no-data-message'>Awaiting data for this visualization.</p>";
             }
         }
 
-        function renderTable(elementId, tableData) {
+        // Renders simple KPI tables (like the Forecast tables)
+        function renderSimpleTable(elementId, tableData) {
             const container = document.getElementById(elementId);
             if (!tableData || tableData.length === 0) {
-                container.innerHTML = "<p class='no-data-message'>No data available.</p>";
+                container.innerHTML = "<p class='no-data-message'>No data.</p>";
                 return;
             }
 
             const table = document.createElement('table');
-            table.className = 'data-table'; // Use a class for styling
+            table.className = 'data-table'; 
 
-            // Create Header
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            Object.keys(tableData[0]).forEach(key => {
-                const th = document.createElement('th');
-                th.textContent = key;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            // Create Body
+            // Create Body (Simple tables often don't need complex headers)
             const tbody = document.createElement('tbody');
             tableData.forEach(item => {
                 const row = document.createElement('tr');
@@ -234,6 +256,39 @@
             container.appendChild(table);
         }
 
+        // Renders the main interactive data table using Tabulator
+        function renderInteractiveTable(tableData) {
+             if (!tableData || tableData.length === 0) {
+                document.getElementById('table-raw-data').innerHTML = "<p class='no-data-message'>No detailed sales data available for this period.</p>";
+                return;
+            }
+
+            rawDataTable = new Tabulator("#table-raw-data", {
+                data: tableData,
+                layout: "fitDataFill", // Adjusts column widths to the data
+                pagination: true,
+                paginationSize: 15,
+                paginationSizeSelector: [15, 50, 100],
+                movableColumns: true, // Allows users to reorder columns
+                resizableRows: false,
+                initialSort: [ // Sort by Price descending initially
+                    {column: "Price (USD)", dir: "desc"},
+                ],
+                // Define columns and formatters
+                columns: [ 
+                    {title: "Mark", field: "Mark", headerFilter: "input"},
+                    {title: "Grade", field: "Grade", headerFilter: "input"},
+                    {title: "Lot", field: "Lot"},
+                    // Use Tabulator's built-in money formatter for numbers (ensures correct sorting)
+                    {title: "KGs", field: "KGs", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:0}},
+                    {title: "Price (USD)", field: "Price (USD)", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:2}},
+                    {title: "Buyer", field: "Buyer", headerFilter: "input"},
+                    {title: "Broker", field: "Broker", headerFilter: "input"},
+                ],
+            });
+        }
+
+
         function showError(message) {
             document.getElementById('report-title').textContent = "Error Loading Report";
             const errorDiv = document.getElementById('error-message');
@@ -244,8 +299,80 @@
     </script>
     
     <style>
-        /* Using Google's color palette and Material Design principles */
+        /* Enhanced Visual Polish using Google Material Principles */
         
+        /* --- Typography and Colors --- */
+        :root {
+            --primary-color: #1a73e8; /* Google Blue */
+            --text-dark: #202124;
+            --text-medium: #3c4043;
+            --text-light: #5f6368;
+            --border-color: #dadce0;
+            --bg-light: #f8f9fa;
+            --bg-hover: #f1f3f4;
+        }
+
+        .page-title {
+            color: var(--text-dark);
+        }
+
+        .report-meta-text {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .back-link {
+            text-decoration: none; 
+            color: var(--primary-color); 
+            display: flex; 
+            align-items: center;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Layout Structure --- */
+        .report-layout-grid {
+            display: grid;
+            /* Create a wider main column (2fr) and a narrower sidebar (1fr) */
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .report-layout-grid {
+                /* Stack columns on smaller screens */
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- Cards and Components --- */
+        .report-card {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: var(--text-medium);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            /* Ensure charts have space to render */
+            min-height: 300px; 
+        }
+
+        /* --- KPI Specific Styling --- */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -254,83 +381,122 @@
         }
         .kpi-card {
             background-color: #fff;
-            padding: 15px 20px;
+            padding: 20px 25px;
             border-radius: 8px;
-            /* Subtle shadow and border matching Google's Material Design */
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #dadce0;
+            border: 1px solid var(--border-color);
         }
         .kpi-card h3 {
             font-size: 0.9em;
-            color: #5f6368; /* Google gray */
-            margin: 0 0 10px 0;
+            color: var(--text-light);
+            margin: 0 0 12px 0;
             font-weight: 500;
         }
         .kpi-value {
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: 700;
             margin: 0;
-            color: #202124;
+            color: var(--text-dark);
         }
 
-        .report-grid {
+        .snapshot-card {
+            background-color: var(--bg-light); 
+            border-left: 5px solid var(--primary-color);
+            margin-bottom: 30px;
+        }
+        .snapshot-card p {
+            font-size: 1.1em; 
+            font-weight: 500;
+            margin: 0;
+            color: var(--text-dark);
+        }
+        .card-title-inline {
+            font-size: 1em;
+            color: var(--text-medium);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        /* --- Forecast Section --- */
+        .forecast-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 20px;
         }
-        @media (max-width: 1024px) {
-            .report-grid {
+         @media (max-width: 600px) {
+            /* Stack forecast tables on very small screens or when sidebar stacks */
+            .forecast-grid {
                 grid-template-columns: 1fr;
             }
         }
-        
-        .report-card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #dadce0;
-            margin-bottom: 30px;
+
+        .forecast-grid h4 {
+            font-size: 1em;
+            color: var(--text-medium);
+            margin-bottom: 10px;
+            font-weight: 500;
         }
 
-        .card-title {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #3c4043;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 10px;
-        }
-        
-        .chart-container {
-            /* Ensure charts have space to render */
-            min-height: 250px; 
-        }
 
-        /* Simple, clean table styling */
+        /* --- Simple Table Styling (Forecast) --- */
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
-        .data-table th, .data-table td {
-            border-bottom: 1px solid #dadce0;
-            padding: 8px 12px;
+        .data-table td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 5px;
             text-align: left;
+            font-size: 0.9em;
         }
-        .data-table th {
-            background-color: #f8f9fa; /* Light gray background */
+         .data-table tr td:last-child {
+            text-align: right;
             font-weight: 500;
-            color: #5f6368;
-        }
-        .data-table tr:hover {
-            background-color: #f1f3f4; /* Subtle hover effect */
+         }
+        .data-table tr:last-child td {
+            border-bottom: none;
         }
         
+        /* --- Tabulator Interactive Table Styling --- */
+        /* Customize Tabulator to match the Google-like theme */
+        .tabulator {
+            font-family: 'Roboto', sans-serif;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .tabulator .tabulator-header {
+            background-color: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tabulator .tabulator-header .tabulator-col {
+            border-right: 1px solid var(--border-color);
+        }
+         .tabulator .tabulator-header .tabulator-col-title {
+            color: var(--text-medium);
+            font-weight: 500;
+         }
+        .tabulator .tabulator-row:hover {
+            background-color: var(--bg-hover);
+        }
+        .tabulator .tabulator-footer {
+             background-color: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        
+        /* --- Utility Classes --- */
         .no-data-message {
             text-align: center;
             color: #999;
-            padding: 20px;
+            padding: 40px 20px;
             font-style: italic;
+        }
+        .error-container {
+            color: red; 
+            display: none; 
+            padding: 20px; 
+            border: 1px solid red; 
+            border-radius: 8px;
         }
     </style>
 </body>
