@@ -6,7 +6,7 @@
     "description": "Awaiting sales results. Offers published.",
     "auction_centre": "Mombasa",
     "source": "TeaTrade Analytics",
-    "report_link": "report_data/mombasa_2025_41.json"
+    "report_link": "report_viewer.html?data=report_data/mombasa_2025_41.json"
   },
   {
     "year": 2025,
@@ -15,7 +15,7 @@
     "description": "Prices significantly higher (+1.71%). Fair demand; selective buying.",
     "auction_centre": "Mombasa",
     "source": "TeaTrade Analytics",
-    "report_link": "report_data/mombasa_2025_39.json"
+    "report_link": "report_viewer.html?data=report_data/mombasa_2025_39.json"
   },
   {
     "year": 2025,
@@ -24,7 +24,7 @@
     "description": "Awaiting sales results. Offers published.",
     "auction_centre": "Mombasa",
     "source": "TeaTrade Analytics",
-    "report_link": "report_data/mombasa_2025_38.json"
+    "report_link": "report_viewer.html?data=report_data/mombasa_2025_38.json"
   },
   {
     "year": 2025,
@@ -33,7 +33,7 @@
     "description": "Prices significantly higher (+4.44%). Fair demand; selective buying.",
     "auction_centre": "Mombasa",
     "source": "TeaTrade Analytics",
-    "report_link": "report_data/mombasa_2025_37.json"
+    "report_link": "report_viewer.html?data=report_data/mombasa_2025_37.json"
   },
   {
     "year": 2025,
@@ -42,6 +42,6 @@
     "description": "Prices generally steady (N/A (First Sale)). Low demand; significant withdrawals.",
     "auction_centre": "Mombasa",
     "source": "TeaTrade Analytics",
-    "report_link": "report_data/mombasa_2025_35.json"
+    "report_link": "report_viewer.html?data=report_data/mombasa_2025_35.json"
   }
 ]
