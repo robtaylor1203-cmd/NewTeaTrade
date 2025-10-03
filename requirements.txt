@@ -1,0 +1,10 @@
+# Data Analysis
+pandas
+altair
+
+# Scraping Engine (Used by News and Market Report scrapers)
+playwright
+beautifulsoup4
+lxml
+requests
+# Add any others required by your scrapers
