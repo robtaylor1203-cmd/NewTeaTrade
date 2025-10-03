@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Report Viewer - TeaTrade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body class="market-reports-page">
+    <header class="site-header">
+        <div class="header-top-bar">
+            <a href="corporate.html" class="header-logo"><h1>Tea<span>Trade</span></h1></a>
+            <div class="header-search-wrapper"><input type="text" class="header-search-bar" placeholder="Global site search..."></div>
+            <div class="user-actions">
+                <a href="#" title="Create Account"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg></a>
+                <a href="#" title="Sign In"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+        <nav class="secondary-nav">
+            <ul>
+                <li><a href="data.html">Data</a></li>
+                <li><a href="market-reports.html" class="active">Market Reports</a></li>
+                <li><a href="#">Auctions</a></li>
+                <li><a href="visuals.html">Visuals</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        
+        <div style="margin-bottom: 15px;">
+            <a href="market-reports.html" style="text-decoration: none; color: #1a73e8; display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Back to Library
+            </a>
+        </div>
+
+        <div class="dashboard-header">
+            <h2 class="page-title" id="report-title">Loading Report...</h2>
+            <p id="report-metadata" style="color: #5f6368;"></p>
+        </div>
+        
+        <div id="report-content" style="display: none;">
+            
+            <div class="kpi-card" style="background-color: #f1f3f4; border-left: 4px solid #4285f4; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #3c4043;">Market Snapshot</h3>
+                <p id="kpi-snapshot" style="font-size: 1.1em; font-weight: 500;"></p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <h3>Total Volume (kg)</h3>
+                    <p class="kpi-value" id="kpi-volume">--</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Average Price (USD/kg)</h3>
+                    <p class="kpi-value" id="kpi-avg-price">--</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Price Movement</h3>
+                    <p class="kpi-value" id="kpi-price-change">--</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>Sell-Through Rate</h3>
+                    <p class="kpi-value" id="kpi-sell-through">--</p>
+                </div>
+            </div>
+
+            <div class="report-grid">
+                
+                <div class="report-column">
+                    <div class="report-card">
+                        <h3 class="card-title">Buyer Activity</h3>
+                        <div id="chart-buyers" class="chart-container"></div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <h3 class="card-title">Grade Performance</h3>
+                        <div id="chart-grades" class="chart-container"></div>
+                    </div>
+                </div>
+
+                <div class="report-column">
+                    <div class="report-card">
+                        <h3 class="card-title">Top Gardens (by Price)</h3>
+                        <div id="table-gardens"></div>
+                    </div>
+                    
+                     <div class="report-card">
+                        <h3 class="card-title">Forecast Analysis</h3>
+                        <h4>Sell-Through (Absorption)</h4>
+                        <div id="table-sell-through"></div>
+                        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0e0e0;">
+                        <h4>Price Realization (vs Valuation/RP)</h4>
+                        <div id="table-realization"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="error-message" style="color: red; display: none;">
+            <p>Error loading report data. Please check the URL and try again.</p>
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize mobile menu (from script.js)
+            if (typeof initializeMobileMenu === 'function') {
+                initializeMobileMenu();
+            }
+
+            // Get the data URL from the query parameter (e.g., ?data=...)
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataUrl = urlParams.get('data');
+
+            if (dataUrl) {
+                // The dataUrl is URL encoded by the Python script, so we must decode it first
+                const decodedUrl = decodeURIComponent(dataUrl);
+                fetchReportData(decodedUrl);
+            } else {
+                showError("No data source specified in URL.");
+            }
+        });
+
+        async function fetchReportData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const reportData = await response.json();
+                renderReport(reportData);
+            } catch (error) {
+                console.error('Error fetching report data:', error);
+                showError(error.message);
+            }
+        }
+
+        function renderReport(data) {
+            // 1. Metadata
+            const meta = data.metadata;
+            document.getElementById('report-title').textContent = `${meta.location} Auction - Sale ${meta.sale_num_only} (${meta.year})`;
+            document.getElementById('report-metadata').textContent = `Date: ${meta.sale_date} | Generated: ${new Date(meta.generated_at).toLocaleString()}`;
+            document.title = `${meta.location} Sale ${meta.sale_num_only} Report - TeaTrade`;
+
+
+            // 2. KPIs
+            const kpis = data.kpis;
+            document.getElementById('kpi-volume').textContent = kpis.TOTAL_VOLUME || '--';
+            document.getElementById('kpi-avg-price').textContent = kpis.AVG_PRICE || '--';
+            document.getElementById('kpi-sell-through').textContent = kpis.SELL_THROUGH_RATE || '--';
+            document.getElementById('kpi-snapshot').textContent = kpis.SNAPSHOT || 'Awaiting data.';
+
+            // Handle Price Change styling based on Google's colors
+            const priceChangeElement = document.getElementById('kpi-price-change');
+            priceChangeElement.textContent = kpis.PRICE_CHANGE || '--';
+            if (kpis.PRICE_CHANGE_CLASS === 'positive') {
+                priceChangeElement.style.color = '#34a853'; // Google Green
+            } else if (kpis.PRICE_CHANGE_CLASS === 'negative') {
+                priceChangeElement.style.color = '#ea4335'; // Google Red
+            } else {
+                priceChangeElement.style.color = 'inherit';
+            }
+
+            // 3. Charts (using Vega-Embed to render Altair specs)
+            renderChart('chart-buyers', data.charts.buyers);
+            renderChart('chart-grades', data.charts.grades);
+
+            // 4. Tables
+            renderTable('table-gardens', data.tables.gardens);
+            renderTable('table-sell-through', data.tables.sell_through);
+            renderTable('table-realization', data.tables.realization);
+            
+            // Show content
+            document.getElementById('report-content').style.display = 'block';
+        }
+
+        function renderChart(elementId, chartSpec) {
+            if (chartSpec && Object.keys(chartSpec).length > 0) {
+                // Use Vega-Embed to render the Altair specification
+                // {actions: false} hides the export/view source menu
+                vegaEmbed(`#${elementId}`, chartSpec, {actions: false}).catch(console.error);
+            } else {
+                document.getElementById(elementId).innerHTML = "<p class='no-data-message'>No data available for this chart.</p>";
+            }
+        }
+
+        function renderTable(elementId, tableData) {
+            const container = document.getElementById(elementId);
+            if (!tableData || tableData.length === 0) {
+                container.innerHTML = "<p class='no-data-message'>No data available.</p>";
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'data-table'; // Use a class for styling
+
+            // Create Header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            Object.keys(tableData[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create Body
+            const tbody = document.createElement('tbody');
+            tableData.forEach(item => {
+                const row = document.createElement('tr');
+                Object.values(item).forEach(value => {
+                    const td = document.createElement('td');
+                    td.textContent = value;
+                    row.appendChild(td);
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        function showError(message) {
+            document.getElementById('report-title').textContent = "Error Loading Report";
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.innerHTML = `<p>${message}</p>`;
+            errorDiv.style.display = 'block';
+            document.getElementById('report-content').style.display = 'none';
+        }
+    </script>
+    
+    <style>
+        /* Using Google's color palette and Material Design principles */
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            background-color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            /* Subtle shadow and border matching Google's Material Design */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #dadce0;
+        }
+        .kpi-card h3 {
+            font-size: 0.9em;
+            color: #5f6368; /* Google gray */
+            margin: 0 0 10px 0;
+            font-weight: 500;
+        }
+        .kpi-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin: 0;
+            color: #202124;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 1024px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .report-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #dadce0;
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #3c4043;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        
+        .chart-container {
+            /* Ensure charts have space to render */
+            min-height: 250px; 
+        }
+
+        /* Simple, clean table styling */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .data-table th, .data-table td {
+            border-bottom: 1px solid #dadce0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f8f9fa; /* Light gray background */
+            font-weight: 500;
+            color: #5f6368;
+        }
+        .data-table tr:hover {
+            background-color: #f1f3f4; /* Subtle hover effect */
+        }
+        
+        .no-data-message {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+</body>
+</html>

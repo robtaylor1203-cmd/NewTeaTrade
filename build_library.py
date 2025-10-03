@@ -3,10 +3,14 @@ import os
 import logging
 import sys
 import glob
+# Import urllib.parse to safely encode URL parameters
+import urllib.parse
 
 # Configuration
 DATA_DIR = "report_data"
 LIBRARY_FILE = "market-reports-library.json"
+# Define the viewer page URL
+VIEWER_PAGE = "report_viewer.html"
 
 # Configure logging to stdout for automation capture
 logging.basicConfig(level=logging.INFO, format='BUILDER: %(message)s', handlers=[logging.StreamHandler(sys.stdout)])
@@ -31,10 +35,17 @@ def transform_to_library_format(item, source_name="TeaTrade Analytics"):
         # Construct Title
         title = f"{location} Auction Analysis"
 
-        # Construct Link
-        # For now, we link directly to the raw JSON data file.
-        # If you create a viewer page (e.g., report_viewer.html?data=...), update this link later.
-        link = os.path.join(DATA_DIR, item['filename'])
+        # CRITICAL UPDATE: Link to the viewer page and pass the JSON file path as a query parameter
+        json_path = os.path.join(DATA_DIR, item['filename'])
+        
+        # Ensure the path uses forward slashes for web URLs, even on Windows
+        json_path_web = json_path.replace(os.sep, '/')
+        
+        # URL-encode the path to ensure it's safe to pass as a parameter
+        encoded_path = urllib.parse.quote(json_path_web)
+
+        # Format: report_viewer.html?data=report_data%2Ffilename.json
+        link = f"{VIEWER_PAGE}?data={encoded_path}"
 
         # Structure required by market-reports.html
         library_entry = {
@@ -84,7 +95,9 @@ def main():
         
         return (year, week)
 
-    all_library_data.sort(key=sort_key, reverse=True)
+    # Apply sorting only if the list is not empty
+    if all_library_data:
+        all_library_data.sort(key=sort_key, reverse=True)
 
     # Save the final library file
     try:
