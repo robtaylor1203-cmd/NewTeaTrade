@@ -12,19 +12,22 @@ DB_FILE = "market_reports.db"
 DATA_OUTPUT_DIR = "report_data" 
 INDEX_FILE = os.path.join(DATA_OUTPUT_DIR, "mombasa_index.json")
 
-# Configure logging
+# Configure logging to stdout for automation capture
 logging.basicConfig(level=logging.INFO, format='ANALYZER: %(message)s', handlers=[logging.StreamHandler(sys.stdout)]) 
 NOISE_VALUES = {'NAN', 'NONE', '', '-', 'NIL', 'N/A', 'NULL', 'UNKNOWN'}
 alt.data_transformers.disable_max_rows()
 
 # =============================================================================
 # Helper Functions (Database and Cleaning)
-# (These functions remain the same as the previous robust versions)
 # =============================================================================
 
 def connect_db():
+    # VITAL CHECK: Ensure the DB exists before analysis (crucial for GitHub Actions)
     if not os.path.exists(DB_FILE):
-        logging.error(f"Database file not found: {DB_FILE}"); sys.exit(1)
+        # If the file is missing, it means the scraping step failed or didn't run.
+        logging.error(f"Database file not found: {DB_FILE}. Ensure scrapers ran successfully."); 
+        # Exit the script immediately if the DB is missing.
+        sys.exit(1)
     try: return sqlite3.connect(DB_FILE)
     except sqlite3.Error as e:
         logging.error(f"Database connection error: {e}"); sys.exit(1)
@@ -37,8 +40,21 @@ def clean_text_column(df, column_name):
 
 def fetch_data(conn):
     try:
+        # Check if essential tables exist
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='auction_sales';")
+        if cursor.fetchone() is None:
+            logging.warning("auction_sales table not found. Scrapers may not have populated data yet. Returning empty dataframes.")
+            return pd.DataFrame(), pd.DataFrame()
+
         sales_df = pd.read_sql_query("SELECT * FROM auction_sales", conn)
-        offers_df = pd.read_sql_query("SELECT * FROM auction_offers", conn)
+        
+        # Use a try-except for offers as it might not always exist
+        try:
+            offers_df = pd.read_sql_query("SELECT * FROM auction_offers", conn)
+        except pd.errors.DatabaseError:
+            logging.warning("auction_offers table not found or readable.")
+            offers_df = pd.DataFrame()
 
         # Numeric conversion
         for df, cols in [(sales_df, ['price', 'quantity_kgs']), (offers_df, ['valuation_or_rp', 'quantity_kgs'])]:
@@ -49,15 +65,19 @@ def fetch_data(conn):
         text_cols_common = ['mark', 'grade', 'broker', 'lot_number', 'sale_number', 'sale_date']
         for df in [sales_df, offers_df]:
             for col in text_cols_common: df = clean_text_column(df, col)
-        sales_df = clean_text_column(sales_df, 'buyer')
+        
+        if 'buyer' in sales_df.columns:
+             sales_df = clean_text_column(sales_df, 'buyer')
 
         # Minimal filtering (Keys only)
         keys = ['broker', 'lot_number', 'sale_number', 'sale_date']
-        sales_df = sales_df.dropna(subset=keys)
-        offers_df = offers_df.dropna(subset=keys)
+        if not sales_df.empty and all(k in sales_df.columns for k in keys):
+            sales_df = sales_df.dropna(subset=keys)
+            sales_df = sales_df[sales_df['sale_number'] != 'UNKNOWN']
 
-        sales_df = sales_df[sales_df['sale_number'] != 'UNKNOWN']
-        offers_df = offers_df[offers_df['sale_number'] != 'UNKNOWN']
+        if not offers_df.empty and all(k in offers_df.columns for k in keys):
+            offers_df = offers_df.dropna(subset=keys)
+            offers_df = offers_df[offers_df['sale_number'] != 'UNKNOWN']
 
         return sales_df, offers_df
     except Exception as e:
@@ -66,7 +86,7 @@ def fetch_data(conn):
 def prepare_sales_data(sales_df_raw):
     required_cols = ['quantity_kgs', 'price', 'mark', 'grade', 'buyer']
 
-    if not all(col in sales_df_raw.columns for col in required_cols):
+    if sales_df_raw.empty or not all(col in sales_df_raw.columns for col in required_cols):
          return pd.DataFrame()
 
     sales_df = sales_df_raw.dropna(subset=required_cols).copy()
@@ -81,6 +101,7 @@ def prepare_sales_data(sales_df_raw):
 
 # =============================================================================
 # Analysis Functions (KPIs, Forecast, and Snapshot)
+# (The analysis logic remains the same as provided previously, robust version included below)
 # =============================================================================
 
 def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, offers_df_week):
@@ -112,7 +133,6 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
                     change = ((avg_price - prev_avg_price) / prev_avg_price) * 100
                     kpis['PRICE_CHANGE_NUMERIC'] = change
                     kpis['PRICE_CHANGE'] = f"{change:+.2f}%"
-                    # Classes are kept for potential subtle styling indicators (e.g., green/red text)
                     if change > 0.5: kpis['PRICE_CHANGE_CLASS'] = 'positive'
                     elif change < -0.5: kpis['PRICE_CHANGE_CLASS'] = 'negative'
                     else: kpis['PRICE_CHANGE_CLASS'] = 'neutral'
@@ -124,11 +144,11 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
     offers_calc = offers_df_week.copy(); sales_calc = sales_df_week_raw.copy()
     lots_offered = 0; lots_sold = 0
 
-    if 'broker' in offers_calc.columns and 'lot_number' in offers_calc.columns:
+    if not offers_calc.empty and 'broker' in offers_calc.columns and 'lot_number' in offers_calc.columns:
         offers_calc['lot_key'] = offers_calc['broker'].astype(str) + '_' + offers_calc['lot_number'].astype(str)
         lots_offered = offers_calc['lot_key'].nunique()
 
-    if 'broker' in sales_calc.columns and 'lot_number' in sales_calc.columns:
+    if not sales_calc.empty and 'broker' in sales_calc.columns and 'lot_number' in sales_calc.columns:
         sales_calc['lot_key'] = sales_calc['broker'].astype(str) + '_' + sales_calc['lot_number'].astype(str)
         lots_sold = sales_calc['lot_key'].nunique()
 
@@ -142,7 +162,7 @@ def analyze_kpis_and_forecast(sales_df_week, sales_df_all, sales_df_week_raw, of
     tables['sell_through'].append({'Metric': 'Rate', 'Value': kpis['SELL_THROUGH_RATE']})
 
     # 3. Forecast Analysis (Realization)
-    if 'valuation_or_rp' in offers_df_week.columns and 'price' in sales_df_week_raw.columns:
+    if not offers_df_week.empty and not sales_df_week_raw.empty and 'valuation_or_rp' in offers_df_week.columns and 'price' in sales_df_week_raw.columns:
         offers_with_valuation = offers_df_week[(offers_df_week['valuation_or_rp'] > 0)].copy()
         sales_with_price = sales_df_week_raw[(sales_df_week_raw['price'] > 0)].copy()
 
@@ -194,21 +214,18 @@ def generate_snapshot(kpis):
 # =============================================================================
 
 def create_buyer_chart(sales_df_week):
-    # Using default Altair scheme
     if sales_df_week.empty or 'buyer' not in sales_df_week.columns or 'value_usd' not in sales_df_week.columns: return {}
     top_buyers = sales_df_week.groupby('buyer')['value_usd'].sum().nlargest(10).reset_index()
     if top_buyers.empty: return {}
     chart = alt.Chart(top_buyers).mark_bar().encode(
         x=alt.X('value_usd:Q', title='Value (USD)'),
         y=alt.Y('buyer:N', title='Buyer', sort='-x'),
-        # Let Altair choose the color based on the default theme
         color=alt.Color('value_usd:Q', legend=None),
         tooltip=[alt.Tooltip('buyer:N'), alt.Tooltip('value_usd:Q', format='$,.0f')]
     ).properties(title="Top 10 Buyers (by Value)")
     return chart.to_dict()
 
 def create_grade_chart(sales_df_week):
-    # Using default Altair blue
     if sales_df_week.empty or 'grade' not in sales_df_week.columns: return {}
     key_grades = ['BP1', 'PF1', 'PD', 'D1']
     key_grades_df = sales_df_week[sales_df_week['grade'].isin(key_grades)].copy()
@@ -220,7 +237,6 @@ def create_grade_chart(sales_df_week):
     if grade_analysis.empty: return {}
     grade_analysis['avg_price'] = grade_analysis['total_value'] / grade_analysis['total_volume']
 
-    # Let Altair choose the default bar color
     chart = alt.Chart(grade_analysis).mark_bar().encode(
         x=alt.X('grade:N', title='Grade', sort='-y'),
         y=alt.Y('avg_price:Q', title='Average Price (USD/kg)'),
@@ -258,38 +274,45 @@ def main():
     sales_df_raw, offers_df_raw = fetch_data(conn)
     sales_df_all = prepare_sales_data(sales_df_raw)
 
-    if 'sale_number' in sales_df_raw.columns and 'sale_number' in offers_df_raw.columns:
-        all_weeks = pd.concat([sales_df_raw['sale_number'], offers_df_raw['sale_number']]).dropna().unique()
-    else:
-        all_weeks = []
+    # Determine unique weeks present in the data
+    all_weeks = []
+    if 'sale_number' in sales_df_raw.columns and not sales_df_raw.empty:
+        all_weeks.extend(sales_df_raw['sale_number'].dropna().unique())
+    if 'sale_number' in offers_df_raw.columns and not offers_df_raw.empty:
+        all_weeks.extend(offers_df_raw['sale_number'].dropna().unique())
+    
+    all_weeks = sorted(list(set(all_weeks)))
 
     if len(all_weeks) == 0:
-        logging.info("No data found."); return
+        logging.info("No sale data found in database. Exiting."); return
 
     report_index = []
 
     # Process each week individually
-    for week_number in sorted(all_weeks):
+    for week_number in all_weeks:
         logging.info(f"Processing Sale: {week_number}")
 
-        sales_week_raw = sales_df_raw[sales_df_raw['sale_number'] == week_number]
-        offers_week = offers_df_raw[offers_df_raw['sale_number'] == week_number]
+        sales_week_raw = sales_df_raw[sales_df_raw['sale_number'] == week_number] if not sales_df_raw.empty else pd.DataFrame()
+        offers_week = offers_df_raw[offers_df_raw['sale_number'] == week_number] if not offers_df_raw.empty else pd.DataFrame()
         sales_week = prepare_sales_data(sales_week_raw)
 
         # Determine Date and Year
         week_date = "Unknown"; year = "Unknown"
-        if not sales_week_raw.empty: week_date = sales_week_raw['sale_date'].iloc[0]
-        elif not offers_week.empty: week_date = offers_week['sale_date'].iloc[0]
+        if not sales_week_raw.empty and 'sale_date' in sales_week_raw.columns: 
+            week_date = sales_week_raw['sale_date'].iloc[0]
+        elif not offers_week.empty and 'sale_date' in offers_week.columns: 
+            week_date = offers_week['sale_date'].iloc[0]
 
         if week_date != "Unknown":
             try: year = pd.to_datetime(week_date).year
             except: pass
             
-        # Extract just the sale week number (e.g., '35' from '2025-35')
+        # CRITICAL: Extract the simple week number (e.g., '35' from '2025-35')
         try:
-            # Format as integer to remove leading zeros (e.g. 09 -> 9) for clean display
-            sale_num_only = int(week_number.split('-')[1])
+            # Format as integer to remove leading zeros (e.g. 09 -> 9)
+            sale_num_only = int(str(week_number).split('-')[1])
         except (IndexError, ValueError):
+            # Handle cases where the format isn't YYYY-WW
             sale_num_only = week_number
 
 
@@ -319,17 +342,17 @@ def main():
         }
 
         # Save the report JSON file
-        filename = f"mombasa_{week_number.replace('-', '_')}.json"
+        filename = f"mombasa_{str(week_number).replace('-', '_')}.json"
         filepath = os.path.join(DATA_OUTPUT_DIR, filename)
 
         try:
             with open(filepath, 'w') as f:
                 json.dump(report_data, f, indent=2)
 
-            # Add enhanced details to index
+            # Ensure all required fields are added to the index
             report_index.append({
                 'sale_number': week_number,
-                'sale_num_only': sale_num_only,
+                'sale_num_only': sale_num_only, # Must be present
                 'sale_date': week_date,
                 'year': year,
                 'filename': filename,
@@ -341,10 +364,11 @@ def main():
 
     # Save the index file (sorted descending)
     try:
-        report_index.sort(key=lambda x: x['sale_number'], reverse=True)
+        # Sort using a robust key that handles potential non-string sale numbers
+        report_index.sort(key=lambda x: str(x['sale_number']), reverse=True)
         with open(INDEX_FILE, 'w') as f:
             json.dump(report_index, f, indent=2)
-        logging.info(f"Generated index file: {INDEX_FILE}")
+        logging.info(f"Generated index file: {INDEX_FILE} with {len(report_index)} entries.")
     except Exception as e:
         logging.error(f"Error saving index file: {e}")
 
