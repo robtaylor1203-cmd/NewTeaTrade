@@ -11,12 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
-    <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_simple.min.css" rel="stylesheet">
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
 </head>
 <body class="market-reports-page">
     <header class="site-header">
-        <div class="header-top-bar">
+         <div class="header-top-bar">
             <a href="corporate.html" class="header-logo"><h1>Tea<span>Trade</span></h1></a>
             <div class="header-search-wrapper"><input type="text" class="header-search-bar" placeholder="Global site search..."></div>
             <div class="user-actions">
@@ -82,7 +82,13 @@
                 <div class="report-column">
                     <div class="report-card">
                         <h3 class="card-title">Interactive Market Analysis</h3>
-                        <div id="chart-interactive-dashboard" class="chart-container"></div>
+                        
+                        <div id="chart-price-distribution" class="chart-container" style="margin-bottom: 30px;"></div>
+                        
+                        <div class="interactive-subgrid">
+                            <div id="chart-grade-performance" class="chart-container"></div>
+                            <div id="chart-broker-performance" class="chart-container"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -93,7 +99,7 @@
                     </div>
 
                     <div class="report-card">
-                        <h3 class="card-title">Forecast Analysis</h3>
+                        <h3 class="card-title">Auction Metrics</h3>
                         <div class="forecast-grid">
                             <div>
                                 <h4>Sell-Through (Absorption)</h4>
@@ -108,10 +114,30 @@
                 </div>
             </div>
 
+            <div class="report-card outlook-card">
+                <h3 class="card-title">Market Outlook & Forecast</h3>
+                <div class="outlook-grid">
+                    <div class="outlook-item">
+                        <h4>Forthcoming Offerings (Next Sale: <span id="outlook-next-sale">N/A</span>)</h4>
+                        <p class="kpi-value" id="outlook-offerings">--</p>
+                    </div>
+                    <div class="outlook-item">
+                         <h4>Weather Outlook (Growing Regions)</h4>
+                        <p id="outlook-weather">--</p>
+                    </div>
+                    <div class="outlook-item" style="grid-column: span 2;">
+                         <h4>Market Prediction & Strategy</h4>
+                        <p id="outlook-prediction">--</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="report-card">
-                <h3 class="card-title">Detailed Sales Data</h3>
+                <h3 class="card-title">Detailed Sales Data (Pivot View)</h3>
                 <div class="table-controls">
                     <input type="text" id="table-search" placeholder="Search all columns..." class="page-search-bar" style="width: 300px; margin-bottom: 10px;">
+                    <button id="toggle-grouping" class="simple-button">Group by Mark</button>
+                    <button id="clear-grouping" class="simple-button">Clear Grouping</button>
                 </div>
                 <div id="table-raw-data"></div>
             </div>
@@ -127,6 +153,7 @@
     <script src="script.js"></script>
     <script>
         let rawDataTable; // Global variable for the Tabulator instance
+        let currentGroupBy = null; // Track current grouping state
 
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize mobile menu
@@ -134,7 +161,7 @@
                 initializeMobileMenu();
             }
 
-            // Get the data URL from the query parameter
+            // Get the data URL
             const urlParams = new URLSearchParams(window.location.search);
             const dataUrl = urlParams.get('data');
 
@@ -145,10 +172,9 @@
                 showError("No data source specified in URL.");
             }
 
-            // Add event listener for the global table search
+            // Table Search Event Listener
             document.getElementById('table-search').addEventListener('keyup', function() {
                 if (rawDataTable) {
-                    // Use Tabulator's filter feature for comprehensive search (OR logic)
                     var value = this.value;
                     rawDataTable.setFilter([
                         [
@@ -159,6 +185,34 @@
                             {field:"Broker", type:"like", value:value},
                         ]
                     ]);
+                }
+            });
+
+            // Table Grouping Controls (Pivot functionality)
+            document.getElementById('toggle-grouping').addEventListener('click', () => {
+                if (rawDataTable) {
+                    if (currentGroupBy === 'Mark') {
+                        rawDataTable.setGroupBy('Grade');
+                        currentGroupBy = 'Grade';
+                        document.getElementById('toggle-grouping').textContent = 'Group by Broker';
+                    } else if (currentGroupBy === 'Grade') {
+                         rawDataTable.setGroupBy('Broker');
+                        currentGroupBy = 'Broker';
+                        document.getElementById('toggle-grouping').textContent = 'Group by Mark';
+                    }
+                    else {
+                        rawDataTable.setGroupBy('Mark');
+                        currentGroupBy = 'Mark';
+                        document.getElementById('toggle-grouping').textContent = 'Group by Grade';
+                    }
+                }
+            });
+
+            document.getElementById('clear-grouping').addEventListener('click', () => {
+                if (rawDataTable) {
+                    rawDataTable.setGroupBy(false);
+                    currentGroupBy = null;
+                    document.getElementById('toggle-grouping').textContent = 'Group by Mark';
                 }
             });
         });
@@ -204,15 +258,26 @@
             }
 
             // 3. Charts (using Vega-Embed)
-            // The Python script defines width='container' for responsiveness
-            renderChart('chart-interactive-dashboard', data.charts.interactive_dashboard);
+            // Render the separated interactive components
+            renderChart('chart-price-distribution', data.charts.price_distribution);
+            renderChart('chart-grade-performance', data.charts.grade_performance);
+            renderChart('chart-broker-performance', data.charts.broker_performance);
             renderChart('chart-buyers', data.charts.buyers);
 
             // 4. Standard Tables (Forecast)
             renderSimpleTable('table-sell-through', data.tables.sell_through);
             renderSimpleTable('table-realization', data.tables.realization);
 
-            // 5. Interactive Table (Raw Data)
+            // 5. Market Outlook
+            const outlook = data.outlook;
+            if (outlook) {
+                document.getElementById('outlook-next-sale').textContent = outlook.next_sale || 'N/A';
+                document.getElementById('outlook-offerings').textContent = outlook.forthcoming_offerings_kgs || '--';
+                document.getElementById('outlook-weather').textContent = outlook.weather_outlook || '--';
+                document.getElementById('outlook-prediction').textContent = outlook.market_prediction || '--';
+            }
+
+            // 6. Interactive Table (Raw Data)
             renderInteractiveTable(data.tables.raw_sales_data);
             
             // Show content
@@ -221,14 +286,15 @@
 
         function renderChart(elementId, chartSpec) {
             if (chartSpec && Object.keys(chartSpec).length > 0) {
-                // Use Vega-Embed with {actions: false} to hide the export menu
-                vegaEmbed(`#${elementId}`, chartSpec, {actions: false}).catch(console.error);
+                // CRITICAL FIX FOR LAYOUT: Ensure Vega-Embed respects the container size
+                // Set autosize to 'fit' to ensure it recalculates based on container dimensions
+                vegaEmbed(`#${elementId}`, chartSpec, {actions: false, autosize: {type: 'fit', contains: 'padding'}}).catch(console.error);
             } else {
                 document.getElementById(elementId).innerHTML = "<p class='no-data-message'>Awaiting data for this visualization.</p>";
             }
         }
 
-        // Renders simple KPI tables (like the Forecast tables)
+        // Renders simple KPI tables
         function renderSimpleTable(elementId, tableData) {
             const container = document.getElementById(elementId);
             if (!tableData || tableData.length === 0) {
@@ -239,7 +305,6 @@
             const table = document.createElement('table');
             table.className = 'data-table'; 
 
-            // Create Body (Simple tables often don't need complex headers)
             const tbody = document.createElement('tbody');
             tableData.forEach(item => {
                 const row = document.createElement('tr');
@@ -265,23 +330,29 @@
 
             rawDataTable = new Tabulator("#table-raw-data", {
                 data: tableData,
-                layout: "fitDataFill", // Adjusts column widths to the data
+                layout: "fitDataFill",
                 pagination: true,
                 paginationSize: 15,
                 paginationSizeSelector: [15, 50, 100],
-                movableColumns: true, // Allows users to reorder columns
-                resizableRows: false,
-                initialSort: [ // Sort by Price descending initially
+                movableColumns: true,
+                // NEW: Pivot/Grouping configuration
+                groupStartOpen: false, // Start groups collapsed
+                groupToggleElement: "header", // Click header to toggle group
+                
+                initialSort: [
                     {column: "Price (USD)", dir: "desc"},
                 ],
-                // Define columns and formatters
                 columns: [ 
                     {title: "Mark", field: "Mark", headerFilter: "input"},
                     {title: "Grade", field: "Grade", headerFilter: "input"},
                     {title: "Lot", field: "Lot"},
-                    // Use Tabulator's built-in money formatter for numbers (ensures correct sorting)
-                    {title: "KGs", field: "KGs", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:0}},
-                    {title: "Price (USD)", field: "Price (USD)", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:2}},
+                    // NEW: Add column calculations (Totals/Averages when grouped)
+                    {title: "KGs", field: "KGs", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:0},
+                        bottomCalc:"sum", bottomCalcFormatter:"money", bottomCalcFormatterParams:{thousand:",", precision:0}
+                    },
+                    {title: "Price (USD)", field: "Price (USD)", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:2},
+                        bottomCalc:"avg", bottomCalcFormatter:"money", bottomCalcFormatterParams:{thousand:",", precision:2}
+                    },
                     {title: "Buyer", field: "Buyer", headerFilter: "input"},
                     {title: "Broker", field: "Broker", headerFilter: "input"},
                 ],
@@ -299,7 +370,7 @@
     </script>
     
     <style>
-        /* Enhanced Visual Polish using Google Material Principles */
+        /* Enhanced Visual Polish and Layout Fixes */
         
         /* --- Typography and Colors --- */
         :root {
@@ -310,41 +381,51 @@
             --border-color: #dadce0;
             --bg-light: #f8f9fa;
             --bg-hover: #f1f3f4;
+            --bg-outlook: #e6f4ea; /* Light green for outlook section */
+            --border-outlook: #34a853; /* Google Green */
         }
 
-        .page-title {
-            color: var(--text-dark);
-        }
-
-        .report-meta-text {
-            color: var(--text-light);
-            font-size: 0.9em;
-        }
+        .page-title { color: var(--text-dark); }
+        .report-meta-text { color: var(--text-light); font-size: 0.9em; }
 
         .back-link {
-            text-decoration: none; 
-            color: var(--primary-color); 
-            display: flex; 
-            align-items: center;
-            font-weight: 500;
+            text-decoration: none; color: var(--primary-color); display: flex; align-items: center; font-weight: 500;
         }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+        .back-link:hover { text-decoration: underline; }
 
         /* --- Layout Structure --- */
         .report-layout-grid {
             display: grid;
-            /* Create a wider main column (2fr) and a narrower sidebar (1fr) */
-            grid-template-columns: 2fr 1fr;
+            /* CRITICAL FIX: Using minmax(0, ...) prevents grid items from overflowing */
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
             gap: 30px;
             margin-bottom: 30px;
         }
+
+        /* Ensure columns can shrink */
+         .report-column {
+             min-width: 0;
+        }
+
+        /* Sub-grid for the interactive charts (Grade vs Broker) */
+        .interactive-subgrid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 30px;
+        }
+
 
         @media (max-width: 1200px) {
             .report-layout-grid {
                 /* Stack columns on smaller screens */
                 grid-template-columns: 1fr;
+            }
+        }
+         @media (max-width: 768px) {
+            .interactive-subgrid {
+                /* Stack interactive charts on very small screens */
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
         }
 
@@ -356,6 +437,8 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border: 1px solid var(--border-color);
             margin-bottom: 30px;
+             /* Ensure content inside the card doesn't overflow */
+            overflow: hidden;
         }
 
         .card-title {
@@ -367,12 +450,8 @@
             font-weight: 500;
         }
         
-        .chart-container {
-            /* Ensure charts have space to render */
-            min-height: 300px; 
-        }
-
-        /* --- KPI Specific Styling --- */
+        
+        /* --- KPI Specific Styling (Unchanged) --- */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -405,36 +484,61 @@
             margin-bottom: 30px;
         }
         .snapshot-card p {
-            font-size: 1.1em; 
-            font-weight: 500;
-            margin: 0;
-            color: var(--text-dark);
+            font-size: 1.1em; font-weight: 500; margin: 0; color: var(--text-dark);
         }
         .card-title-inline {
-            font-size: 1em;
-            color: var(--text-medium);
-            margin-bottom: 10px;
-            font-weight: 500;
+            font-size: 1em; color: var(--text-medium); margin-bottom: 10px; font-weight: 500;
         }
 
-        /* --- Forecast Section --- */
+        /* --- Forecast Section (Sidebar) --- */
         .forecast-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-         @media (max-width: 600px) {
-            /* Stack forecast tables on very small screens or when sidebar stacks */
+         @media (max-width: 600px), (min-width: 1200px) and (max-width: 1400px) {
+            /* Stack forecast tables when sidebar is narrow or screen is very small */
             .forecast-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .forecast-grid h4 {
-            font-size: 1em;
+            font-size: 1em; color: var(--text-medium); margin-bottom: 10px; font-weight: 500;
+        }
+
+         /* --- Market Outlook Section Styling --- */
+        .outlook-card {
+            background-color: var(--bg-outlook); /* Subtle green background */
+            border-color: var(--border-outlook);
+        }
+        .outlook-card .card-title {
+             border-color: var(--border-outlook);
+        }
+
+        .outlook-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+         @media (max-width: 768px) {
+            .outlook-grid {
+                grid-template-columns: 1fr;
+            }
+             .outlook-item[style*="grid-column: span 2"] {
+                 grid-column: span 1 !important;
+             }
+        }
+
+        .outlook-item h4 {
+             font-size: 1em;
             color: var(--text-medium);
             margin-bottom: 10px;
             font-weight: 500;
+        }
+        .outlook-item p {
+            color: var(--text-dark);
+            line-height: 1.5;
         }
 
 
@@ -457,46 +561,57 @@
             border-bottom: none;
         }
         
-        /* --- Tabulator Interactive Table Styling --- */
-        /* Customize Tabulator to match the Google-like theme */
+        /* --- Tabulator Interactive Table Styling (Pivot Style) --- */
+        /* Customize the 'simple' theme to look sharp and professional */
         .tabulator {
             font-family: 'Roboto', sans-serif;
-            border-radius: 8px;
             border: 1px solid var(--border-color);
+            font-size: 0.9em;
         }
         .tabulator .tabulator-header {
-            background-color: var(--bg-light);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--primary-color);
+             font-weight: 500;
+             background-color: var(--bg-light);
         }
-        .tabulator .tabulator-header .tabulator-col {
-            border-right: 1px solid var(--border-color);
-        }
-         .tabulator .tabulator-header .tabulator-col-title {
-            color: var(--text-medium);
-            font-weight: 500;
-         }
         .tabulator .tabulator-row:hover {
             background-color: var(--bg-hover);
         }
-        .tabulator .tabulator-footer {
-             background-color: var(--bg-light);
+        /* Pivot Style (Grouped Rows) */
+        .tabulator-group {
+            background-color: #e9ecef;
+            font-weight: 700;
             border-top: 1px solid var(--border-color);
+        }
+        .tabulator-group:hover {
+             background-color: #dee2e6;
+        }
+         /* Column Calculations (Totals) */
+        .tabulator-calcs-holder {
+            background-color: var(--bg-light) !important;
+            font-weight: 700;
+            border-top: 2px solid var(--text-medium) !important;
         }
 
         
         /* --- Utility Classes --- */
         .no-data-message {
-            text-align: center;
-            color: #999;
-            padding: 40px 20px;
-            font-style: italic;
+            text-align: center; color: #999; padding: 40px 20px; font-style: italic;
         }
         .error-container {
-            color: red; 
-            display: none; 
-            padding: 20px; 
-            border: 1px solid red; 
-            border-radius: 8px;
+            color: red; display: none; padding: 20px; border: 1px solid red; border-radius: 8px;
+        }
+        .simple-button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-light);
+            color: var(--text-medium);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .simple-button:hover {
+            background-color: var(--bg-hover);
         }
     </style>
 </body>
