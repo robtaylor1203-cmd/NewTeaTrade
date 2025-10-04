@@ -77,30 +77,25 @@
                 <p id="kpi-snapshot"></p>
             </div>
 
-            <div class="report-layout-equal-grid">
+            <div class="report-card">
+                <h3 class="card-title">Interactive Market Analysis</h3>
+                <p class="section-commentary">Analyze the distribution of prices across the auction. Use the top chart to filter the Grade and Broker performance charts below by clicking and dragging a selection.</p>
                 
-                <div class="report-column">
-                    <div class="report-card">
-                        <h3 class="card-title">Interactive Market Analysis</h3>
-                        <p class="section-commentary">Analyze the distribution of prices across the auction. Use the top chart to filter the Grade and Broker performance charts below by clicking and dragging a selection.</p>
-                        
-                        <div id="chart-price-distribution" class="chart-container" style="margin-bottom: 30px;"></div>
-                        
-                        <div class="interactive-subgrid">
-                            <div id="chart-grade-performance" class="chart-container"></div>
-                            <div id="chart-broker-performance" class="chart-container"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="report-column">
-                     <div class="report-card">
-                        <h3 class="card-title">Buyer Activity</h3>
-                        <p class="section-commentary">Overview of the top purchasing entities at the auction, ranked by the total value (USD) of their acquisitions.</p>
-                        <div id="chart-buyers" class="chart-container"></div>
-                    </div>
+                <div id="chart-price-distribution" class="chart-container" style="margin-bottom: 30px;"></div>
+                
+                <div class="interactive-subgrid">
+                    <div id="chart-grade-performance" class="chart-container"></div>
+                    <div id="chart-broker-performance" class="chart-container"></div>
                 </div>
             </div>
+
+            <div class="report-card">
+                <h3 class="card-title">Buyer Activity & Drill-down</h3>
+                <p class="section-commentary">Overview of the top purchasing entities. Click on a specific buyer's bar to analyze their purchases by grade in the chart below.</p>
+                <div id="chart-buyers" class="chart-container"></div>
+            </div>
+                
+            
 
             <div class="report-card">
                 <h3 class="card-title">Auction Metrics</h3>
@@ -456,8 +451,7 @@
         /* --- Layout Structure --- */
         
         /* CRITICAL FIX FOR OVERFLOW: Ensure all grid containers and columns have min-width: 0. 
-           This allows them to shrink and prevents Vega-Lite from causing overflow/expansion on mobile. */
-        .report-layout-equal-grid,
+           This allows them to shrink and prevents Vega-Lite from causing overflow/expansion. */
         .interactive-subgrid,
         .analysis-grid,
         .outlook-grid,
@@ -467,25 +461,22 @@
             min-width: 0;
         }
 
-         .report-column, .analysis-chart, .analysis-insights, .outlook-item, .metric-item {
+        /* Ensure all potential column containers can shrink */
+         .analysis-chart, .analysis-insights, .outlook-item, .metric-item {
              min-width: 0;
         }
 
-        /* NEW: Equal split (1fr 1fr) for the main charts */
-        .report-layout-equal-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            margin-bottom: 30px;
-        }
-       
+
         .interactive-subgrid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
         
+        /* UPDATED: Adjust analysis grid for wider chart (3fr) and narrower insights (1fr) */
         .analysis-grid {
-            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
         }
 
-         /* NEW: Grid for Auction Metrics (Full Width Section) */
+         /* Grid for Auction Metrics (Full Width Section) */
         .metrics-grid {
              grid-template-columns: repeat(3, minmax(0, 1fr));
              gap: 25px;
@@ -505,13 +496,9 @@
         
 
          @media (max-width: 1200px) {
-            .report-layout-equal-grid, .analysis-grid {
+             .analysis-grid {
                 grid-template-columns: 1fr;
             }
-             /* Ensure cards stack correctly without extra gap when they have bottom margin */
-             .report-layout-equal-grid {
-                 gap: 0;
-             }
         }
          @media (max-width: 768px) {
             .interactive-subgrid {
@@ -545,7 +532,7 @@
             font-weight: 500;
         }
         
-        /* NEW: Commentary styling */
+        /* Commentary styling */
         .section-commentary {
             font-size: 0.95em;
             color: var(--text-light);

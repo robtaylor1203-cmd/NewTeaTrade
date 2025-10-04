@@ -226,7 +226,6 @@ def create_price_distribution_chart(sales_df_week, brush):
         title="Price Distribution (Click and drag to filter below)",
         height=height,
         width='container'
-    # ALTAIR 5 UPDATE: Use add_params instead of add_selection
     ).add_params(
         brush
     )
@@ -281,29 +280,34 @@ def create_interactive_charts(sales_df_week):
         'broker_performance': create_broker_performance_chart(sales_df_week, local_brush),
     }
 
-
+# UPDATED: Implement Interactive Drill-down Buyer Chart
 def create_buyer_chart(sales_df_week):
-    # (Remains the same)
-    """Generates a chart for the Top 15 Buyers."""
+    """Generates an interactive, full-width buyer chart with grade drill-down."""
     if sales_df_week.empty or 'buyer' not in sales_df_week.columns or 'value_usd' not in sales_df_week.columns: return {}
 
-    # Aggregate data
+    # 1. Main Buyer Aggregation
     buyer_agg = sales_df_week.groupby('buyer').agg(
         total_value=('value_usd', 'sum'),
         total_volume=('quantity_kgs', 'sum')
     ).reset_index()
-    
     buyer_agg['avg_price'] = buyer_agg.apply(lambda row: row['total_value'] / row['total_volume'] if row['total_volume'] > 0 else 0, axis=1)
 
-    # Get Top 15
-    top_buyers = buyer_agg.nlargest(15, 'total_value')
+    # Get Top 15 (excluding placeholders if they exist)
+    top_buyers = buyer_agg[buyer_agg['buyer'] != PLACEHOLDER].nlargest(15, 'total_value')
 
     if top_buyers.empty: return {}
 
-    # Use the standard Primary Color
-    chart = alt.Chart(top_buyers).mark_bar(color=PRIMARY_COLOR).encode(
-        y=alt.Y('buyer:N', title='Buyer', sort='-x'),
-        x=alt.X('total_value:Q', title='Value (USD)'),
+    # 2. Define Interaction (Click on a buyer bar)
+    # We use selection_point for the drill-down mechanism.
+    buyer_selection = alt.selection_point(fields=['buyer'], empty=True)
+
+    # 3. Main Buyer Chart (Overview)
+    # Full width, Buyers on X-axis
+    main_chart = alt.Chart(top_buyers).mark_bar().encode(
+        x=alt.X('buyer:N', title='Buyer', sort='-y', axis=alt.Axis(labelAngle=-45)), # Angle labels for readability
+        y=alt.Y('total_value:Q', title='Value (USD)'),
+        # Highlight the selected bar
+        color=alt.condition(buyer_selection, alt.value(PRIMARY_COLOR), alt.value("#a6c8ff")),
         tooltip=[
             alt.Tooltip('buyer:N'),
             alt.Tooltip('total_value:Q', format='$,.0f', title='Value (USD)'),
@@ -311,11 +315,40 @@ def create_buyer_chart(sales_df_week):
             alt.Tooltip('avg_price:Q', format='$.2f', title='Avg Price')
         ]
     ).properties(
-        title="Top 15 Buyers (by Value)",
-        height=CHART_HEIGHT + 50,
+        title="Top 15 Buyers by Value (Click bar to see Grade breakdown below)",
+        height=CHART_HEIGHT,
+        width='container'
+    ).add_params(
+        buyer_selection
+    )
+
+    # 4. Drill-down Chart (Grade Breakdown)
+    # This chart uses the raw data (sales_df_week) but filters based on the selection.
+    grade_breakdown = alt.Chart(sales_df_week).mark_bar().encode(
+        x=alt.X('grade:N', title='Grade', sort='-y'),
+        y=alt.Y('sum(value_usd):Q', title='Value (USD)'),
+        # Use a distinct color scheme for the breakdown
+        color=alt.Color('grade:N', legend=alt.Legend(title="Grade"), scale=alt.Scale(scheme='category20')),
+        tooltip=[
+            alt.Tooltip('buyer:N'),
+            alt.Tooltip('grade:N'),
+            alt.Tooltip('sum(value_usd):Q', format='$,.0f', title='Value (USD)'),
+            alt.Tooltip('sum(quantity_kgs):Q', format=',.0f', title='Volume (kg)')
+        ]
+    ).transform_filter(
+        buyer_selection # Only show data for the selected buyer
+    ).properties(
+        title="Grade Breakdown for Selected Buyer",
+        height=CHART_HEIGHT - 50,
         width='container'
     )
-    return chart.to_dict()
+    
+    # 5. Combine Charts Vertically
+    # Altair's vconcat automatically handles the display logic based on the filter.
+    combined_chart = alt.vconcat(main_chart, grade_breakdown, spacing=40).resolve_scale(color='independent')
+
+    return combined_chart.to_dict()
+
 
 # =============================================================================
 # Advanced Analysis (Candlestick and Insights) (ALTAIR 5 COMPATIBLE)
@@ -399,8 +432,7 @@ def create_candlestick_chart(movement_df):
 
     input_dropdown = alt.binding_select(options=marks, name='Select Garden: ')
     
-    # ALTAIR 5 UPDATE: Use selection_point
-    # CRITICAL FIX: The 'value' must be a LIST of dictionaries when 'fields' are specified.
+    # ALTAIR 5 UPDATE: Use selection_point and 'value' as a list of dicts
     selection = alt.selection_point(fields=['mark'], bind=input_dropdown, value=[{'mark': marks[0]}])
 
     # Base chart definition
@@ -408,13 +440,13 @@ def create_candlestick_chart(movement_df):
         selection
     ).properties(
         width='container',
-        height=350,
+        height=400, # Increased height slightly for better visibility
         title="Week-over-Week Price Movement (Candlestick)"
     )
 
     # 1. The Wicks
     wicks = base.mark_rule(strokeWidth=1).encode(
-        x='grade:N',
+        x=alt.X('grade:N', axis=alt.Axis(labelAngle=-45)), # Angle labels
         y=alt.Y('low:Q', title='Price (USD/kg)', scale=alt.Scale(zero=False)),
         y2='high:Q',
         color=alt.Color('color:N', scale=None),
@@ -436,7 +468,6 @@ def create_candlestick_chart(movement_df):
     )
 
     # Combine layers and add the selection mechanism
-    # ALTAIR 5 UPDATE: Use add_params
     chart = alt.layer(wicks, body).add_params(selection)
 
     return chart.to_dict()
@@ -517,7 +548,7 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 # =============================================================================
 
 def main():
-    logging.info("Starting Mombasa Data Analysis (Finalized Compatibility Mode)...")
+    logging.info("Starting Mombasa Data Analysis (Enhanced Interactivity Mode)...")
 
     if not os.path.exists(DATA_OUTPUT_DIR): os.makedirs(DATA_OUTPUT_DIR)
 
@@ -580,10 +611,10 @@ def main():
         # Advanced Analysis
         movement_data, analytical_insights = analyze_price_movements(sales_week, sales_df_all)
 
-        # Generate Charts (Refactored and Updated for Altair 5)
+        # Generate Charts (Refactored and Updated)
         charts = create_interactive_charts(sales_week)
         
-        # Add the non-interactive charts
+        # Add the Buyer Drill-down chart
         charts['buyers'] = create_buyer_chart(sales_week)
         charts['candlestick'] = create_candlestick_chart(movement_data)
 
