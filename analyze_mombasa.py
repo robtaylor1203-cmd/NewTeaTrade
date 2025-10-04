@@ -280,9 +280,9 @@ def create_interactive_charts(sales_df_week):
     }
 
 
-# UPDATED: Implement Horizontal Layout and Standardized Colors
+# UPDATED: Implement Value/Volume Switch, Horizontal Layout, Standardized Colors
 def create_buyer_chart(sales_df_week):
-    """Generates an interactive, side-by-side buyer chart with grade drill-down."""
+    """Generates an interactive, side-by-side buyer chart with grade drill-down and Value/Volume switch."""
     if sales_df_week.empty or 'buyer' not in sales_df_week.columns or 'value_usd' not in sales_df_week.columns: return {}
 
     # 1. Main Buyer Aggregation
@@ -296,19 +296,25 @@ def create_buyer_chart(sales_df_week):
 
     if top_buyers.empty: return {}
 
-    # 2. Define Interaction
-    # Initialize the selection with the top buyer for better initial visualization
+    # 2. Define Interactions
+    # 2a. Buyer Selection (Drill-down)
     top_buyer_name = top_buyers.iloc[0]['buyer']
     # ALTAIR 5: selection_point, value must be a list of dicts.
     buyer_selection = alt.selection_point(fields=['buyer'], empty=False, value=[{'buyer': top_buyer_name}])
 
+    # 2b. NEW: Value/Volume Switch (Radio buttons)
+    metric_options = ['Value (USD)', 'Volume (kg)']
+    metric_binding = alt.binding_radio(options=metric_options, name='Select Metric: ')
+    # ALTAIR 5: Use alt.param for the switch
+    metric_switch = alt.param(bind=metric_binding, value=metric_options[0])
+
     LAYOUT_HEIGHT = 450
 
     # 3. Main Buyer Chart (Overview - 2/3 width)
-    # Switched to Y-axis for better readability in horizontal layout
     main_chart = alt.Chart(top_buyers).mark_bar().encode(
         y=alt.Y('buyer:N', title='Buyer', sort='-x'),
-        x=alt.X('total_value:Q', title='Value (USD)'),
+        # NEW: Dynamic X-axis based on the switch
+        x=alt.X('dynamic_metric:Q').title(None), # Title handled by the switch name
         # Highlight the selected bar
         color=alt.condition(buyer_selection, alt.value(PRIMARY_COLOR), alt.value("#a6c8ff")),
         tooltip=[
@@ -317,18 +323,23 @@ def create_buyer_chart(sales_df_week):
             alt.Tooltip('total_volume:Q', format=',.0f', title='Volume (kg)'),
             alt.Tooltip('avg_price:Q', format='$.2f', title='Avg Price')
         ]
+    ).transform_calculate(
+        # Calculate the dynamic metric based on the switch selection
+        dynamic_metric=alt.expr.if_(metric_switch == metric_options[0], alt.datum.total_value, alt.datum.total_volume)
     ).properties(
         title="Top 15 Buyers (Click bar to see breakdown)",
         height=LAYOUT_HEIGHT,
         width='container'
     ).add_params(
-        buyer_selection
+        buyer_selection,
+        metric_switch # Add the new switch parameter
     )
 
     # 4. Drill-down Chart (Grade Breakdown - 1/3 width)
     grade_breakdown = alt.Chart(sales_df_week).mark_bar(color=PRIMARY_COLOR).encode(
         y=alt.Y('grade:N', title='Grade', sort='-x'),
-        x=alt.X('sum(value_usd):Q', title='Value (USD)'),
+        # NEW: Dynamic X-axis based on the switch
+        x=alt.X('sum(dynamic_metric):Q').title(None),
         # UPDATE: Removed multi-color scheme, using PRIMARY_COLOR consistently.
         tooltip=[
             alt.Tooltip('buyer:N'),
@@ -336,6 +347,9 @@ def create_buyer_chart(sales_df_week):
             alt.Tooltip('sum(value_usd):Q', format='$,.0f', title='Value (USD)'),
             alt.Tooltip('sum(quantity_kgs):Q', format=',.0f', title='Volume (kg)')
         ]
+    ).transform_calculate(
+        # Calculate the dynamic metric for the raw data too
+         dynamic_metric=alt.expr.if_(metric_switch == metric_options[0], alt.datum.value_usd, alt.datum.quantity_kgs)
     ).transform_filter(
         buyer_selection
     ).properties(
@@ -345,7 +359,6 @@ def create_buyer_chart(sales_df_week):
     )
     
     # 5. Combine Charts Horizontally (hconcat)
-    # We rely on the HTML/CSS Grid (defined in report_viewer.html) to handle the 2/3 vs 1/3 ratio.
     combined_chart = alt.hconcat(main_chart, grade_breakdown, spacing=40).resolve_scale(color='independent')
 
     return combined_chart.to_dict()
@@ -553,7 +566,7 @@ def generate_forecast_outlook(week_number, location, offers_df_all):
 # =============================================================================
 
 def main():
-    logging.info("Starting Mombasa Data Analysis (Refined Layout and Colors)...")
+    logging.info("Starting Mombasa Data Analysis (Final Polish Mode)...")
 
     if not os.path.exists(DATA_OUTPUT_DIR): os.makedirs(DATA_OUTPUT_DIR)
 
@@ -619,7 +632,7 @@ def main():
         # Generate Charts (Refactored and Updated)
         charts = create_interactive_charts(sales_week)
         
-        # Add the Buyer Drill-down chart (Now Horizontal)
+        # Add the Buyer Drill-down chart (Now Horizontal with Switch)
         charts['buyers'] = create_buyer_chart(sales_week)
         charts['candlestick'] = create_candlestick_chart(movement_data)
 
