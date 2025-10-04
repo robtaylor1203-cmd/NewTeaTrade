@@ -77,12 +77,12 @@
                 <p id="kpi-snapshot"></p>
             </div>
 
-
-            <div class="report-layout-grid">
+            <div class="report-layout-equal-grid">
                 
                 <div class="report-column">
                     <div class="report-card">
                         <h3 class="card-title">Interactive Market Analysis</h3>
+                        <p class="section-commentary">Analyze the distribution of prices across the auction. Use the top chart to filter the Grade and Broker performance charts below by clicking and dragging a selection.</p>
                         
                         <div id="chart-price-distribution" class="chart-container" style="margin-bottom: 30px;"></div>
                         
@@ -96,27 +96,43 @@
                 <div class="report-column">
                      <div class="report-card">
                         <h3 class="card-title">Buyer Activity</h3>
+                        <p class="section-commentary">Overview of the top purchasing entities at the auction, ranked by the total value (USD) of their acquisitions.</p>
                         <div id="chart-buyers" class="chart-container"></div>
-                    </div>
-
-                    <div class="report-card">
-                        <h3 class="card-title">Auction Metrics</h3>
-                        <div class="forecast-grid">
-                            <div>
-                                <h4>Sell-Through (Absorption)</h4>
-                                <div id="table-sell-through"></div>
-                            </div>
-                            <div>
-                                <h4>Price Realization (vs Valuation)</h4>
-                                <div id="table-realization"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="report-card">
+                <h3 class="card-title">Auction Metrics</h3>
+                <p class="section-commentary">Detailed statistics regarding the efficiency and performance of the auction process.</p>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <h4>Sell-Through (Absorption)</h4>
+                        <p>Indicates the percentage of lots offered that were successfully sold. High absorption reflects strong demand.</p>
+                        <div id="table-sell-through"></div>
+                    </div>
+                    <div class="metric-item">
+                        <h4>Price Realization (vs Valuation)</h4>
+                        <p>Compares the actual sale price against the broker's valuation or reserve price (if available).</p>
+                        <div id="table-realization"></div>
+                    </div>
+                     <div class="metric-item">
+                        <h4>Data Status</h4>
+                        <p>Information regarding the completeness of the data utilized in this analysis.</p>
+                        <table class="data-table">
+                            <tbody>
+                                <tr><td>Status</td><td>Provisional</td></tr>
+                                <tr><td>Note</td><td>Awaiting final confirmation on select lots.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="report-card">
                 <h3 class="card-title">Detailed Price Analysis & Insights</h3>
+                 <p class="section-commentary">A deep dive into week-over-week price movements for specific garden and grade combinations, highlighting significant changes.</p>
                 <div class="analysis-grid">
                     <div class="analysis-chart">
                          <div id="chart-candlestick" class="chart-container"></div>
@@ -132,6 +148,7 @@
 
             <div class="report-card outlook-card">
                 <h3 class="card-title">Market Outlook & Forecast</h3>
+                <p class="section-commentary">Forward-looking information regarding upcoming offerings, environmental factors, and market predictions.</p>
                 <div class="outlook-grid">
                     <div class="outlook-item">
                         <h4>Forthcoming Offerings (Next Sale: <span id="outlook-next-sale">N/A</span>)</h4>
@@ -150,8 +167,9 @@
 
             <div class="report-card">
                 <h3 class="card-title">Detailed Sales Data (Pivot View)</h3>
+                <p class="section-commentary">Explore the raw transaction data. Use the filters in the column headers (featuring autocomplete) or the global search. The table uses infinite scrolling for navigation.</p>
                 <div class="table-controls">
-                    <input type="text" id="table-search" placeholder="Search all columns..." class="page-search-bar" style="width: 300px; margin-bottom: 10px;">
+                    <input type="text" id="table-search" placeholder="Global search..." class="page-search-bar" style="width: 250px; margin-bottom: 10px;">
                     <button id="toggle-grouping" class="simple-button">Group by Mark</button>
                     <button id="clear-grouping" class="simple-button">Clear Grouping</button>
                 </div>
@@ -277,10 +295,9 @@
             renderChart('chart-grade-performance', data.charts.grade_performance);
             renderChart('chart-broker-performance', data.charts.broker_performance);
             renderChart('chart-buyers', data.charts.buyers);
-            // NEW: Candlestick Chart
             renderChart('chart-candlestick', data.charts.candlestick);
 
-            // 4. Standard Tables
+            // 4. Standard Tables (Metrics)
             renderSimpleTable('table-sell-through', data.tables.sell_through);
             renderSimpleTable('table-realization', data.tables.realization);
 
@@ -293,7 +310,7 @@
                 document.getElementById('outlook-prediction').textContent = outlook.market_prediction || '--';
             }
 
-            // 6. NEW: Insights
+            // 6. Insights
             document.getElementById('analytical-insights').textContent = data.insights || 'No significant insights generated.';
 
             // 7. Interactive Table
@@ -303,11 +320,11 @@
             document.getElementById('report-content').style.display = 'block';
         }
 
-        // UPDATED: Fix for chart rendering issues in CSS Grid
+        // FIX: Robust rendering for complex layouts
         function renderChart(elementId, chartSpec) {
             if (chartSpec && Object.keys(chartSpec).length > 0) {
-                // FIX: Use autosize: 'pad'. This adapts to the container padding and resolves 
-                // initialization issues in complex layouts where 'fit' fails to calculate dimensions correctly on load.
+                // Using 'pad' often resolves sizing issues within CSS Grid/Flexbox better than 'fit'.
+                // It ensures the chart respects the container padding and recalculates on resize.
                 vegaEmbed(`#${elementId}`, chartSpec, {
                     actions: false, 
                     autosize: {type: 'pad', resize: true, contains: 'padding'}
@@ -321,7 +338,7 @@
         function renderSimpleTable(elementId, tableData) {
              const container = document.getElementById(elementId);
             if (!tableData || tableData.length === 0) {
-                container.innerHTML = "<p class='no-data-message'>No data.</p>";
+                container.innerHTML = "<p class='no-data-message' style='padding: 10px;'>No data.</p>";
                 return;
             }
             const table = document.createElement('table');
@@ -341,22 +358,35 @@
             container.appendChild(table);
         }
 
-        // Renders the main interactive data table using Tabulator
+        // ENHANCEMENT: Renders the main interactive data table
         function renderInteractiveTable(tableData) {
              if (!tableData || tableData.length === 0) {
                 document.getElementById('table-raw-data').innerHTML = "<p class='no-data-message'>No detailed sales data available for this period.</p>";
                 return;
             }
 
+            // Helper function to generate unique values for the dropdown filters
+            const getUniqueValues = (data, field) => {
+                const values = new Set();
+                data.forEach(item => {
+                    // Ensure the value exists and is not null/undefined before adding
+                    if (item[field] != null) {
+                        values.add(item[field]);
+                    }
+                });
+                return Array.from(values).sort();
+            };
+
+
             rawDataTable = new Tabulator("#table-raw-data", {
                 data: tableData,
-                // REFINED: Use fitColumns to utilize the full width of the container neatly
-                layout: "fitColumns", 
-                pagination: true,
-                paginationSize: 15,
-                paginationSizeSelector: [15, 50, 100],
+                layout: "fitColumns", // Utilize full width
+                
+                // ENHANCEMENT: Infinite Scroll instead of Pagination
+                height: "600px", // Set a fixed height to enable virtual DOM scrolling
+                // Remove pagination settings
+                
                 movableColumns: true,
-                // Pivot/Grouping configuration
                 groupStartOpen: false, 
                 groupToggleElement: "header",
                 
@@ -364,18 +394,26 @@
                     {column: "Price (USD)", dir: "desc"},
                 ],
                 columns: [ 
-                    // Use widthGrow to define relative widths
-                    {title: "Mark", field: "Mark", headerFilter: "input", widthGrow: 2},
-                    {title: "Grade", field: "Grade", headerFilter: "input", widthGrow: 1},
-                    {title: "Lot", field: "Lot", widthGrow: 1},
+                    // ENHANCEMENT: Use 'list' (searchable dropdown/autocomplete) for filters
+                    {title: "Mark", field: "Mark", widthGrow: 2, 
+                        headerFilter: "list", headerFilterParams:{values: getUniqueValues(tableData, "Mark"), clearable:true, autocomplete:true}
+                    },
+                    {title: "Grade", field: "Grade", widthGrow: 1,
+                        headerFilter: "list", headerFilterParams:{values: getUniqueValues(tableData, "Grade"), clearable:true, autocomplete:true}
+                    },
+                    {title: "Lot", field: "Lot", widthGrow: 1, headerFilter: "input"},
                     {title: "KGs", field: "KGs", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:0},
                         bottomCalc:"sum", bottomCalcFormatter:"money", bottomCalcFormatterParams:{thousand:",", precision:0}, widthGrow: 1
                     },
                     {title: "Price (USD)", field: "Price (USD)", hozAlign: "right", formatter:"money", formatterParams:{thousand:",", precision:2},
                         bottomCalc:"avg", bottomCalcFormatter:"money", bottomCalcFormatterParams:{thousand:",", precision:2}, widthGrow: 1
                     },
-                    {title: "Buyer", field: "Buyer", headerFilter: "input", widthGrow: 2},
-                    {title: "Broker", field: "Broker", headerFilter: "input", widthGrow: 1},
+                    {title: "Buyer", field: "Buyer", widthGrow: 2,
+                        headerFilter: "list", headerFilterParams:{values: getUniqueValues(tableData, "Buyer"), clearable:true, autocomplete:true}
+                    },
+                    {title: "Broker", field: "Broker", widthGrow: 1,
+                         headerFilter: "list", headerFilterParams:{values: getUniqueValues(tableData, "Broker"), clearable:true, autocomplete:true}
+                    },
                 ],
             });
         }
@@ -391,7 +429,7 @@
     </script>
     
     <style>
-        /* Refined Visual Polish, Layout Fixes, and Font Adjustments */
+        /* Refined Visual Polish, Layout Fixes, and Interactivity Enhancements */
         
         /* --- Typography and Colors --- */
         :root {
@@ -404,9 +442,8 @@
             --bg-hover: #f1f3f4;
         }
 
-        /* REFINED: Slightly reduce the base font size for the viewer page */
         .report-viewer-body {
-            font-size: 15px; /* Slightly smaller than the default 16px */
+            font-size: 15px; /* Maintaining slightly smaller font */
         }
 
         .page-title { color: var(--text-dark); }
@@ -417,44 +454,72 @@
         }
 
         /* --- Layout Structure --- */
-        /* Using minmax(0, ...) ensures grid items do not overflow */
-        .report-layout-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        .interactive-subgrid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 30px;
-        }
-         .report-column {
-             min-width: 0;
-        }
         
-        /* NEW: Grid for Candlestick and Insights */
-        .analysis-grid {
+        /* CRITICAL FIX FOR OVERFLOW: Ensure all grid containers and columns have min-width: 0. 
+           This allows them to shrink and prevents Vega-Lite from causing overflow/expansion on mobile. */
+        .report-layout-equal-grid,
+        .interactive-subgrid,
+        .analysis-grid,
+        .outlook-grid,
+        .metrics-grid {
             display: grid;
-            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
             gap: 30px;
-        }
-         .analysis-insights h4 {
-            font-size: 1em;
-            color: var(--text-medium);
-            margin-bottom: 10px;
-            font-weight: 500;
+            min-width: 0;
         }
 
+         .report-column, .analysis-chart, .analysis-insights, .outlook-item, .metric-item {
+             min-width: 0;
+        }
+
+        /* NEW: Equal split (1fr 1fr) for the main charts */
+        .report-layout-equal-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-bottom: 30px;
+        }
+       
+        .interactive-subgrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        
+        .analysis-grid {
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        }
+
+         /* NEW: Grid for Auction Metrics (Full Width Section) */
+        .metrics-grid {
+             grid-template-columns: repeat(3, minmax(0, 1fr));
+             gap: 25px;
+        }
+        .metric-item h4 {
+             font-size: 1em;
+            color: var(--text-medium);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+         .metric-item p {
+             font-size: 0.9em;
+             color: var(--text-light);
+             margin-bottom: 15px;
+             line-height: 1.4;
+         }
+        
+
          @media (max-width: 1200px) {
-            .report-layout-grid, .analysis-grid {
+            .report-layout-equal-grid, .analysis-grid {
                 grid-template-columns: 1fr;
             }
+             /* Ensure cards stack correctly without extra gap when they have bottom margin */
+             .report-layout-equal-grid {
+                 gap: 0;
+             }
         }
          @media (max-width: 768px) {
             .interactive-subgrid {
                 grid-template-columns: 1fr;
                 gap: 20px;
+            }
+            .metrics-grid {
+                 grid-template-columns: 1fr;
             }
         }
 
@@ -462,25 +527,34 @@
         /* --- Cards and Components --- */
         .report-card {
             background-color: #fff;
-            padding: 20px; /* Slightly reduced padding */
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border: 1px solid var(--border-color);
             margin-bottom: 30px;
-            overflow: hidden;
+            /* Ensure content inside the card doesn't overflow */
+            overflow: hidden; 
         }
 
         .card-title {
-            font-size: 1.2em; /* Slightly reduced size */
-            margin-bottom: 20px;
+            font-size: 1.2em;
+            margin-bottom: 15px; /* Reduced margin */
             color: var(--text-medium);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
             font-weight: 500;
         }
         
+        /* NEW: Commentary styling */
+        .section-commentary {
+            font-size: 0.95em;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
         
-        /* --- KPI Specific Styling --- */
+        /* --- KPI Specific Styling (Unchanged) --- */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -501,21 +575,19 @@
             font-weight: 500;
         }
         .kpi-value {
-            font-size: 1.6em; /* Reduced size */
+            font-size: 1.6em;
             font-weight: 700;
             margin: 0;
             color: var(--text-dark);
         }
 
-        /* REFINED: Snapshot Styling (No background color) */
         .snapshot-card {
-            /* Removed background-color: var(--bg-light); */
             border-left: 4px solid var(--primary-color);
             margin-bottom: 30px;
         }
         .snapshot-card p {
             font-size: 1em; 
-            font-weight: 400; /* Standard weight */
+            font-weight: 400;
             margin: 0; 
             color: var(--text-dark);
             line-height: 1.5;
@@ -524,31 +596,10 @@
             font-size: 0.9em; color: var(--text-medium); margin-bottom: 10px; font-weight: 500;
         }
 
-        /* --- Forecast Section (Sidebar) --- */
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-         @media (max-width: 600px), (min-width: 1200px) and (max-width: 1400px) {
-            .forecast-grid {
-                grid-template-columns: 1fr;
-            }
-        }
 
-        .forecast-grid h4 {
-            font-size: 0.9em; color: var(--text-medium); margin-bottom: 10px; font-weight: 500;
-        }
-
-         /* --- Market Outlook Section Styling (REFINED: No background color) --- */
-        .outlook-card {
-             /* No specific background/border styling needed */
-        }
-        
+         /* --- Market Outlook Section Styling (REFINED) --- */
         .outlook-grid {
-            display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 20px;
         }
          @media (max-width: 768px) {
             .outlook-grid {
@@ -571,7 +622,7 @@
         }
 
 
-        /* --- Simple Table Styling (Forecast) --- */
+        /* --- Simple Table Styling (Metrics) --- */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -586,9 +637,11 @@
             text-align: right;
             font-weight: 500;
          }
+         .data-table tr:last-child td {
+             border-bottom: none;
+         }
         
         /* --- Tabulator Interactive Table Styling (Modernized) --- */
-        /* Customize the default modern theme */
         .tabulator {
             font-family: 'Roboto', sans-serif;
             border-radius: 8px;
@@ -606,8 +659,12 @@
         .tabulator .tabulator-row:hover {
             background-color: var(--bg-hover);
         }
-        .tabulator .tabulator-footer {
-             background-color: var(--bg-light);
+        /* Ensure dropdown filters look modern */
+        .tabulator .tabulator-header .tabulator-header-filter input,
+        .tabulator .tabulator-header .tabulator-header-filter select {
+            border-radius: 4px;
+            padding: 5px;
+            border: 1px solid var(--border-color);
         }
 
         /* (Pivot Style/Grouped Rows - Unchanged) */
@@ -646,6 +703,34 @@
         .chart-description {
             font-size: 0.85em; color: var(--text-light); margin-top: 10px;
         }
+
+        /* STYLING FIX: Modernize Vega-Embed Dropdowns (Candlestick Selector) */
+        /* This targets the container generated by Vega-Embed */
+        .vega-bindings {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+        }
+        /* This targets the label text (e.g., "Select Garden:") */
+        .vega-bind-name {
+            font-weight: 500;
+            color: var(--text-medium);
+            margin-right: 10px;
+        }
+        /* This targets the <select> element itself */
+        .vega-bindings select {
+            padding: 8px 12px;
+            border-radius: 6px; /* Rounded corners */
+            border: 1px solid var(--border-color);
+            background-color: white;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9em;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .vega-bindings select:hover {
+            border-color: var(--primary-color);
+        }
+
     </style>
 </body>
 </html>
