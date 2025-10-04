@@ -5,7 +5,7 @@
     "location": "Mombasa",
     "year": 2025,
     "sale_num_only": 41,
-    "generated_at": "2025-10-03T20:15:25.647305"
+    "generated_at": "2025-10-04T04:15:45.433414"
   },
   "kpis": {
     "TOTAL_VOLUME": "0",
@@ -18,11 +18,13 @@
     "REALIZATION_RATE": "N/A",
     "SNAPSHOT": "Awaiting sales results. Offers published."
   },
+  "insights": "Awaiting current week data or missing key columns for trend analysis.",
   "charts": {
     "price_distribution": {},
     "grade_performance": {},
     "broker_performance": {},
-    "buyers": {}
+    "buyers": {},
+    "candlestick": {}
   },
   "tables": {
     "sell_through": [
@@ -50,7 +52,7 @@
   "outlook": {
     "next_sale": "N/A",
     "forthcoming_offerings_kgs": "Awaiting Catalogues",
-    "weather_outlook": "Favorable conditions expected in the growing regions supplying Mombasa. Moderate rainfall anticipated over the next 7 days.",
-    "market_prediction": "Demand is expected to remain strong following recent price trends. Buyers may become more selective if quality varies. Currency fluctuations should be monitored closely."
+    "weather_outlook": "Seasonal weather patterns are prevailing in the key growing regions supplying Mombasa. Production levels are reported as stable.",
+    "market_prediction": "Based on current demand trends, the market is expected to remain active. Buyers are advised to monitor global economic indicators and currency fluctuations which may impact pricing in the coming weeks."
   }
 }
