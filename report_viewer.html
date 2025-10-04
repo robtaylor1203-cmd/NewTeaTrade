@@ -428,7 +428,8 @@
         
         /* --- Typography and Colors --- */
         :root {
-            --primary-color: #1a73e8;
+            --primary-color: #1a73e8; /* Google Blue (Active) */
+            --primary-color-light: #a6c8ff; /* Lighter Blue (Inactive) */
             --text-dark: #202124;
             --text-medium: #3c4043;
             --text-light: #5f6368;
@@ -451,7 +452,7 @@
         /* --- Layout Structure --- */
         
         /* CRITICAL FIX FOR OVERFLOW: Ensure all grid containers and columns have min-width: 0. 
-           This allows them to shrink and prevents Vega-Lite from causing overflow/expansion. */
+           This is the definitive fix for Vega-Lite causing overflow/expansion in Grid layouts. */
         .interactive-subgrid,
         .analysis-grid,
         .outlook-grid,
@@ -466,10 +467,11 @@
              min-width: 0;
         }
 
-        /* FIX: Ensure the chart containers themselves do not cause overflow, but allow internal rendering */
+        /* FIX: Ensure the chart containers themselves do not cause overflow */
         .chart-container {
-            /* Removed overflow: hidden; as it can sometimes interfere with Vega initialization visibility */
             min-width: 0;
+            /* Adding overflow: hidden back, but ensuring internal Vega elements are visible */
+            overflow: hidden; 
         }
 
 
@@ -502,7 +504,7 @@
 
         /* Define the 2/3 vs 1/3 grid for the horizontal buyer chart */
         /* We target the Vega-Embed container generated inside the chart div */
-        #chart-buyers .vega-embed {
+        #chart-buyers .vega-embed details > div {
             display: grid;
             /* Define the 2/3 (2fr) and 1/3 (1fr) split */
             grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
@@ -518,7 +520,7 @@
         
          @media (max-width: 992px) {
             /* Stack the buyer chart on medium/small screens */
-            #chart-buyers .vega-embed {
+            #chart-buyers .vega-embed details > div {
                 grid-template-columns: 1fr;
             }
          }
@@ -715,26 +717,40 @@
         }
 
         /* STYLING FIX: Modernize Vega-Embed Controls (Dropdowns and Radio Buttons) */
-        /* This ensures the Value/Volume switch is visible and styled correctly */
+        
+        /* Ensure the Vega-Embed container allows controls to be positioned outside the chart area */
+        .vega-embed {
+             overflow: visible !important;
+        }
+
         .vega-bindings {
-            margin-top: 15px;
+            margin-top: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            flex-wrap: wrap; /* Allow controls to wrap on small screens */
-            padding: 10px 0;
-            /* Ensure controls are visible even if the chart container has issues */
-            overflow: visible !important; 
+            flex-wrap: wrap; 
+            padding: 5px 0;
         }
-        /* This targets the label text (e.g., "Select Garden:") */
+
+        /* Specific positioning for the Buyer chart controls (moved above the chart) */
+        #chart-buyers .vega-bindings {
+            /* Move the bindings container out of the grid flow to position it above */
+            position: relative;
+            top: -10px;
+            left: 0;
+        }
+
+        /* Styling the label text (e.g., "Select Metric:") */
         .vega-bind-name {
             font-weight: 500;
             color: var(--text-medium);
-            margin-right: 10px;
+            margin-right: 15px;
         }
-        /* This targets the <select> element itself */
+
+        /* Styling the Dropdown (<select>) */
         .vega-bindings select {
             padding: 8px 12px;
-            border-radius: 6px; /* Rounded corners */
+            border-radius: 6px;
             border: 1px solid var(--border-color);
             background-color: white;
             font-family: 'Roboto', sans-serif;
@@ -744,19 +760,31 @@
         .vega-bindings select:hover {
             border-color: var(--primary-color);
         }
-        /* This targets the radio button inputs */
+
+        /* NEW: Pill Button Styling for Radio Inputs */
+        /* Hide the actual radio input */
         .vega-bindings input[type="radio"] {
-            margin-right: 5px;
-            /* Modernize radio appearance */
-            accent-color: var(--primary-color);
+            display: none;
         }
-        /* This targets the label for the radio button */
+
+        /* Style the label associated with the radio input */
         .vega-bindings label {
-            margin-right: 15px;
+            padding: 8px 15px;
+            margin-right: 10px;
             font-size: 0.9em;
             color: var(--text-medium);
-            display: flex;
-            align-items: center;
+            background-color: var(--primary-color-light); /* Inactive color */
+            border-radius: 20px; /* Pill shape */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        /* Style the label when the associated radio input is checked */
+        .vega-bindings input[type="radio"]:checked + label {
+            background-color: var(--primary-color); /* Active color */
+            color: white;
+            font-weight: 500;
         }
 
     </style>
