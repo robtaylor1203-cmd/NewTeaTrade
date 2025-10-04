@@ -91,8 +91,9 @@
 
             <div class="report-card">
                 <h3 class="card-title">Buyer Activity & Drill-down</h3>
-                <p class="section-commentary">Overview of the top purchasing entities. Click on a specific buyer's bar to analyze their purchases by grade in the chart below.</p>
-                <div id="chart-buyers" class="chart-container"></div>
+                <p class="section-commentary">Overview of the top purchasing entities. Click on a specific buyer's bar on the left to analyze their purchases by grade on the right.</p>
+                
+                <div id="chart-buyers" class="chart-container buyer-chart-grid"></div>
             </div>
                 
             
@@ -318,7 +319,7 @@
         // FIX: Robust rendering for complex layouts
         function renderChart(elementId, chartSpec) {
             if (chartSpec && Object.keys(chartSpec).length > 0) {
-                // Using 'pad' often resolves sizing issues within CSS Grid/Flexbox better than 'fit'.
+                // Using 'pad' resolves sizing issues within CSS Grid/Flexbox.
                 // It ensures the chart respects the container padding and recalculates on resize.
                 vegaEmbed(`#${elementId}`, chartSpec, {
                     actions: false, 
@@ -379,7 +380,6 @@
                 
                 // ENHANCEMENT: Infinite Scroll instead of Pagination
                 height: "600px", // Set a fixed height to enable virtual DOM scrolling
-                // Remove pagination settings
                 
                 movableColumns: true,
                 groupStartOpen: false, 
@@ -424,7 +424,7 @@
     </script>
     
     <style>
-        /* Refined Visual Polish, Layout Fixes, and Interactivity Enhancements */
+        /* Finalized Visual Polish and Layout Fixes */
         
         /* --- Typography and Colors --- */
         :root {
@@ -438,7 +438,7 @@
         }
 
         .report-viewer-body {
-            font-size: 15px; /* Maintaining slightly smaller font */
+            font-size: 15px;
         }
 
         .page-title { color: var(--text-dark); }
@@ -471,9 +471,9 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
         
-        /* UPDATED: Adjust analysis grid for wider chart (3fr) and narrower insights (1fr) */
+        /* UPDATE: Adjust analysis grid for maximum chart width (4fr) and insights (1fr) */
         .analysis-grid {
-            grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+            grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
         }
 
          /* Grid for Auction Metrics (Full Width Section) */
@@ -493,6 +493,15 @@
              margin-bottom: 15px;
              line-height: 1.4;
          }
+
+        /* NEW: Define the 2/3 vs 1/3 grid for the horizontal buyer chart */
+        /* We target the Vega-Embed container generated inside the chart div */
+        #chart-buyers .vega-embed {
+            display: grid;
+            /* Define the 2/3 (2fr) and 1/3 (1fr) split */
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            gap: 30px;
+        }
         
 
          @media (max-width: 1200px) {
@@ -500,6 +509,14 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+         @media (max-width: 992px) {
+            /* Stack the buyer chart on medium/small screens */
+            #chart-buyers .vega-embed {
+                grid-template-columns: 1fr;
+            }
+         }
+
          @media (max-width: 768px) {
             .interactive-subgrid {
                 grid-template-columns: 1fr;
@@ -525,7 +542,7 @@
 
         .card-title {
             font-size: 1.2em;
-            margin-bottom: 15px; /* Reduced margin */
+            margin-bottom: 15px;
             color: var(--text-medium);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
